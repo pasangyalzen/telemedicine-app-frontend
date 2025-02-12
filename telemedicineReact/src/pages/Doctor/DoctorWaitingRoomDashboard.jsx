@@ -104,7 +104,7 @@ export default function DoctorWaitingRoomDashboard() {
         {/* Bottom Row - 4 Columns */}
         <div className="grid grid-cols-4 gap-4 text-sm font-light">
           {["Edit Waiting Room", "Account Settings", "Suggest Improvement", "Telehealth Shop"].map((item, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg shadow text-center hover:bg-gray-200 cursor-pointer">
+            <div key={index} className="bg-[#49cccc] p-4 text-gray-200 rounded-lg shadow text-center hover:bg-[#49cccc] hover:text-white cursor-pointer">
               <h3 className="font-semibold">{item}</h3>
             </div>
           ))}

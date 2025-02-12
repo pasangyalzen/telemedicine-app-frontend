@@ -3,5 +3,6 @@ export const PATHS = {
     LOGIN: "/login",
     REGISTER: "/register",
     PATIENTVIDEOCALLDASHBOARD: "/patient-video-call-dashboard",
-    DOCTORWAITINGROOMDASHBOARD: "/doctor-waiting-room-dashboard"
+    DOCTORWAITINGROOMDASHBOARD: "/doctor-waiting-room-dashboard",
+    ADMINDASHBOARD: "/admin-dashboard",
 }

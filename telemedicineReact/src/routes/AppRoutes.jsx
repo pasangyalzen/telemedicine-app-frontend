@@ -6,6 +6,7 @@ import RegisterPage from "../pages/auth/RegisterPage";
 import PatientVideoCallDashboard from "../pages/Patient/PatientVideoCallDashboard";
 import NotFoundPage from "../pages/NotFoundPage";
 import DoctorWaitingRoomDashboard from "../pages/Doctor/DoctorWaitingRoomDashboard";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
 export default function AppRoutes() {
     return (
         <BrowserRouter>
@@ -15,6 +16,7 @@ export default function AppRoutes() {
                 <Route path={PATHS.REGISTER} element = {<RegisterPage />} />
                 <Route path={PATHS.PATIENTVIDEOCALLDASHBOARD} element = {<PatientVideoCallDashboard/>} />
                 <Route path={PATHS.DOCTORWAITINGROOMDASHBOARD} element ={<DoctorWaitingRoomDashboard/>}/>
+                <Route path={PATHS.ADMINDASHBOARD} element ={<AdminDashboard/>}/>
                 <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
 
             </Routes>
