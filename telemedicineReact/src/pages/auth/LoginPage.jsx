@@ -1,34 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PATHS } from '../../constants/path';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 import LoginVideo from "../../assets/Login_Doctor.mp4";  
+import { handleLogin } from '../../services/authService';  
 
 export default function LoginPage() {
-    const navigate = useNavigate(); // For navigation after login
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // Error message state
+
+    // Check if the user is already logged in
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (token && role) {
+            redirectUser(role); // Redirect if already logged in
+        }
+    }, []);
+
+    // Function to redirect based on role
+    const redirectUser = (role) => {
+        switch (role) {
+            case "SuperAdmin":
+                navigate(PATHS.ADMINDASHBOARD);
+                break;
+            case "Doctor":
+                navigate(PATHS.DOCTOR_DASHBOARD);
+                break;
+            case "Patient":
+                navigate(PATHS.PATIENT_DASHBOARD);
+                break;
+            case "Pharmacist":
+                navigate(PATHS.PHARMACIST_DASHBOARD);
+                break;
+            default:
+                navigate(PATHS.DASHBOARD);
+        }
+    };
 
     // Handle login logic
-    const handleLogin = async (e) => {
-        e.preventDefault(); // Prevent form from refreshing
-
-        try {
-            const response = await axios.post("http://localhost:5186/api/Admin/Account/Login", { email, password });
-            
-            // Store JWT token in localStorage
-            localStorage.setItem("token", response.data.data.token);
-
-            // Navigate to the dashboard (or home page)
-            navigate(PATHS.DASHBOARD);  // Adjust to your correct path for the dashboard
-
-            console.log("Login successful");
-			//console.log(response.dat.token); 
-        } catch (error) {
-            console.error("Login failed:", error.response?.data?.message || error.message);
-        }
-    }
+    const handleLoginClick = async (e) => {
+        e.preventDefault();
+        setErrorMessage(""); // Clear previous errors
+    
+        await handleLogin({ email, password }, redirectUser, setErrorMessage);  // Call handleLogin from the utils file
+    };
 
     return (
         <main className="fixed inset-0 bg-primary bg-gradient-to-r from-primary">
@@ -36,8 +56,7 @@ export default function LoginPage() {
 
             <div className="h-full w-full flex items-center justify-center px-4">
                 <div className="w-full max-w-3xl mt-auto mb-auto flex bg-primary-light bg-gradient-to-r from-primary to-primary-light backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-
-                    {/* Image Section (Left Column) */}
+                    {/* Video Section */}
                     <div className="w-1/2 mt-0 flex justify-center items-center">
                         <video
                             className="w-full h-full object-cover rounded-xl shadow-lg"
@@ -50,13 +69,20 @@ export default function LoginPage() {
                         </video>
                     </div>
 
-                    {/* Login Section (Right Column) */}
+                    {/* Login Form Section */}
                     <div className="w-1/2 flex flex-col justify-center items-center space-y-6 ml-5">
                         <h1 className="text-4xl font-semibold text-white mb-8 text-center bg-gradient-to-r from-primary-light via-[#036f72] to-primary bg-clip-text text-transparent">
                             LOGIN
                         </h1>
 
-                        <form className="space-y-6" onSubmit={handleLogin}>
+                        {/* Error Message Display */}
+                        {errorMessage && (
+                            <div className="text-red-500 text-sm text-center bg-red-100 px-4 py-2 rounded-md w-full">
+                                {errorMessage}
+                            </div>
+                        )}
+
+                        <form className="space-y-6" onSubmit={handleLoginClick}>
                             <div className="space-y-2 text-start w-full">
                                 <label className="text-sm text-gray-400">Username</label>
                                 <input
@@ -103,16 +129,7 @@ export default function LoginPage() {
                                     SignUp
                                 </Link>
                             </div>
-
-                            {/* Google Sign-In Option */}
-                            <div className="mt-6 text-center">
-                                <button
-                                    type="button"
-                                    className="w-full bg-gray-300 text-black py-2 rounded-md mt-2 hover:bg-[#036f72] hover:text-white transition-colors"
-                                >
-                                    Sign in with Google
-                                </button>
-                            </div>
+                            
                         </form>
                     </div>
 
