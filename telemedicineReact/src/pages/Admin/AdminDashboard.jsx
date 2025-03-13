@@ -1,8 +1,9 @@
-import Sidebar from "../../components/Sidebar"; // Adjust path based on project structure
+import Sidebar from "../../layouts/Sidebar"; // Adjust path based on project structure
 import { Users, UserCheck, UserPlus, UserCog, Bell, ChevronDown, Settings, LogOut } from "lucide-react"; // Icons
 import { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
-import { handleLogout } from "../../services/authService"; 
+import { handleLogout } from "../../services/authService"; // Assuming this is the logout function
+import ConfirmationModal from "../../components/ConfirmationModal"; // Import the modal
 
 const AdminDashboard = () => {
   const totalUsers = 1000;
@@ -11,7 +12,21 @@ const AdminDashboard = () => {
   const totalPharmacists = 100;
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // For handling the logout modal
+  const navigate = useNavigate(); // useNavigate hook for navigation
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true); // Show the confirmation modal when logout button is clicked
+  };
+
+  const handleLogoutConfirm = () => {
+    handleLogout(navigate); // Pass navigate as argument to handleLogout
+    setShowLogoutModal(false); // Close the modal
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false); // Close the modal without doing anything
+  };
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
@@ -31,24 +46,24 @@ const AdminDashboard = () => {
 
             {/* Admin Dropdown */}
             <div className="relative">
-              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2 text-[#65cccc] hover:text-white">
+              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex bg-primary items-center space-x-2 text-[#65cccc] hover:text-white">
                 <span>Admin</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded-lg shadow-lg">
+                <div className="absolute right-0 mt-2 w-40  rounded-lg shadow-lg">
                   <button 
                     onClick={() => navigate("/admin/settings")} 
-                    className="block w-full px-4 py-2 text-left hover:bg-gray-200"
+                    className="block w-full px-4 py-2 text-left hover:bg-primary-light hover:text-white"
                   >
                     <Settings className="w-5 h-5 inline mr-2" />
                     Settings
                   </button>
 
                   <button 
-                    onClick={() => handleLogout(navigate)} 
-                    className="block w-full px-4 py-2 text-left hover:bg-gray-200"
+                    onClick={handleLogoutClick}  // Trigger the logout modal
+                    className="block w-full px-4 py-2 text-left hover:bg-primary-light hover:text-white"
                   >
                     <LogOut className="w-5 h-5 inline mr-2" />
                     Logout
@@ -94,6 +109,21 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <ConfirmationModal
+          message={
+            <>
+            <p className="mb-2">Are you sure you want to logout?</p>
+            <p className="text-sm text-gray-400">You will be redirected to the login page.</p>
+            </>
+          }
+          actionLabel="Logout"
+          onConfirm={handleLogoutConfirm}
+          onCancel={handleLogoutCancel}
+        />
+      )}
     </div>
   );
 };

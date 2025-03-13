@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../layouts/Navbar";
 
 export default function PatientVideoCallDashboard() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false); // State to track if the video should be played

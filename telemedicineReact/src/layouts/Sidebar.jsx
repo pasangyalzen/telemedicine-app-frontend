@@ -18,10 +18,12 @@ import {
   UserCircle,
 } from "lucide-react"; // Import icons
 import { handleLogout } from "../services/authService"; // Assuming authService is in services folder
+import ConfirmationModal from "../components/ConfirmationModal"; // Import ConfirmationModal
 
 const Sidebar = () => {
   const location = useLocation(); // Get current route
   const [isCollapsed, setIsCollapsed] = useState(false); // Sidebar collapse state
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
   const navigate = useNavigate(); // For redirecting after logout
 
   // Placeholder for admin details (Replace with real data later)
@@ -40,6 +42,12 @@ const Sidebar = () => {
     { name: "Notifications", icon: <Bell />, path: "/admin/notifications" },
     { name: "Settings", icon: <Settings />, path: "/admin/settings" },
   ];
+
+  // Function to handle logout
+  const handleConfirmLogout = () => {
+    handleLogout(navigate); // Call handleLogout function here
+    setIsModalOpen(false); // Close the modal after logout
+  };
 
   return (
     <div
@@ -89,13 +97,28 @@ const Sidebar = () => {
       {/* Logout Button */}
       <div className="p-4 border-t border-gray-700">
         <button
-          onClick={() => handleLogout(navigate)} // Call handleLogout function here
+          onClick={() => setIsModalOpen(true)} // Open the confirmation modal on click
           className="w-full flex items-center justify-center p-3 bg-[#49cccc] text-primary-dark rounded-lg hover:bg-[#49ccccd7] hover:text-white transition"
         >
           <LogOut className="w-5 h-5" />
           {!isCollapsed && <span className="ml-3">Logout</span>}
         </button>
       </div>
+
+      {/* Confirmation Modal */}
+      {isModalOpen && (
+        <ConfirmationModal
+          message={
+            <>
+            <p className = "mb-2">Are you sure you want to logout?</p>
+            <p className="text-sm text-gray-400">You will be redirected to the login page.</p>
+            </>
+          }
+          actionLabel="Logout"
+          onConfirm={handleConfirmLogout}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
