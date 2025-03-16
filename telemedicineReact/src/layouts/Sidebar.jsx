@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'; 
+import { useState, useEffect  } from 'react'; 
+import { useLocation } from "react-router-dom"; // Add this line
+import { Link } from "react-router-dom";
+import { PATHS } from "../constants/path"; // Import the PATHS object
 import {
   LayoutDashboard,
   Users,
@@ -16,31 +19,38 @@ import {
   Menu,
   X,
   UserCircle,
-} from "lucide-react"; // Import icons
-import { handleLogout } from "../services/authService"; // Assuming authService is in services folder
-import ConfirmationModal from "../components/ConfirmationModal"; // Import ConfirmationModal
+} from "lucide-react";
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
+import { handleLogout } from "../services/authService"; // Import the logout function
 
-const Sidebar = () => {
+const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
   const location = useLocation(); // Get current route
   const [isCollapsed, setIsCollapsed] = useState(false); // Sidebar collapse state
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
   const navigate = useNavigate(); // For redirecting after logout
+  const [admin, setAdmin] = useState({ name: "", role: "" }); // Admin details state
 
-  // Placeholder for admin details (Replace with real data later)
-  const admin = { name: "Admin Name", role: "Administrator" };
+  // Load admin details from localStorage
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email") || "Admin"; // Fallback name
+    const storedRole = localStorage.getItem("role") || "Administrator"; // Fallback role
+    setAdmin({ name: storedEmail, role: storedRole });
+  }, []);
 
+ 
+  // Update menuItems to use the PATHS object for routing
   const menuItems = [
-    { name: "Dashboard", icon: <LayoutDashboard />, path: "/admin/dashboard" },
-    { name: "Users", icon: <Users />, path: "/admin/users" },
-    { name: "Doctors", icon: <Stethoscope />, path: "/admin/doctors" },
-    { name: "Patients", icon: <User />, path: "/admin/patients" },
-    { name: "Pharmacists", icon: <Pill />, path: "/admin/pharmacists" },
-    { name: "Appointments", icon: <Calendar />, path: "/admin/appointments" },
-    { name: "Payments", icon: <CreditCard />, path: "/admin/payments" },
-    { name: "Reports", icon: <BarChart />, path: "/admin/reports" },
-    { name: "Security", icon: <Shield />, path: "/admin/security" },
-    { name: "Notifications", icon: <Bell />, path: "/admin/notifications" },
-    { name: "Settings", icon: <Settings />, path: "/admin/settings" },
+    { name: "Dashboard", icon: <LayoutDashboard />, path: PATHS.ADMINDASHBOARD },
+    { name: "Users", icon: <Users />, path: PATHS.USERS },
+    { name: "Doctors", icon: <Stethoscope />, path: PATHS.DOCTORS },
+    { name: "Patients", icon: <User />, path: PATHS.PATIENTS },
+    { name: "Pharmacists", icon: <Pill />, path: PATHS.PHARMACISTS },
+    { name: "Appointments", icon: <Calendar />, path: PATHS.APPOINTMENTS },
+    { name: "Payments", icon: <CreditCard />, path: PATHS.PAYMENTS },
+    { name: "Reports", icon: <BarChart />, path: PATHS.REPORTS },
+    { name: "Security", icon: <Shield />, path: PATHS.SECURITY },
+    { name: "Notifications", icon: <Bell />, path: PATHS.NOTIFICATIONS },
+    { name: "Settings", icon: <Settings />, path: PATHS.SETTINGS },
   ];
 
   // Function to handle logout
@@ -82,8 +92,9 @@ const Sidebar = () => {
             <li key={item.name}>
               <Link
                 to={item.path}
+                onClick={() => setSelectedMenu(item.name)} // Update selected menu when clicked
                 className={`flex items-center p-3 rounded-lg hover:bg-primary-light hover:text-white text-[#81e3e3] transition ${
-                  location.pathname === item.path ? "bg-gray-800" : ""
+                  selectedMenu === item.name ? "bg-gray-800" : ""
                 }`}
               >
                 <span className="w-6 h-6">{item.icon}</span>
@@ -100,20 +111,15 @@ const Sidebar = () => {
           onClick={() => setIsModalOpen(true)} // Open the confirmation modal on click
           className="w-full flex items-center justify-center p-3 bg-[#49cccc] text-primary-dark rounded-lg hover:bg-[#49ccccd7] hover:text-white transition"
         >
-          <LogOut className="w-5 h-5" />
-          {!isCollapsed && <span className="ml-3">Logout</span>}
+          <LogOut className="w-5 h-5 inline mr-2" />
+          {!isCollapsed && "Logout"}
         </button>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Logout Confirmation Modal */}
       {isModalOpen && (
         <ConfirmationModal
-          message={
-            <>
-            <p className = "mb-2">Are you sure you want to logout?</p>
-            <p className="text-sm text-gray-400">You will be redirected to the login page.</p>
-            </>
-          }
+          message="Are you sure you want to logout?"
           actionLabel="Logout"
           onConfirm={handleConfirmLogout}
           onCancel={() => setIsModalOpen(false)}

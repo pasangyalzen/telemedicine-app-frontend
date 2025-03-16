@@ -9,16 +9,17 @@ import DoctorWaitingRoomDashboard from "../pages/Doctor/DoctorWaitingRoomDashboa
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 
 // Import Admin Pages
-// import Users from "../pages/Admin/Users";
-// import Doctors from "../pages/Admin/Doctors";
-// import Patients from "../pages/Admin/Patients";
-// import Pharmacists from "../pages/Admin/Pharmacists";
-// import Appointments from "../pages/Admin/Appointments";
-// import Payments from "../pages/Admin/Payments";
-// import Reports from "../pages/Admin/Reports";
-// import Security from "../pages/Admin/Security";
-// import Notifications from "../pages/Admin/Notifications";
-// import Settings from "../pages/Admin/Settings";
+import UserManagement from "../components/UserManagement";
+import DoctorManagement from "../components/DoctorManagement";
+import PatientManagement from "../components/PatientManagement";
+import PharmacistManagement from "../components/PharmacistManagement";
+import AppointmentManagement from "../components/AppointmentManagement";
+import PaymentsManagement from "../components/PaymentsManagement";
+import ReportsManagement from "../components/ReportsManagement";
+import SecuritySettings from "../components/SecuritySettings";
+import NotificationsSettings from "../components/NotificationsSettings";
+import SettingsPage from "../components/SettingsPage";
+
 
 export default function AppRoutes() {
   return (
@@ -29,22 +30,22 @@ export default function AppRoutes() {
         <Route path={PATHS.REGISTER} element={<RegisterPage />} />
         <Route path={PATHS.PATIENTVIDEOCALLDASHBOARD} element={<PatientVideoCallDashboard />} />
         <Route path={PATHS.DOCTORWAITINGROOMDASHBOARD} element={<DoctorWaitingRoomDashboard />} />
-        <Route path={PATHS.ADMINDASHBOARD} element={<AdminDashboard />}/>
-        
+
         {/* Admin Dashboard with Nested Routes */}
-        {/*<Route path={PATHS.ADMINDASHBOARD} element={<AdminDashboard />}>
-          <Route index element={<Users />} /> 
-          <Route path="users" element={<Users />} />
-          <Route path="doctors" element={<Doctors />} />
-          <Route path="patients" element={<Patients />} />
-          <Route path="pharmacists" element={<Pharmacists />} />
-          <Route path="appointments" element={<Appointments />} />
-          <Route path="payments" element={<Payments />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="security" element={<Security />} />
-          <Route path="notifications" element={<Notifications />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>*/}
+        <Route path={PATHS.ADMINDASHBOARD} element={<AdminDashboard />}>
+          {/* Nested Routes for Admin Dashboard */}
+          <Route index element={<UserManagement />} /> {/* Default route when /admin/dashboard is accessed */}
+          <Route path="users" element={<UserManagement />} />
+          <Route path="doctors" element={<DoctorManagement />} />
+          <Route path="patients" element={<PatientManagement />} />
+          <Route path="pharmacists" element={<PharmacistManagement />} />
+          <Route path="appointments" element={<AppointmentManagement />} />
+          <Route path="payments" element={<PaymentsManagement />} />
+          <Route path="reports" element={<ReportsManagement />} />
+          <Route path="security" element={<SecuritySettings />} />
+          <Route path="notifications" element={<NotificationsSettings />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
 
         <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
       </Routes>

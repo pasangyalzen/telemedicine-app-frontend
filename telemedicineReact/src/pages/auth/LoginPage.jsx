@@ -29,10 +29,10 @@ export default function LoginPage() {
                 navigate(PATHS.ADMINDASHBOARD);
                 break;
             case "Doctor":
-                navigate(PATHS.DOCTOR_DASHBOARD);
+                navigate(PATHS.DOCTORWAITINGROOMDASHBOARD);
                 break;
             case "Patient":
-                navigate(PATHS.PATIENT_DASHBOARD);
+                navigate(PATHS.PATIENTVIDEOCALLDASHBOARD);
                 break;
             case "Pharmacist":
                 navigate(PATHS.PHARMACIST_DASHBOARD);
@@ -120,7 +120,7 @@ export default function LoginPage() {
                                 SIGN IN
                             </button>
 
-                            <div className="text-center text-gray-400">
+                            {/* <div className="text-center text-gray-400">
                                 <span>Don't have an account ?</span> 
                                 <Link
                                     onClick={() => navigate(PATHS.REGISTER)}
@@ -128,7 +128,7 @@ export default function LoginPage() {
                                 >
                                     SignUp
                                 </Link>
-                            </div>
+                            </div> */}
                             
                         </form>
                     </div>
