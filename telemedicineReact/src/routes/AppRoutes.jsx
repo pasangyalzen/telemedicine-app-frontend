@@ -9,16 +9,16 @@ import DoctorWaitingRoomDashboard from "../pages/Doctor/DoctorWaitingRoomDashboa
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 
 // Import Admin Pages
-import UserManagement from "../components/UserManagement";
-import DoctorManagement from "../components/DoctorManagement";
-import PatientManagement from "../components/PatientManagement";
-import PharmacistManagement from "../components/PharmacistManagement";
-import AppointmentManagement from "../components/AppointmentManagement";
-import PaymentsManagement from "../components/PaymentsManagement";
-import ReportsManagement from "../components/ReportsManagement";
-import SecuritySettings from "../components/SecuritySettings";
-import NotificationsSettings from "../components/NotificationsSettings";
-import SettingsPage from "../components/SettingsPage";
+import UserManagement from "../pages/Admin/components/UserManagement";
+import DoctorManagement from "../pages/Admin/components/DoctorManagement";
+import PatientManagement from "../pages/Admin/components/PatientManagement";
+import PharmacistManagement from "../pages/Admin/components/PharmacistManagement";
+import AppointmentManagement from "../pages/Admin/components/AppointmentManagement";
+import PaymentsManagement from "../pages/Admin/components/PaymentsManagement";
+import ReportsManagement from "../pages/Admin/components/ReportsManagement";
+import SecuritySettings from "../pages/Admin/components/SecuritySettings";
+import NotificationsSettings from "../pages/Admin/components/NotificationsSettings";
+import SettingsPage from "../pages/Admin/components/SettingsPage";
 
 
 export default function AppRoutes() {

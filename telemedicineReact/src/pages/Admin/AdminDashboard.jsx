@@ -6,17 +6,17 @@ import { handleLogout } from "../../services/authService"; // Import the logout 
 import ConfirmationModal from "../../components/ConfirmationModal"; // Import the modal
 
 // Components for each section
-import UserManagement from "../../components/UserManagement";
-import DoctorManagement from "../../components/DoctorManagement";
-import PatientManagement from "../../components/PatientManagement";
-import PharmacistManagement from "../../components/PharmacistManagement";
-import AppointmentManagement from "../../components/AppointmentManagement";
-import PaymentsManagement from "../../components/PaymentsManagement";
-import ReportsManagement from "../../components/ReportsManagement";
-import SecuritySettings from "../../components/SecuritySettings";
-import NotificationsSettings from "../../components/NotificationsSettings";
-import SettingsPage from "../../components/SettingsPage";
-import DashboardContent from "../../components/DashboardContent";
+import UserManagement from "./components/UserManagement";
+import DoctorManagement from "./components/DoctorManagement";
+import PatientManagement from "./components/PatientManagement";
+import PharmacistManagement from "./components/PharmacistManagement";
+import AppointmentManagement from "./components/AppointmentManagement";
+import PaymentsManagement from "./components/PaymentsManagement";
+import ReportsManagement from "./components/ReportsManagement";
+import SecuritySettings from "./components/SecuritySettings";
+import NotificationsSettings from "./components/NotificationsSettings";
+import SettingsPage from "./components/SettingsPage";
+import DashboardContent from "./components/DashboardContent";
 
 const AdminDashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Boxes or Menu Content */}
-        <div className="flex-grow p-6 border border-red-500">
+        <div className="flex-grow p-6 border border-primary-light">
           {renderSelectedMenu()}
         </div>
       </div>
