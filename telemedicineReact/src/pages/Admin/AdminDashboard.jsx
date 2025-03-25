@@ -21,7 +21,7 @@ import DashboardContent from "./components/DashboardContent";
 const AdminDashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // For handling the logout modal
-  const [selectedMenu, setSelectedMenu] = useState("UserManagement"); // Track selected menu
+  const [selectedMenu, setSelectedMenu] = useState("Dashboard"); // Track selected menu
   const navigate = useNavigate(); // useNavigate hook for navigation
 
   useEffect(() => {
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Boxes or Menu Content */}
-        <div className="flex-grow p-6 border border-primary-light">
+        <div className="flex-grow p-6 border border-primary-ligh bg-white">
           {renderSelectedMenu()}
         </div>
       </div>

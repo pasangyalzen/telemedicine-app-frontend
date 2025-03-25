@@ -1,11 +1,14 @@
-const Select = ({ options = [], value, onChange, className }) => {
+const Select = ({ options = [], value, onChange, className, children }) => {
     return (
       <select
         value={value}
         onChange={onChange}
         className={`border border-gray-300 rounded px-3 py-2 w-full ${className}`}
       >
-        {options.length === 0 ? (
+        {/* If children are provided, render them. Otherwise, use options */}
+        {children && children.length > 0 ? (
+          children
+        ) : options.length === 0 ? (
           <option disabled>No options available</option>
         ) : (
           options.map((option, index) => (
@@ -16,6 +19,6 @@ const Select = ({ options = [], value, onChange, className }) => {
         )}
       </select>
     );
-  };
-  
-  export default Select;
+};
+
+export default Select;

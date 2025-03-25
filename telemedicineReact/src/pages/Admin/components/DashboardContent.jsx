@@ -2,6 +2,7 @@ import React from "react";
 import Card from "../../../components/ui/Card"; // ✅ Fixed import
 import { Bar, Pie } from "react-chartjs-2";
 import Button from "../../../components/UI/button";
+import UserManagement from './UserManagement';
 import {
   Users,
   Calendar,
