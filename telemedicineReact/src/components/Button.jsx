@@ -1,19 +1,20 @@
 import React from "react";
-import { FaArrowRight } from "react-icons/fa"; // Example icon (You can use any icon from react-icons)
+import { FaArrowRight } from "react-icons/fa"; // Example icon, but it can be any icon passed as a prop
 
 const Button = ({
   children,
   onClick,
-  variant = "primary",
-  icon: Icon,
-  className = "",
-  ...props
+  variant = "primary",  // Button variant (primary, secondary, etc.)
+  icon: Icon,           // Icon to be passed and rendered in the button (if any)
+  className = "",       // Custom additional className for styling
+  type = "button",      // Default type is "button"
+  ...props              // Any additional props passed
 }) => {
   // Base styles for the button
   const baseClasses =
     "font-sans font-semibold px-6 py-3 rounded-md transition-colors relative group flex items-center gap-2";
 
-  // Define styles for different button types
+  // Define styles for different button variants
   const variantClasses = {
     primary: "bg-[#7FD1C7] text-[#012f33] hover:bg-opacity-90",
     secondary:
@@ -26,10 +27,11 @@ const Button = ({
   return (
     <button
       onClick={onClick}
+      type={type}  // Ensure it uses the type passed (default is "button")
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       {...props}
     >
-      {Icon && <Icon className="w-5 h-5" />}
+      {Icon && <Icon className="w-5 h-5" />}  {/* Render the icon if passed */}
       <span className="transition-all duration-300 group-hover:mr-3">
         {children}
       </span>

@@ -1,109 +1,70 @@
+import axios from "axios";
+
 const API_URL = "http://localhost:5186/api/admin";
+
+// Configure Axios instance
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // Fetch all appointments
 export const fetchAppointments = async (page = 1, pageSize = 5, sortColumn = "CreatedAt", sortOrder = "ASC") => {
   try {
     console.log("📢 Fetching appointments...");
 
-    const response = await fetch(
-      `${API_URL}/appointments/GetAllAppointments?page=${page}&pageSize=${pageSize}&sortColumn=${sortColumn}&sortOrder=${sortOrder}`, 
-      {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    const response = await apiClient.get(`/appointments/GetAllAppointments`, {
+      params: { page, pageSize, sortColumn, sortOrder },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`❌ Error fetching appointments: ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log("✅ API Response:", result); // LOG API RESPONSE
-
-    return result;
+    console.log("✅ API Response:", response.data);
+    return response.data;
   } catch (error) {
-    console.error("🚨 Error fetching appointments:", error);
-    throw error;
+    console.error("🚨 Error fetching appointments:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Error fetching appointments");
   }
 };
 
 // ✅ Create a new appointment
 export const createAppointment = async (appointmentData) => {
   try {
-    const formattedAppointmentData = {
-      ...appointmentData,
-      scheduledTime: appointmentData.scheduledTime ? new Date(appointmentData.scheduledTime).toISOString() : "",
-    };
-    const response = await fetch(`${API_URL}/appointments/CreateAppointment`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formattedAppointmentData),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Error creating appointment: ${errorText}`);
-    }
-
-    return await response.json();
+    const response = await apiClient.post("/appointments/CreateAppointment", appointmentData);
+    return response.data;
   } catch (error) {
-    console.error("Error creating appointment:", error);
-    throw error;
+    console.error("🚨 Error creating appointment:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Error creating appointment");
   }
 };
 
-// Update appointment status
-const updateAppointment = async (appointmentId, updatedData) => {
-  const API_URL = `http://localhost:5186/api/admin/appointments/UpdateAppointment/${appointmentId}`;
-  
+// ✅ Update appointment status
+export const updateAppointment = async (appointmentId, updatedData) => {
   try {
-    const response = await fetch(API_URL, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(updatedData),
+    const response = await apiClient.put(`/appointments/UpdateAppointment/${appointmentId}`, updatedData, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Error updating appointment: ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log("Appointment updated successfully:", result);
-    return result;
+    console.log("✅ Appointment updated successfully:", response.data);
+    return response.data;
   } catch (error) {
-    console.error("Error updating appointment:", error);
-    throw error;
+    console.error("🚨 Error updating appointment:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Error updating appointment");
   }
 };
 
-// Delete appointment
+// ✅ Delete appointment
 export const deleteAppointment = async (appointmentId) => {
   try {
-    const response = await fetch(`${API_URL}/appointments/DeleteAppointment/${appointmentId}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-      },
+    const response = await apiClient.delete(`/appointments/DeleteAppointment/${appointmentId}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Error deleting appointment: ${errorText}`);
-    }
-
-    return await response.json();
+    console.log("✅ Appointment deleted successfully");
+    return response.data;
   } catch (error) {
-    console.error("Error deleting appointment:", error);
-    throw error;
+    console.error("🚨 Error deleting appointment:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Error deleting appointment");
   }
 };

@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { createAppointment } from "../pages/Admin/services/appointmentApi";
+// File: useAppointmentManagement.js (or your relevant file)
+import { updateAppointment } from "../pages/Admin/services/appointmentApi"; // Adjust the import path according to your file structure
 
 const useAppointmentManagement = () => {
   const [appointments, setAppointments] = useState([]);
@@ -16,6 +19,7 @@ const useAppointmentManagement = () => {
   const [editAppointment, setEditAppointment] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [currentAppointmentId, setCurrentAppointmentId] = useState(null);
   
   
   const [formData, setFormData] = useState({
@@ -115,6 +119,7 @@ const useAppointmentManagement = () => {
         status: appointment.status,
         videoCallLink: appointment.videoCallLink,
       });
+      setCurrentAppointmentId(appointment.appointmentId); 
   
       // Set the selected appointment for further actions (like updating)
       setEditAppointment(appointment);
@@ -127,20 +132,39 @@ const useAppointmentManagement = () => {
     }
   };
 
-  const createAppointment = async (newAppointment) => {
-    const formattedAppointment = {
-      doctorName: newAppointment.doctorName,
-      patientName: newAppointment.patientName,
-      scheduledTime: newAppointment.scheduledTime,
-      status: newAppointment.status,
-      videoCallLink: newAppointment.videoCallLink,
-    };
-
+  const handleCreateAppointment = async (e, appointmentData) => {
+    e.preventDefault(); // Prevent default form submission behavior
     setLoadingCreate(true);
+  
+    // Log the data to be sent to the API
+    console.log("Data being sent to API:", appointmentData);
+  
     try {
-      const response = await axios.post("/api/appointments", formattedAppointment);
-      setAppointments((prev) => [...prev, response.data]);
-      setFilteredAppointments((prev) => [...prev, response.data]);
+      // Get the raw scheduled time and format it
+      let rawScheduledTime = appointmentData.scheduledTime; // From input field
+      let formattedScheduledTime = `${rawScheduledTime}:00.000Z`;
+  
+      console.log("Raw Input Value:", rawScheduledTime); // Log the raw input value
+      console.log("Final Scheduled Time Sent to API:", formattedScheduledTime); // Log the formatted value
+  
+      // Update the appointmentData with the formatted scheduledTime
+      const updatedAppointmentData = { ...appointmentData, scheduledTime: formattedScheduledTime };
+  
+      // Log the structure before sending it to the API
+      console.log("Submitted Data Structure:", JSON.stringify(updatedAppointmentData, null, 2));
+  
+      // API call to create appointment
+      const response = await createAppointment(updatedAppointmentData);
+  
+      // Log the response to ensure it's correct
+      console.log("Appointment created:", response);
+  
+      // Update your state with the new appointment data
+      setAppointments((prev) => [...prev, response]);
+      setFilteredAppointments((prev) => [...prev, response]);
+  
+      // Close the modal after successful creation
+      closeCreateModal(); // Close modal only after success
       setSuccessMessage("Appointment created successfully!");
     } catch (err) {
       setError(`Error creating appointment: ${err.message}`);
@@ -148,22 +172,29 @@ const useAppointmentManagement = () => {
       setLoadingCreate(false);
     }
   };
-
-  const handleUpdate = async () => {
-    if (!editAppointment) return;
+  const handleUpdate = async (formData) => {
+    if (!currentAppointmentId) return;  // Ensure the appointmentId is available
+  
+    console.log("Updating appointment with ID:", currentAppointmentId); // Debugging log
+  
     setLoadingUpdate(true);
+  
     try {
-      const response = await axios.put(`/api/appointments/${editAppointment.appointmentId}`, formData);
-      setAppointments((prev) =>
-        prev.map((appt) => (appt.appointmentId === editAppointment.appointmentId ? response.data : appt))
-      );
-      setFilteredAppointments((prev) =>
-        prev.map((appt) => (appt.appointmentId === editAppointment.appointmentId ? response.data : appt))
-      );
-      setSuccessMessage("Appointment updated successfully!");
-      resetForm();
-    } catch (err) {
-      setError(`Error updating appointment: ${err.message}`);
+      const updatedAppointment = await updateAppointment(currentAppointmentId, formData);  // Use currentAppointmentId
+  
+      if (updatedAppointment) {
+        setAppointments((prev) =>
+          prev.map((appt) => (appt.appointmentId === currentAppointmentId ? updatedAppointment : appt))
+        );
+        setFilteredAppointments((prev) =>
+          prev.map((appt) => (appt.appointmentId === currentAppointmentId ? updatedAppointment : appt))
+        );
+  
+        setSuccessMessage("✅ Appointment updated successfully!");
+        resetForm();
+      }
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoadingUpdate(false);
     }
@@ -244,26 +275,11 @@ const useAppointmentManagement = () => {
     setShowEditModal(false); // Close the edit modal
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-  
-    // Check if all required fields are populated
-    if (
-      formData.patientName &&
-      formData.doctorName &&
-      formData.scheduledTime &&
-      formData.status &&
-      formData.videoCallLink // Add all required fields here
-    ) {
-      // Proceed with form submission (i.e., call the function to create appointment)
-      createAppointment(formData);
-    } else {
-      // Handle invalid form (for example, show an error message)
-      console.log("Invalid form data", formData);
-      alert("Please fill all the required fields.");
-    }
-  };
-
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();  // Prevent the default form submission (which would reload the page)
+  //   console.log("📢 handleSubmit triggered");
+  //   handleCreateAppointment(formData);  // Now we can safely call the handleCreateAppointment function
+  // };
   return {
     appointments,
     filteredAppointments,
@@ -282,7 +298,6 @@ const useAppointmentManagement = () => {
     editAppointment,
     handleInputChange,
     handleEditAppointmentClick,
-    createAppointment,
     handleUpdate,
     handleDeleteClick,
     handleDeleteAppointment,
@@ -292,9 +307,9 @@ const useAppointmentManagement = () => {
     openCreateModal,
     showCreateModal,
     handleCreateClick,
-    handleSubmit,
     setShowEditModal,
     cancelEdit,
+    handleCreateAppointment,
   };
 };
 

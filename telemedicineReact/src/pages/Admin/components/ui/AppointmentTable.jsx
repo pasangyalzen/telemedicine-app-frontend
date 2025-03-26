@@ -11,6 +11,7 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isLastPage, setIsLastPage] = useState(false); // State to check if it's the last page
+  
 
   const totalPages = Math.ceil(appointments.length / itemsPerPage);
   const paginatedAppointments = Array.isArray(appointments)

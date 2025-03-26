@@ -14,7 +14,12 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
   useEffect(() => {
     if (appointment) {
       console.log("Editing appointment:", appointment); // Debugging
-      setFormData({ ...appointment });  // Update the formData only once
+      // Ensure the scheduled time is in the correct format for datetime-local input
+      const formattedScheduledTime = new Date(appointment.scheduledTime).toISOString().slice(0, 16);
+      setFormData({
+        ...appointment,
+        scheduledTime: formattedScheduledTime, // Format the scheduled time
+      });
     }
   }, [appointment]);
 
@@ -23,28 +28,34 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
   console.log("Rendering AppointmentEditForm", appointment); // Logs the appointment data being passed to the form
   if (!appointment) return null;
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    console.log(`Changing ${name} to ${value}`); // Debugging
+    setFormData((prevState) => ({
+      ...prevState,  // Preserve other fields
+      [name]: value, // Update only the changed field
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleUpdate(formData); // Pass updated appointment data to parent component
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex text-black justify-center items-center">
       <div className="p-6 bg-white shadow-md rounded-lg w-96">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">Edit Appointment</h3>
+        <h3 className="text-xl font-semibold mb-4">Edit Appointment</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <Input
               type="text"
               name="patientName"
               value={formData?.patientName ?? ""}
-              onChange={(e) => setFormData((prevState) => ({
-                ...prevState,
-                patientName: e.target.value
-              }))}
+              onChange={handleInputChange}
               placeholder="Patient Name"
               required
-              className="bg-gray-100 text-gray-800 p-3 rounded-md border border-gray-300"
+              className="bg-white p-2 rounded-md border border-gray-300"
             />
           </div>
           <div className="mb-4">
@@ -52,25 +63,19 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
               type="text"
               name="doctorName"
               value={formData?.doctorName ?? ""}
-              onChange={(e) => setFormData((prevState) => ({
-                ...prevState,
-                doctorName: e.target.value
-              }))}
+              onChange={handleInputChange}
               placeholder="Doctor Name"
               required
-              className="bg-gray-100 text-gray-800 p-3 rounded-md border border-gray-300"
+              className="bg-white p-2 rounded-md border border-gray-300"
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-4  bg-white">
             <Select
               name="status"
               value={formData?.status || "Scheduled"}
-              onChange={(e) => setFormData((prevState) => ({
-                ...prevState,
-                status: e.target.value
-              }))}
+              onChange={handleInputChange}
               required
-              className="bg-gray-100 text-gray-800 p-3 rounded-md border border-gray-300"
+              className="bg-white text-black border border-gray-300"
             >
               <option value="Scheduled">Scheduled</option>
               <option value="Completed">Completed</option>
@@ -89,22 +94,19 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
               type="datetime-local"
               name="scheduledTime"
               value={formData?.scheduledTime ?? ""}
-              onChange={(e) => setFormData((prevState) => ({
-                ...prevState,
-                scheduledTime: e.target.value
-              }))}
+              onChange={handleInputChange}
               required
-              className="bg-gray-100 text-gray-800 p-3 rounded-md border border-gray-300"
+              className="bg-white p-2 rounded-md border border-gray-300"
             />
           </div>
           <div className="flex justify-between">
-            <Button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-200 transform hover:scale-105">
+            <Button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg">
               Update Appointment
             </Button>
             <Button
               type="button"
               onClick={cancelEdit}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 transform hover:scale-105"
+              className="bg-gray-600 text-white px-4 py-2 rounded-lg"
             >
               Cancel
             </Button>
