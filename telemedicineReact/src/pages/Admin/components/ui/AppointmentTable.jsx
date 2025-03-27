@@ -74,23 +74,7 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
                 <Td className="p-4 border border-gray-300 text-center text-black">{new Date(appointment.scheduledTime).toLocaleDateString()}</Td>
                 <Td className="p-4 border border-gray-300 text-center text-black">{new Date(appointment.scheduledTime).toLocaleTimeString()}</Td>
                 <Td className="p-4 border border-gray-300 text-center text-black">
-                  <select
-                    value={appointment.status}
-                    onChange={(e) => handleStatusChangeSelect(appointment.appointmentId, e.target.value)}
-                    className="bg-white border-gray-300 rounded-md text-sm p-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  >
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Pending">Pending</option>
-                    <option value="NoShow">NoShow</option>
-                    <option value="Rescheduled">Rescheduled</option>
-                    <option value="InProgress">InProgress</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="AwaitingPayment">AwaitingPayment</option>
-                  </select>
-                </Td>
+                <span className="text-sm font-medium">{appointment.status}</span></Td>
                 <Td className="p-4 border border-gray-300 text-center">
                   <div className="flex justify-center gap-4">
                     {/* Edit Button */}
@@ -127,7 +111,8 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
       </Table>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center mt-4">
+      {/* Pagination Controls */}
+      {/* <div className="flex justify-center mt-4">
         <button 
           onClick={() => handlePageChange(currentPage - 1)} 
           disabled={currentPage === 1} 
@@ -143,7 +128,7 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
         >
           Next
         </button>
-      </div>
+      </div> */}
 
       {/* Confirmation Modal for Status Change */}
       {showConfirmationModal && (
@@ -165,8 +150,8 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
         />
       )}
 
-      {/* Page End Message */}
-      {isLastPage && <div className="text-center text-teal-600 mt-4">You have reached the last page.</div>}
+      {/* Page End Message
+      {isLastPage && <div className="text-center text-teal-600 mt-4">You have reached the last page.</div>} */}
     </div>
   );
 };

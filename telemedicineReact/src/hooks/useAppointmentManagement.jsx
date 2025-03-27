@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { createAppointment } from "../pages/Admin/services/appointmentApi";
-// File: useAppointmentManagement.js (or your relevant file)
-import { updateAppointment } from "../pages/Admin/services/appointmentApi"; // Adjust the import path according to your file structure
+import toast from "react-hot-toast";
+import { updateAppointment,createAppointment,deleteAppointment } from "../pages/Admin/services/appointmentApi"; // Adjust the import path according to your file structure
 
 const useAppointmentManagement = () => {
   const [appointments, setAppointments] = useState([]);
@@ -155,6 +154,8 @@ const useAppointmentManagement = () => {
   
       // API call to create appointment
       const response = await createAppointment(updatedAppointmentData);
+      fetchAppointments();
+      toast.success("Appointment created successfully!");
   
       // Log the response to ensure it's correct
       console.log("Appointment created:", response);
@@ -168,14 +169,16 @@ const useAppointmentManagement = () => {
       setSuccessMessage("Appointment created successfully!");
     } catch (err) {
       setError(`Error creating appointment: ${err.message}`);
+      toast.error(`${err.message}`);
     } finally {
       setLoadingCreate(false);
     }
   };
-  const handleUpdate = async (formData) => {
-    if (!currentAppointmentId) return;  // Ensure the appointmentId is available
+  const handleUpdate = async (e, formData) => {
+    console.log("Updating Appointment with ID:");
+    if (!formData) return;  // Ensure the appointmentId is available
   
-    console.log("Updating appointment with ID:", currentAppointmentId); // Debugging log
+    console.log("Updaadfadsfadsfadsf ID:", currentAppointmentId); // Debugging log
   
     setLoadingUpdate(true);
   
@@ -190,38 +193,57 @@ const useAppointmentManagement = () => {
           prev.map((appt) => (appt.appointmentId === currentAppointmentId ? updatedAppointment : appt))
         );
   
-        setSuccessMessage("✅ Appointment updated successfully!");
+        toast.success("Appointment updated successfully!");
         resetForm();
+        fetchAppointments();
       }
     } catch (error) {
       setError(error.message);
+      toast.error(error.message);
     } finally {
       setLoadingUpdate(false);
     }
   };
 
   const handleDeleteClick = async (appointmentId) => {
-    const appointmentToDelete = appointments.find((appt) => appt.appointmentId === appointmentId);
-    if (appointmentToDelete) {
-      setEditAppointment(appointmentToDelete);
+    try {
+      console.log("Hello");
+      console.log(appointmentId);
+  
+      // Call the deleteAppointment API to delete the appointment
+      const result = await deleteAppointment(appointmentId);
+  
+      // If successful, you can handle state updates here (e.g., removing the appointment from the list)
+      // Assuming 'appointments' is an array of appointments
+      setAppointments((prevAppointments) =>
+        prevAppointments.filter((appt) => appt.appointmentId !== appointmentId)
+      );
+      fetchAppointments();
+      toast.success("Appointment deleted successfully!");
+  
+      console.log("✅ Appointment deleted successfully:", result);
+    } catch (error) {
+      toast.error(error);
+      console.error("🚨 Error deleting appointment:", error.message);
     }
   };
 
-  const handleDeleteAppointment = async () => {
-    if (!editAppointment) return;
-    setLoadingDelete(true);
-    try {
-      await axios.delete(`/api/appointments/${editAppointment.appointmentId}`);
-      setAppointments((prev) => prev.filter((appt) => appt.appointmentId !== editAppointment.appointmentId));
-      setFilteredAppointments((prev) => prev.filter((appt) => appt.appointmentId !== editAppointment.appointmentId));
-      setSuccessMessage("Appointment deleted successfully!");
-    } catch (err) {
-      setError(`Error deleting appointment: ${err.message}`);
-    } finally {
-      setLoadingDelete(false);
-      setEditAppointment(null);
-    }
-  };
+  // const handleDeleteAppointment = async () => {
+  //   if (!editAppointment) return;
+  //   setLoadingDelete(true);
+  //   try {
+  //     await axios.delete(`/api/appointments/${editAppointment.appointmentId}`);
+  //     setAppointments((prev) => prev.filter((appt) => appt.appointmentId !== editAppointment.appointmentId));
+  //     setFilteredAppointments((prev) => prev.filter((appt) => appt.appointmentId !== editAppointment.appointmentId));
+      
+  //   } catch (err) {
+  //     setError(`Error deleting appointment: ${err.message}`);
+  //     toast.error(err);
+  //   } finally {
+  //     setLoadingDelete(false);
+  //     setEditAppointment(null);
+  //   }
+  // };
  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -300,7 +322,7 @@ const useAppointmentManagement = () => {
     handleEditAppointmentClick,
     handleUpdate,
     handleDeleteClick,
-    handleDeleteAppointment,
+    //handleDeleteAppointment,
     resetForm,
     closeCreateModal,
     setShowCreateModal,

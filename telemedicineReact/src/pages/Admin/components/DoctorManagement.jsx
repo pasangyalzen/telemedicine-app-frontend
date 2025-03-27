@@ -5,15 +5,23 @@ import EditDoctorForm from "./ui/EditDoctorForm";
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import SearchBar from "./ui/SearchBar"; // Import SearchBar
 import { deleteDoctor } from "../services/doctorApi";
+import useUserManagement from "../../../hooks/useUserManagement";
+import RegisterUser from "../../../components/RegisterUser";
 
 const DoctorManagement = () => {
   const navigate = useNavigate();
+  const {
+    handleRegisterClick,  
+    showRegisterForm, // From useUserManagement hook
+    setShowRegisterForm, // Ensure this is destructured properly
+  } = useUserManagement();
   const {
     doctors,
     editDoctor,
     formData,
     setFormData,
     handleEditClick,
+    handleRegister,
     handleUpdate,
     handleDeleteClick,
     handleDelete,
@@ -31,7 +39,7 @@ const DoctorManagement = () => {
     sortOrder,
     setSortOrder,
     userIdToDelete, // To store the userId of the doctor to be deleted
-    setUserIdToDelete, // Function to set the userId to delete
+    setUserIdToDelete, 
   } = useDoctorManagement();
 
   // Handling the cancel action in the edit form
@@ -39,6 +47,14 @@ const DoctorManagement = () => {
     setEditDoctor(null);
     navigate(-1); // Go back to the previous page
   };
+
+  const handleSubmit = async () => {
+  
+   handleRegisterClick();
+   console.log(handleRegisterClick);
+     // See if it's a function in the console
+  //  console.log("Button Clicked");
+  }
 
   // Handle Delete Confirmation
   const handleDeleteDoctor = async (userId) => {
@@ -93,10 +109,28 @@ const DoctorManagement = () => {
         </div>
 
         {/* Register Doctor Button */}
-        <button className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600transition-all">
+        <button 
+          onClick={handleRegisterClick} // Directly show the form when clicked
+          className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
+        >
           Register Doctor
         </button>
       </div>
+
+      {/* Show Registration Form Modal */}
+      {showRegisterForm && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+            <RegisterUser setShowRegisterForm={setShowRegisterForm} />  {/* Pass setShowRegisterForm */}
+            <button
+              onClick={() => setShowRegisterForm(false)} // Close form when clicked
+              className="absolute top-2 right-2 text-xl text-gray-700"
+            >
+              X
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Show Edit Form as a Modal */}
       {editDoctor && (

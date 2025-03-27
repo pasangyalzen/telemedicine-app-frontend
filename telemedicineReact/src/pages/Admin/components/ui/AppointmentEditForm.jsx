@@ -4,7 +4,8 @@ import Button from "../../../../components/Button"; // Assuming you have a reusa
 import Select from "../../../../components/ui/Select";
 
 const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
-  const [formData, setFormData] = useState(appointment || {
+  const [formData, setFormData] = useState({
+    appointmentId: "",
     patientName: "",
     doctorName: "",
     status: "Scheduled",
@@ -13,67 +14,74 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
 
   useEffect(() => {
     if (appointment) {
-      console.log("Editing appointment:", appointment); // Debugging
-      // Ensure the scheduled time is in the correct format for datetime-local input
       const formattedScheduledTime = new Date(appointment.scheduledTime).toISOString().slice(0, 16);
       setFormData({
-        ...appointment,
+        appointmentId: appointment.appointmentId || "",
+        patientName: appointment.patientName || "",
+        doctorName: appointment.doctorName || "",
+        status: appointment.status || "Scheduled",
         scheduledTime: formattedScheduledTime, // Format the scheduled time
       });
     }
   }, [appointment]);
 
-  if (!formData) return <div>Loading...</div>;
-  console.log("FormData:", formData); // This logs the updated form data
-  console.log("Rendering AppointmentEditForm", appointment); // Logs the appointment data being passed to the form
-  if (!appointment) return null;
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Changing ${name} to ${value}`); // Debugging
-    setFormData((prevState) => ({
-      ...prevState,  // Preserve other fields
-      [name]: value, // Update only the changed field
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleUpdate(formData); // Pass updated appointment data to parent component
+    console.log("Submitting form data:", formData);
+    handleUpdate(e, formData); // Pass updated appointment data to parent component
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex text-black justify-center items-center">
-      <div className="p-6 bg-white shadow-md rounded-lg w-96">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
         <h3 className="text-xl font-semibold mb-4">Edit Appointment</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <Input
               type="text"
-              name="patientName"
-              value={formData?.patientName ?? ""}
+              name="appointmentId"
+              value={formData?.appointmentId ?? ""}
               onChange={handleInputChange}
+              placeholder="Appointment ID"
+              disabled
+              className="bg-white p-2 rounded-md border border-gray-300 text-black"
+            />
+          </div>
+          <div className="mb-4">
+            <Input
+              type="text"
+              name="patientName"
+              value={formData.patientName || ""}
+              onChange={(e) => setFormData({ ...formData, patientName: e.target.value })}
               placeholder="Patient Name"
               required
-              className="bg-white p-2 rounded-md border border-gray-300"
+              className="bg-white p-2 rounded-md border border-gray-300 text-black"
             />
           </div>
           <div className="mb-4">
             <Input
               type="text"
               name="doctorName"
-              value={formData?.doctorName ?? ""}
-              onChange={handleInputChange}
+              value={formData.doctorName || ""}
+              onChange={(e) => setFormData({ ...formData, doctorName: e.target.value })}
               placeholder="Doctor Name"
               required
-              className="bg-white p-2 rounded-md border border-gray-300"
+              className="bg-white p-2 rounded-md border border-gray-300 text-black"
             />
           </div>
-          <div className="mb-4  bg-white">
+          <div className="mb-4">
             <Select
               name="status"
               value={formData?.status || "Scheduled"}
-              onChange={handleInputChange}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               required
               className="bg-white text-black border border-gray-300"
             >
@@ -93,12 +101,26 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
             <Input
               type="datetime-local"
               name="scheduledTime"
-              value={formData?.scheduledTime ?? ""}
-              onChange={handleInputChange}
+              value={formData.scheduledTime || ""}
+              onChange={(e) => {
+                console.log("Raw Input Value:", e.target.value); // Debugging log
+                setFormData({ ...formData, scheduledTime: e.target.value });
+              }}
               required
-              className="bg-white p-2 rounded-md border border-gray-300"
+              className="bg-white p-2 rounded-md border border-gray-300 text-black"
             />
           </div>
+          {/* Video Call Link */}
+        <div className="mb-4">
+          <Input
+            type="text"
+            name="videoCallLink"
+            value={formData.videoCallLink || ""}
+            onChange={(e) => setFormData({ ...formData, videoCallLink: e.target.value })}
+            placeholder="Video Call Link"
+            className="bg-white text-black p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
           <div className="flex justify-between">
             <Button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg">
               Update Appointment

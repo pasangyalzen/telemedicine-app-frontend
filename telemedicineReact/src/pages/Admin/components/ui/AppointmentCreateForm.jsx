@@ -24,7 +24,11 @@ const AppointmentCreateForm = ({
   return (
     <div className="p-6 bg-gray-50 shadow-md rounded-lg w-96">
       <h3 className="text-xl font-semibold mb-4 text-teal-700">Create New Appointment</h3>
-      <form onSubmit={(e) => handleCreateAppointment(e, formData)}> {/* Ensure handleCreateAppointment is called on submit */} {/* Patient Name */} <div className="mb-4">
+      <form onSubmit={(e) => { 
+        e.preventDefault(); // Prevent default form submission behavior
+        handleCreateAppointment(e, formData); // Call the handler and pass formData
+      }}>
+  {/* Ensure handleCreateAppointment is called on submit */} {/* Patient Name */} <div className="mb-4">
 
 
         {/* Doctor Name */}
@@ -66,14 +70,14 @@ const AppointmentCreateForm = ({
       </div>
 
         {/* Status Dropdown */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <AppointmentStatusSelect
             value={formData.status || "Scheduled"}
             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
             required
             className="bg-white p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-teal-500"
           />
-        </div>
+        </div> */}
 
         {/* Video Call Link */}
         <div className="mb-4">

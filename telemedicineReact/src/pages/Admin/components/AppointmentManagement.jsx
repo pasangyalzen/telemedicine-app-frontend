@@ -54,17 +54,19 @@ const AppointmentManagement = () => {
       )}
       
       {editAppointment && (
-  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    {/* Modal Content */}
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
       <AppointmentEditForm
         appointment={editAppointment}
         setFormData={setFormData}
         handleUpdate={handleUpdate}
-        cancelEdit={cancelEdit} // Pass cancel function to navigate back
+        cancelEdit={cancelEdit}
       />
     </div>
   </div>
 )}
+
 
       <div className="flex justify-between mb-4">
         <SearchBar 
