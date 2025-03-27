@@ -10,7 +10,6 @@ function App() {
     <>
       <AppRoutes />
       <Toaster {...toastOptions} />
-      <PaginationComponent />
     </>
   )
 }

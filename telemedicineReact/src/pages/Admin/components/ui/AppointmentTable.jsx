@@ -38,12 +38,12 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
   };
 
   // Handle page change
-  const handlePageChange = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-      setIsLastPage(pageNumber === totalPages); // Set if it's the last page
-    }
-  };
+  // const handlePageChange = (pageNumber) => {
+  //   if (pageNumber >= 1 && pageNumber <= totalPages) {
+  //     setCurrentPage(pageNumber);
+  //     setIsLastPage(pageNumber === totalPages); // Set if it's the last page
+  //   }
+  // };
 
   useEffect(() => {
     // Check if the current page is the last page

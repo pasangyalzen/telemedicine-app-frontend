@@ -58,15 +58,19 @@ const DoctorManagement = () => {
 
   // Handle Delete Confirmation
   const handleDeleteDoctor = async (userId) => {
-    // Set the userId to be deleted and show the confirmation modal
+    console.log("hellosdas");
+    console.log("her",userId)// Set the userId to be deleted and show the confirmation modal
     setUserIdToDelete(userId);
+    
     setShowDeleteModal(true);
   };
 
   // Delete doctor after confirmation
   const handleConfirmDelete = async () => {
+    console.log("sfgfsdgsdfGSDF",userIdToDelete);
     try {
       const responseMessage = await deleteDoctor(userIdToDelete);
+      console.log("hello");
       setSuccessMessage(responseMessage); // Set success message
       setErrorMessage(""); // Clear error message
       setShowDeleteModal(false); // Close modal after successful deletion
@@ -150,7 +154,7 @@ const DoctorManagement = () => {
       <DoctorTable
         doctors={doctors}
         handleEditClick={handleEditClick}
-        handleDeleteClick={handleDeleteDoctor} // Call the handleDeleteDoctor function here
+        handleDeleteClick={handleDeleteClick} // Call the handleDeleteDoctor function here
       />
 
       {/* Delete Confirmation Modal */}

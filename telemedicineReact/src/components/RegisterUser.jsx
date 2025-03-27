@@ -1,131 +1,163 @@
 import React, { useState } from 'react';
-import useUserManagement from '../hooks/useUserManagement'; // Make sure the hook is imported correctly
+import useUserManagement from '../hooks/useUserManagement'; // Ensure the hook is imported correctly
 import toast from 'react-hot-toast';
 
 const RegisterUser = ({ setShowRegisterForm }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // New state for confirm password
-  const [role, setRole] = useState('Doctor'); // Default role set to Doctor
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: 'Doctor', // Default role set to Doctor
+    fullName: '',
+    phoneNumber: '',
+    gender: '',
+    dateOfBirth: '',
+    licenseNumber: '',
+    medicalCollege: '',
+    specialization: '',
+    yearsOfExperience: '',
+    clinicName: '',
+    clinicAddress: '',
+    consultationFee: ''
+  });
+
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Access the registration functionality from useUserManagement hook
-  const { handleRegisterUser } = useUserManagement(); // Assuming you have a `handleRegisterUser` function in the hook
+  const { handleRegisterUser } = useUserManagement();
 
-  // Handle form submission
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Validate that passwords match
-    if (password !== confirmPassword) {
+
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       setSuccessMessage("");
       return;
     }
-  
-    const model = { email, password, confirmPassword, role };
-  
-    try {
-      const response = await handleRegisterUser(model); // Call the function from the hook
-      console.log(response.message); // Log the response message for debugging
 
-      // Check for successful registration (success = true in response)
-      if (response?.success) { // Use response.success to check success
-        setSuccessMessage(response.message); // Use the message from the response
-        //toast.success(response.message);
+    try {
+      const response = await handleRegisterUser(formData);
+      if (response?.success) {
+        toast.success(response.message); // Show success message
+        setShowRegisterForm(false); // Close the form after success
+        setSuccessMessage(response.message);
         setError('');
-        
-        // Clear form fields after success
-        setEmail('');
-        setPassword('');
-        setConfirmPassword(''); // Clear confirm password
+        setFormData({
+          email: '',
+          password: '',
+          confirmPassword: '',
+          role: 'Doctor',
+          fullName: '',
+          phoneNumber: '',
+          gender: '',
+          dateOfBirth: '',
+          licenseNumber: '',
+          medicalCollege: '',
+          specialization: '',
+          yearsOfExperience: '',
+          clinicName: '',
+          clinicAddress: '',
+          consultationFee: ''
+        });
       } else {
-        // If registration is not successful, use the message from response
-        setError(response.message); // Show the error message from response
+        setError(response.message);
         setSuccessMessage('');
       }
     } catch (err) {
-      // Handle any errors that occur during the registration process
       setError('An error occurred during registration. Please try again.');
       setSuccessMessage('');
       console.log(err);
     }
   };
 
+  const formFields = [
+    { label: 'Full Name', name: 'fullName', type: 'text', placeholder: 'Full Name' },
+    { label: 'Email', name: 'email', type: 'email', placeholder: 'Email' },
+    { label: 'Password', name: 'password', type: 'password', placeholder: 'Password' },
+    { label: 'Confirm Password', name: 'confirmPassword', type: 'password', placeholder: 'Confirm Password' },
+    { label: 'Phone Number', name: 'phoneNumber', type: 'text', placeholder: 'Phone Number' },
+    { label: 'Gender', name: 'gender', type: 'text', placeholder: 'Gender' },
+    { label: 'Date of Birth', name: 'dateOfBirth', type: 'date', placeholder: 'Date of Birth' },
+    { label: 'License Number', name: 'licenseNumber', type: 'text', placeholder: 'License Number' },
+    { label: 'Medical College', name: 'medicalCollege', type: 'text', placeholder: 'Medical College' },
+    { label: 'Specialization', name: 'specialization', type: 'text', placeholder: 'Specialization' },
+    { label: 'Years of Experience', name: 'yearsOfExperience', type: 'number', placeholder: 'Years of Experience' },
+    { label: 'Clinic Name', name: 'clinicName', type: 'text', placeholder: 'Clinic Name' },
+    { label: 'Clinic Address', name: 'clinicAddress', type: 'text', placeholder: 'Clinic Address' },
+    { label: 'Consultation Fee', name: 'consultationFee', type: 'number', placeholder: 'Consultation Fee' }
+  ];
+
   return (
-    <div className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
       <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Register a New User</h2>
+
+      {/* Scrollable form container */}
+      <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <table className="table-auto w-full text-left">
+            <tbody>
+              {formFields.map((field, index) => (
+                <tr key={index}>
+                  <td className="py-2 px-4 font-medium text-gray-700">{field.label}</td>
+                  <td className="py-2 px-4">
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={handleChange}
+                      placeholder={field.placeholder}
+                      required
+                      className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                      style={{ backgroundColor: '#333', color: 'white', border: '1px solid #555' }}
+                    />
+                  </td>
+                </tr>
+              ))}
+
+              {/* Role */}
+              <tr>
+                <td className="py-2 px-4 font-medium text-gray-700">Role</td>
+                <td className="py-2 px-4">
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                    style={{ backgroundColor: '#333', color: 'white', border: '1px solid #555' }}
+                  >
+                    <option value="Doctor">Doctor</option>
+                    <option value="Patient">Patient</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Pharmacist">Pharmacist</option>
+                  </select>
+                </td>
+              </tr>
+
+              {/* Submit Button */}
+              <tr>
+                <td colSpan="2" className="py-4 px-4 text-center">
+                  <button
+                    type="submit"
+                    className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700"
+                  >
+                    Register User
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+
       
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
-          <input 
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-2 border border-gray-300 rounded bg-white text-black"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
-          <input 
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full p-2 border border-gray-300 rounded bg-white text-black"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-          <input 
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="w-full p-2 border border-gray-300 rounded bg-white text-black"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="mt-2 p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
-          >
-            <option value="Doctor">Doctor</option>
-            <option value="Patient">Patient</option>
-            <option value="Admin">Admin</option>
-            <option value="Pharmacist">Pharmacist</option>
-          </select>
-        </div>
-
-        {/* Register Button */}
-        <button 
-          type="submit" 
-          className="w-full px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
-        >
-          Register
-        </button>
-      </form>
-
-      {/* Display error or success message */}
-      {error && <div className="mt-4 text-red-600 text-center">{error}</div>}
-      {successMessage && <div className="mt-4 text-green-600 text-center">{successMessage}</div>}
-
-      {/* Cancel Button */}
-      <button
-        onClick={() => setShowRegisterForm(false)} // Close form when clicked
-        className="mt-4 w-full px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-gray-400 hover:bg-gray-300 transition-all"
-      >
-        Cancel
-      </button>
     </div>
   );
 };

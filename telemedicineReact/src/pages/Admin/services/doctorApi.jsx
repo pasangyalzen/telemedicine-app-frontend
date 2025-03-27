@@ -29,29 +29,30 @@ export const fetchDoctorById = async (doctorId) => {
 };
 
 export const fetchUserIdByDoctorId = async (doctorId) => {
-    try {
-      const response = await fetch(`${API_URL}/GetUserIdByDoctorId/${doctorId}`, {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
-      });
-  
-      // Log the raw response text for debugging
-      const textResponse = await response.text();
-      console.log("Raw Response:", textResponse);
-  
-      if (!response.ok) {
-        throw new Error(`Error fetching userId: ${response.statusText}`);
-      }
-  
-      // Return the text response directly, as it's a string (userId)
-      return textResponse; 
-  
-    } catch (error) {
-      console.error("Error fetching userId:", error);
-      throw error;
+  try {
+    console.log(`Fetching userId for doctorId: ${doctorId}`);  // Log before the fetch call
+    const response = await fetch(`${API_URL}/GetUserIdByDoctorId/${doctorId}`, {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+    });
+
+    const responseBody = await response.json();
+    console.log("Response Body:", responseBody);
+    console.log(responseBody.result);
+
+    if (!response.ok) {
+      throw new Error(`Error fetching userId: ${response.statusText}`);
     }
-  };
+
+    return responseBody.result; // Assuming 'result' contains the userId
+  
+  } catch (error) {
+    console.error("Error fetching userId:", error);
+    throw error;
+  }
+};
 
   export const deleteDoctor = async (userId) => {
+    console.log("userId",userId);
     try {
       const response = await fetch(`${API_URL}/DeleteDoctor/${userId}`, {
         method: "DELETE",

@@ -1,5 +1,5 @@
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-
+// console.log(doctor.doctorId);
 const DoctorTable = ({ doctors, handleEditClick, handleDeleteClick }) => {
   return (
     <div className="overflow-x-auto shadow-lg rounded-lg bg-white">

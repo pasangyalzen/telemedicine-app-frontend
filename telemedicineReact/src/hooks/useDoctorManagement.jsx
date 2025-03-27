@@ -97,21 +97,28 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
     try {
       const userId = await fetchUserIdByDoctorId(doctorId);
       setUserIdToDelete(userId);
+      console.log("fdfsadsfd",userId);
       setShowDeleteModal(true);
+      
     } catch (error) {
       console.error("Error fetching userId for doctor:", error);
     }
   };
 
   // Confirm deletion
-  const handleDeleteDoctor = async (userId) => {
+  const handleDeleteDoctor = async (userIdToDelete) => {
+    console.log("ID",userIdToDelete);
     try {
-      const responseMessage = await deleteDoctor(userId); // Call deleteDoctor
+      const responseMessage = await deleteDoctor(userIdToDelete); // Call deleteDoctor
       setSuccessMessage(responseMessage); // Set success message if deletion is successful
+      const data = await fetchDoctors(); // Call the fetchDoctors function you defined
+      setDoctors(data);
+      setFilteredDoctors(data);
       setErrorMessage(""); // Clear error message in case of success
     } catch (error) {
       setErrorMessage(error.message); // Set error message if deletion fails
       setSuccessMessage(""); // Clear success message in case of error
+      console.log(error);
     }
   };
   return {
@@ -132,6 +139,7 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
     setSuccessMessage, // Return success message
     errorMessage,  // Return errorMessage state
     setErrorMessage,
+    userIdToDelete,
   };
 };
 

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../pages/Admin/services/adminApi";
+import { fetchDoctors } from "../pages/Admin/services/doctorApi";
+import toast from "react-hot-toast";
 
 const useUserManagement = () => {
   const navigate = useNavigate();
@@ -29,13 +31,19 @@ const useUserManagement = () => {
       const response = await registerUser(formData); // Call the register function from adminApi
       
       // Check if response is successful
-      if (response?.status === 200) {
-        return response; // Return the full response here so we can handle it in RegisterUser
+      if (response.status == 200) {
+        fetchDoctors();
+        console.log("toast");
+        toast.success(response.data); 
+        return response; // Return the full response here so we can handle it in RegisterUser 
+        
       } else {
+        toast.error("Registration failed!"); 
         // Handle error from the API response
         return response; // Return error response to handle it in RegisterUser
       }
     } catch (error) {
+      toast.error("An error occurred during registration."); 
       return { status: 500, data: { message: "An error occurred during registration." } };
     }
   };
