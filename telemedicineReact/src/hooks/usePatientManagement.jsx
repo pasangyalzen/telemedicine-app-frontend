@@ -173,29 +173,30 @@ const usePatientManagement = () => {
   };
   
   // Handle the confirmation of the delete action
-  const handleDeleteConfirm = async () => {
-    if (operation === "delete") {
-      try {
-        // Proceed with the delete action using selectedPatientId
-        await handleDeletePatient(selectedPatientId); // Your delete logic here
-        setShowConfirmationModal(false); // Close the modal after delete
-      } catch (error) {
-        // Handle any errors here
-        console.error("Error during delete:", error);
-      }
-    }
-  };
+  // const handleDeleteConfirm = async () => {
+  //   if (operation === "delete") {
+  //     try {
+  //       // Proceed with the delete action using selectedPatientId
+  //       await handleDeletePatient(selectedPatientId); // Your delete logic here
+  //       setShowConfirmationModal(false); // Close the modal after delete
+  //     } catch (error) {
+  //       // Handle any errors here
+  //       console.error("Error during delete:", error);
+  //     }
+  //   }
+  // };
   
-  // Handle cancel
-  const handleDeleteCancel = () => {
-    setShowConfirmationModal(false); // Close the modal on cancel
-  };
+  // // Handle cancel
+  // const handleDeleteCancel = () => {
+  //   setShowConfirmationModal(false); // Close the modal on cancel
+  // };
 
   // Handle delete patient
   const handleDeletePatient = async (patientId) => {
     setLoadingDelete(true);
     try {
-      await deletePatientApi(patientId); // Use patientApi's deletePatient method
+      response = await deletePatientApi(patientId);
+      console.log(response); // Use patientApi's deletePatient method
       toast.success("Patient deleted successfully!");
 
       // Optionally, refresh the patient list after deletion
@@ -205,7 +206,6 @@ const usePatientManagement = () => {
       setShowDeleteModal(false);
       setPatientIdToDelete(null);  // Reset the patientId
     } catch (err) {
-      toast.error(`Error deleting patient: ${err.message}`);
       setLoadingDelete(false);
     }
   };

@@ -21,6 +21,7 @@ const PatientManagement = () => {
     setSearchQuery,
     cancelCreateForm,
     handleConfirmUpdateStatus,
+    handleCreatePatient,
     handleDeletePatient,
     handleUpdatePatient,
     setShowConfirmationModal,

@@ -92,11 +92,18 @@ export const deletePatient = async (patientId) => {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    toast.success("Patient deleted successfully!");
-    return response.data;
+    if (response.status == 200){
+      console.log("APIRESPONSE",response);
+      toast.success("Patient deleted successfully!");
+
+    }
+    else{
+
+      return response.data;
+    }
+    
   } catch (error) {
     console.error("🚨 Error deleting patient:", error.response?.data || error.message);
-    toast.error(error.response?.data?.message || "Error deleting patient");
     throw new Error(error.response?.data?.message || "Error deleting patient");
   }
 };
