@@ -123,18 +123,21 @@ const DoctorManagement = () => {
 
       {/* Show Registration Form Modal */}
       {showRegisterForm && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-            <RegisterUser setShowRegisterForm={setShowRegisterForm} />  {/* Pass setShowRegisterForm */}
-            <button
-              onClick={() => setShowRegisterForm(false)} // Close form when clicked
-              className="absolute top-2 right-2 text-xl text-gray-700"
-            >
-              X
-            </button>
-          </div>
+      <div className="fixed inset-0 bg-primary bg-opacity-80 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
+          {/* Modal content */}
+          <RegisterUser setShowRegisterForm={setShowRegisterForm} />
+          
+          {/* Close button */}
+          <button
+            onClick={() => setShowRegisterForm(false)} // Close form when clicked
+            className="absolute top-2 right-5 text-xl text-teal-700 bg-teal-900 hover:bg-teal-600 hover:text-black"
+          >
+            X
+          </button>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Show Edit Form as a Modal */}
       {editDoctor && (
