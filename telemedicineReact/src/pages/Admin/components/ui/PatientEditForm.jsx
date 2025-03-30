@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import usePatientManagement from "../../../../hooks/usePatientManagement";
 
-const PatientEditForm = ({ formData = {},patientData,setFormData}) => {
-  console.log(patientData);
+const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, cancelEdit }) => {
+  const { handleEditPatient, cancelEditForm, setShowEditModal, showEditModal, closeEditModal } = usePatientManagement();
   // const [formData, setFormData] = useState({
   //   fullName: "",
+  //   email: "",
   //   phoneNumber: "",
-  //   gender: "Female",
-  //   dateOfBirth: "2025-03-28T20:50:45.475Z",
+  //   gender: "",
+  //   dateOfBirth: "",
   //   bloodGroup: "",
   //   address: "",
   //   emergencyContactName: "",
@@ -20,78 +21,86 @@ const PatientEditForm = ({ formData = {},patientData,setFormData}) => {
   //   allergies: "",
   //   chronicDiseases: "",
   //   medications: "",
-  //   status: true,
-  // });
+  // // });
+  // setEditPatient(patient);
 
   const [errors, setErrors] = useState({});
-  const { handleUpdatePatient, editPatient } = usePatientManagement();
-  console.log("I am also here",editPatient);
 
-  // Update formData whenever patientData changes
-  useEffect(() => {
-    console.log("Now here", editPatient); // Check if editPatient is updating
-    if (editPatient) {
-      setFormData({
-        fullName: editPatient.fullName || "",
-        phoneNumber: editPatient.phoneNumber || "",
-        gender: editPatient.gender || "Female",
-        dateOfBirth: editPatient.dateOfBirth || "2025-03-28T20:50:45.475Z",
-        bloodGroup: editPatient.bloodGroup || "",
-        address: editPatient.address || "",
-        emergencyContactName: editPatient.emergencyContactName || "",
-        emergencyContactNumber: editPatient.emergencyContactNumber || "",
-        healthInsuranceProvider: editPatient.healthInsuranceProvider || "",
-        medicalHistory: editPatient.medicalHistory || "",
-        profileImage: editPatient.profileImage || "",
-        maritalStatus: editPatient.maritalStatus || "",
-        allergies: editPatient.allergies || "",
-        chronicDiseases: editPatient.chronicDiseases || "",
-        medications: editPatient.medications || "",
-        status: editPatient.status ?? true, // Ensures boolean value is properly set
-      });
-    }
-}, [editPatient]); // Triggers when editPatient updates // Only update formData when patientData changes
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  
-    // Handle form submission logic here
-    // You can call your API or update state to save patient data
-    toast.success("Patient updated successfully!");
-    handleUpdatePatient(formData); // Pass the updated formData back for processing
-  };
-
-  // Form fields configuration
   const formFields = [
-    { name: "fullName", label: "Full Name", type: "text", required: true },
-    { name: "phoneNumber", label: "Phone Number", type: "text", required: true },
-    { name: "gender", label: "Gender", type: "select", options: ["Female", "Male", "Other"], required: true },
-    { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
-    { name: "bloodGroup", label: "Blood Group", type: "text" },
-    { name: "address", label: "Address", type: "text" },
-    { name: "emergencyContactName", label: "Emergency Contact Name", type: "text" },
-    { name: "emergencyContactNumber", label: "Emergency Contact Number", type: "text" },
-    { name: "healthInsuranceProvider", label: "Health Insurance Provider", type: "text" },
-    { name: "medicalHistory", label: "Medical History", type: "textarea" },
-    { name: "profileImage", label: "Profile Image URL", type: "url", required: true },
-    { name: "maritalStatus", label: "Marital Status", type: "text" },
-    { name: "allergies", label: "Allergies", type: "text" },
-    { name: "chronicDiseases", label: "Chronic Diseases", type: "text" },
-    { name: "medications", label: "Medications", type: "text" },
+    { label: "Full Name", name: "fullName", type: "text", required: true },
+    { label: "Email", name: "email", type: "email", required: true },
+    { label: "Phone Number", name: "phoneNumber", type: "text", required: true },
+    { label: "Gender", name: "gender", type: "select", options: ["Male", "Female", "Other"], required: true },
+    { label: "Date of Birth", name: "dateOfBirth", type: "date", required: true },
+    { label: "Blood Group", name: "bloodGroup", type: "text" },
+    { label: "Address", name: "address", type: "text" },
+    { label: "Emergency Contact Name", name: "emergencyContactName", type: "text" },
+    { label: "Emergency Contact Number", name: "emergencyContactNumber", type: "text" },
+    { label: "Health Insurance Provider", name: "healthInsuranceProvider", type: "text" },
+    { label: "Medical History", name: "medicalHistory", type: "textarea" },
+    { label: "Profile Image URL", name: "profileImage", type: "url", required: true },
+    { label: "Marital Status", name: "maritalStatus", type: "text" },
+    { label: "Allergies", name: "allergies", type: "text" },
+    { label: "Chronic Diseases", name: "chronicDiseases", type: "text" },
+    { label: "Medications", name: "medications", type: "text" },
   ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  useEffect(() => {
+    console.log("Modal state has changed:", showEditModal);
+  }, [showEditModal]);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    formFields.forEach((field) => {
+      if (field.required && !formData[field.name]) {
+        newErrors[field.name] = `${field.label} is required.`;
+      }
+
+      if (field.name === "confirmPassword" && formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match.";
+      }
+
+      if (field.name === "dateOfBirth" && formData.dateOfBirth && new Date(formData.dateOfBirth) > new Date()) {
+        newErrors.dateOfBirth = "Date of birth cannot be in the future.";
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    // Check if the form data has changed before submitting
+    const hasChanges = Object.keys(formData).some(key => formData[key] !== "");
+    if (!hasChanges) {
+      toast.warning("No changes detected.");
+      return;
+    }
+    try {
+      const response = await handleUpdatePatient(formData);
+      if (response?.success) {
+        toast.success(response.message);
+        setShowEditModal(false);
+      }
+    } catch (error) {
+      console.error("Error during patient edit:", error);
+      toast.error("Error during patient edit: " + error.message);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
-      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Update Patient</h2>
+      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Edit Patient Information</h2>
 
+      {/* Scrollable form container */}
       <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <table className="table-auto w-full text-left">
@@ -105,8 +114,8 @@ const PatientEditForm = ({ formData = {},patientData,setFormData}) => {
                         id={field.name}
                         name={field.name}
                         value={formData[field.name]}
-                        onChange={handleChange}
-                        className="p-3 border rounded-lg w-full text-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                        onChange={handleInputChange}
+                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
                       >
                         <option value="">Select {field.label}</option>
                         {field.options.map((option) => (
@@ -120,8 +129,8 @@ const PatientEditForm = ({ formData = {},patientData,setFormData}) => {
                         id={field.name}
                         name={field.name}
                         value={formData[field.name]}
-                        onChange={handleChange}
-                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                        onChange={handleInputChange}
+                        className="p-3 border rounded-lg w-full text-gray-800 bg-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
                         placeholder={`Enter ${field.label}`}
                       />
                     ) : (
@@ -130,12 +139,13 @@ const PatientEditForm = ({ formData = {},patientData,setFormData}) => {
                         type={field.type}
                         name={field.name}
                         value={formData[field.name]}
-                        onChange={handleChange}
+                        onChange={handleInputChange}
                         required={field.required}
-                        className="p-3 border rounded-lg w-full text-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
                         placeholder={`Enter ${field.label}`}
                       />
                     )}
+                    {errors[field.name] && <span className="text-red-500 text-sm mt-1">{errors[field.name]}</span>}
                   </td>
                 </tr>
               ))}
@@ -145,7 +155,7 @@ const PatientEditForm = ({ formData = {},patientData,setFormData}) => {
                     type="submit"
                     className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700"
                   >
-                    Update Patient
+                    Save Changes
                   </button>
                 </td>
               </tr>

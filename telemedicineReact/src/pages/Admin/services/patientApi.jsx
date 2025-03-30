@@ -94,7 +94,7 @@ export const deletePatient = async (patientId) => {
     });
     if (response.status == 200){
       console.log("APIRESPONSE",response);
-      toast.success("Patient deleted successfully!");
+      
 
     }
     else{
@@ -105,5 +105,20 @@ export const deletePatient = async (patientId) => {
   } catch (error) {
     console.error("🚨 Error deleting patient:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Error deleting patient");
+  }
+};
+// Fetch UserId by PatientId
+export const fetchUserIdByPatientId = async (patientId) => {
+  try {
+    const response = await apiClient.get(`/GetUserIdByPatientId/${patientId}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    return response.data.result; // Assuming the response contains { result: userId }
+  } catch (error) {
+    console.error("🚨 Error fetching UserId by PatientId:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Error fetching UserId by PatientId");
   }
 };

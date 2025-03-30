@@ -6,7 +6,8 @@ import {
   createPatient as createPatientApi,
   fetchPatientById as fetchPatientByIdApi,
   updatePatient as updatePatientApi,
-  deletePatient as deletePatientApi} from "../pages/Admin/services/patientApi"// Import the methods from patientApi
+  deletePatient as deletePatientApi,
+  fetchUserIdByPatientId} from "../pages/Admin/services/patientApi"// Import the methods from patientApi
 
 const usePatientManagement = () => {
   const [patients, setPatients] = useState([]);
@@ -125,19 +126,37 @@ const usePatientManagement = () => {
   // Handle edit patient click
   const handleEditPatientClick = async (patientId) => {
     try {
-      console.log("Hello");
       const response = await fetchPatientByIdApi(patientId);
+      setCurrentPatientId(patientId);
       if (response) {
-        setEditPatient(response);  // This should set the patient data correctly
-        setCurrentPatientId(patientId);
-        console.log("Setting showEditModal to true");
-        setShowEditModal(true);  // This should trigger the modal visibility
+        setEditPatient(response); // This sets the patient data correctly
+        
+        // Setting the formData just like handleEdit for doctor
+        setFormData({
+          patientId: response.patientId || "",
+          fullName: response.fullName || "",
+          phoneNumber: response.phoneNumber || "",
+          gender: response.gender || "",
+          dateOfBirth: response.dateOfBirth || "",
+          bloodGroup: response.bloodGroup || "",
+          address: response.address || "",
+          emergencyContactName: response.emergencyContactName || "",
+          emergencyContactNumber: response.emergencyContactNumber || "",
+          healthInsuranceProvider: response.healthInsuranceProvider || "",
+          medicalHistory: response.medicalHistory || "",
+          profileImage: response.profileImage || "",
+          maritalStatus: response.maritalStatus || "",
+          allergies: response.allergies || "",
+          chronicDiseases: response.chronicDiseases || "",
+          medications: response.medications || "",
+          updatedAt: response.updatedAt || "",
+        });
+        
+        setShowEditModal(true); // This triggers the modal visibility
       } else {
         console.log("No data returned from API.");
       }
       setCurrentPatientId(patientId);
-      setShowEditModal(true);
-      console.log(showEditModal);
     } catch (err) {
       setError(`Error fetching patient details: ${err.message}`);
     }
@@ -151,7 +170,7 @@ const usePatientManagement = () => {
   }, [editPatient]);
   // Handle update patient
   const handleUpdatePatient = async (updatedData) => {
-    e.preventDefault();
+    //e.preventDefault();
     setLoadingUpdate(true);
     try {
       await updatePatientApi(currentPatientId, updatedData); // Use patientApi's updatePatient method
@@ -167,7 +186,8 @@ const usePatientManagement = () => {
   };
   const handleDeleteClick = async (patientId) => {
     console.log("Delete");  
-    setSelectedPatientId(patientId); // Store the patientId to delete
+    const userIdToDelete = await fetchUserIdByPatientId(patientId);
+    setSelectedPatientId(userIdToDelete); // Store the patientId to delete
     setOperation("delete");          // Set the operation to delete
     setShowConfirmationModal(true);  // Show the confirmation modal
   };
@@ -195,17 +215,20 @@ const usePatientManagement = () => {
   const handleDeletePatient = async (patientId) => {
     setLoadingDelete(true);
     try {
-      response = await deletePatientApi(patientId);
-      console.log(response); // Use patientApi's deletePatient method
+      const response = await deletePatientApi(patientId); // Ensure this function is correct
+      console.log(response);
       toast.success("Patient deleted successfully!");
-
-      // Optionally, refresh the patient list after deletion
-      fetchPatients();
-
-      // Close the modal after successful deletion
-      setShowDeleteModal(false);
-      setPatientIdToDelete(null);  // Reset the patientId
+  
+      // ✅ Ensure table data is refreshed
+      await fetchPatients(); // Wait for data refresh before closing modal
+  
+      // ✅ Close modal & reset state after deletion
+      setShowConfirmationModal(false);
+      setPatientIdToDelete(null);
     } catch (err) {
+      console.error("Error deleting patient:", err);
+      toast.error("Failed to delete patient.");
+    } finally {
       setLoadingDelete(false);
     }
   };
@@ -238,6 +261,9 @@ const usePatientManagement = () => {
     setShowDeleteModal,
     showConfirmationModal,
     setShowConfirmationModal,
+    selectedPatientId,
+    editPatient,
+    setEditPatient,
   };
 };
 

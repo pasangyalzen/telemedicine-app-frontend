@@ -123,7 +123,7 @@ const RegisterPatientForm = () => {
                         name={field.name}
                         value={formData[field.name]}
                         onChange={handleInputChange}
-                        className="p-3 border rounded-lg w-full text-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
                       >
                         <option value="">Select {field.label}</option>
                         {field.options.map((option) => (
@@ -138,7 +138,7 @@ const RegisterPatientForm = () => {
                         name={field.name}
                         value={formData[field.name]}
                         onChange={handleInputChange}
-                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                        className="p-3 border rounded-lg w-full text-gray-800 bg-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
                         placeholder={`Enter ${field.label}`}
                       />
                     ) : (
@@ -149,7 +149,7 @@ const RegisterPatientForm = () => {
                         value={formData[field.name]}
                         onChange={handleInputChange}
                         required={field.required}
-                        className="p-3 border rounded-lg w-full text-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
+                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
                         placeholder={`Enter ${field.label}`}
                       />
                     )}

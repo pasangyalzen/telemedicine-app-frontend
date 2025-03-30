@@ -9,7 +9,7 @@ const PatientTable = ({ patients, handleEditPatientClick, handleDeleteClick }) =
         <thead className="bg-teal-600 text-white">
           <tr>
             <th className="p-4 border border-gray-300 text-sm font-semibold">Name</th>
-            <th className="p-4 border border-gray-300 text-sm font-semibold">Age</th>
+            <th className="p-4 border border-gray-300 text-sm font-semibold">Gender</th>
             <th className="p-4 border border-gray-300 text-sm font-semibold">Phone</th>
             <th className="p-4 border border-gray-300 text-sm font-semibold">Actions</th>
           </tr>
@@ -18,7 +18,7 @@ const PatientTable = ({ patients, handleEditPatientClick, handleDeleteClick }) =
           {patients.map((patient) => (
             <tr key={patient.patientId} className="border-b hover:bg-gray-50">
               <td className="p-4 border border-gray-300">{patient.fullName}</td>
-              <td className="p-4 border border-gray-300">{patient.age}</td>
+              <td className="p-4 border border-gray-300">{patient.gender}</td>
               <td className="p-4 border border-gray-300">{patient.phoneNumber}</td>
               <td className="p-4 border border-gray-300 text-center">
                 <div className="flex justify-center gap-4">

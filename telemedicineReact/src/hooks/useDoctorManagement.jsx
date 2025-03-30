@@ -66,7 +66,8 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
   };
 
   // Update doctor functionality
-  const handleUpdate = async () => {
+  const handleUpdate = async (e) => {
+    e.preventDefault();
     if (!editDoctor) return;
 
     try {
@@ -84,6 +85,7 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
         setEditDoctor(null); // Close the edit form after updating
         setSuccessMessage("Doctor updated successfully!"); // Set success message
         setTimeout(() => setSuccessMessage(""), 5000); // Clear message after 5 seconds
+        navigate(-1);
       } else {
         console.error("Error updating doctor:", response ? response.message : "Unknown error");
       }

@@ -43,7 +43,8 @@ const DoctorManagement = () => {
   } = useDoctorManagement();
 
   // Handling the cancel action in the edit form
-  const cancelEdit = () => {
+  const cancelEdit = (e) => {
+    e.preventDefault();
     setEditDoctor(null);
     navigate(-1); // Go back to the previous page
   };
@@ -141,17 +142,23 @@ const DoctorManagement = () => {
 
       {/* Show Edit Form as a Modal */}
       {editDoctor && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-            <EditDoctorForm
-              formData={formData}
-              setFormData={setFormData}
-              handleUpdate={handleUpdate}
-              cancelEdit={cancelEdit} // Pass cancel function to navigate back
-            />
-          </div>
+      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
+          <EditDoctorForm
+            formData={formData}
+            setFormData={setFormData}
+            handleUpdate={handleUpdate}
+            cancelEdit={cancelEdit} // Pass cancel function to navigate back
+          />
+          <button
+            onClick={(e) => cancelEdit(e)} // Close form when clicked
+            className="absolute top-2 right-5 text-xl text-teal-700 bg-teal-900 hover:bg-teal-600 hover:text-black"
+          >
+            X
+          </button>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Doctor Table */}
       <DoctorTable

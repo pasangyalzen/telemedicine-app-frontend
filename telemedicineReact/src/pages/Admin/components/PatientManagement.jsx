@@ -27,6 +27,9 @@ const PatientManagement = () => {
     setShowConfirmationModal,
     closeCreateModal,
     openCreateModal,
+    showDeleteModal,
+    setShowDeleteModal,
+    setEditPatient,
     closeEditModal,
     handleEditClick,
     handleDeleteClick,
@@ -34,9 +37,12 @@ const PatientManagement = () => {
     handleEditPatientClick,
     setFormData,
     handleUpdate,
-    cancelEdit,
   } = usePatientManagement(); // Custom hook managing state and logic
   console.log("Modal Status:", showEditModal, "Edit Patient:", editPatient);
+  const cancelEdit = () => {
+    setEditPatient(null);
+    navigate(-1); // Go back to the previous page
+  };
 
   return (
     <div className="p-6 bg-white shadow-md rounded-lg">
@@ -68,11 +74,17 @@ const PatientManagement = () => {
         <div className="fixed inset-0 bg-primary bg-opacity-80 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
             <PatientEditForm
-              patientData={editPatient}
+              formData={formData}
               setFormData={setFormData}
               handleUpdatePatient={handleUpdatePatient}
               cancelEdit={cancelEdit}
             />
+            <button
+            onClick={() => cancelEdit()} // Close form when clicked
+            className="absolute top-2 right-5 text-xl text-teal-700 bg-teal-900 hover:bg-teal-600 hover:text-black"
+          >
+            X
+          </button>
           </div>
         </div>
       )}

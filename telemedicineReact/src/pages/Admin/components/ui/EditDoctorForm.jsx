@@ -3,100 +3,57 @@ import Button from "../../../../components/Button";
 
 const EditDoctorForm = ({ formData = {}, setFormData, handleUpdate, cancelEdit }) => {
   return (
-    <div className="p-6 border border-gray-500 rounded bg-gray-100 shadow-md">
-      <h3 className="text-lg text-black font-bold mb-4">Edit Doctor</h3>
+    <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
+      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Edit Doctor Information</h2>
 
-      <div className="grid grid-cols-2 gap-4 text-gray-500">
-        <Input
-          placeholder="Full Name"
-          value={formData.fullName || ""}
-          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Email"
-          value={formData.email || ""}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Phone Number"
-          value={formData.phoneNumber || ""}
-          onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Gender"
-          value={formData.gender || ""}
-          onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          type="date"
-          placeholder="Date of Birth"
-          value={formData.dateOfBirth ? formData.dateOfBirth.split("T")[0] : ""}
-          onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="License Number"
-          value={formData.licenseNumber || ""}
-          onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Medical College"
-          value={formData.medicalCollege || ""}
-          onChange={(e) => setFormData({ ...formData, medicalCollege: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Specialization"
-          value={formData.specialization || ""}
-          onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          type="number"
-          placeholder="Years of Experience"
-          value={formData.yearsOfExperience || 0}
-          onChange={(e) => setFormData({ ...formData, yearsOfExperience: Number(e.target.value) })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Clinic Name"
-          value={formData.clinicName || ""}
-          onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          placeholder="Clinic Address"
-          value={formData.clinicAddress || ""}
-          onChange={(e) => setFormData({ ...formData, clinicAddress: e.target.value })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-        <Input
-          type="number"
-          placeholder="Consultation Fee"
-          value={formData.consultationFee || 0}
-          onChange={(e) => setFormData({ ...formData, consultationFee: Number(e.target.value) })}
-          className="bg-white p-2 rounded-md border border-gray-300"
-        />
-      </div>
-
-      <div className="flex justify-end gap-4 mt-6">
-        <Button
-          onClick={handleUpdate}
-          className="bg-teal-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 transition duration-300"
-        >
-          Update Doctor
-        </Button>
-        <Button
-          onClick={cancelEdit}
-          className="bg-gray-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition duration-300"
-        >
-          Cancel
-        </Button>
+      {/* Scrollable form container */}
+      <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <table className="table-auto w-full text-left">
+            <tbody>
+              {[
+                { label: "Full Name", name: "fullName", type: "text", required: true },
+                { label: "Email", name: "email", type: "email", required: true },
+                { label: "Phone Number", name: "phoneNumber", type: "text", required: true },
+                { label: "Gender", name: "gender", type: "text", required: true },
+                { label: "Date of Birth", name: "dateOfBirth", type: "date", required: true },
+                { label: "License Number", name: "licenseNumber", type: "text" },
+                { label: "Medical College", name: "medicalCollege", type: "text" },
+                { label: "Specialization", name: "specialization", type: "text" },
+                { label: "Years of Experience", name: "yearsOfExperience", type: "number" },
+                { label: "Clinic Name", name: "clinicName", type: "text" },
+                { label: "Clinic Address", name: "clinicAddress", type: "text" },
+                { label: "Consultation Fee", name: "consultationFee", type: "number" }
+              ].map((field, index) => (
+                <tr key={index}>
+                  <td className="py-2 px-4 font-medium text-gray-700">{field.label}</td>
+                  <td className="py-2 px-4">
+                    <input
+                      id={field.name}
+                      type={field.type}
+                      name={field.name}
+                      value={formData[field.name] || ""}
+                      onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                      className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
+                      placeholder={`Enter ${field.label}`}
+                      required={field.required}
+                    />
+                  </td>
+                </tr>
+              ))}
+              <tr>
+                <td colSpan="2" className="py-4 px-4 text-center">
+                  <button
+                    onClick={handleUpdate}
+                    className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700"
+                  >
+                    Update Doctor
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
       </div>
     </div>
   );
