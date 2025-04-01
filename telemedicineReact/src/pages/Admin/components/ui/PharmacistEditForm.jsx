@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import usePatientManagement from "../../../../hooks/usePatientManagement";
+import usePharmacistManagement from "../../../../hooks/usePharmacistManagement";
 
-const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, cancelEdit }) => {
-  const { handleEditPatient, cancelEditForm, setShowEditModal, showEditModal, closeEditModal } = usePatientManagement();
-
-
+const PharmacistEditForm = ({ formData = {}, setFormData, handleUpdatePharmacist, cancelEdit }) => {
+  const { setShowEditModal, showEditModal } = usePharmacistManagement();
   const [errors, setErrors] = useState({});
   console.log(formData);
 
@@ -15,17 +13,12 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
     { label: "Phone Number", name: "phoneNumber", type: "text", required: true },
     { label: "Gender", name: "gender", type: "select", options: ["Male", "Female", "Other"], required: true },
     { label: "Date of Birth", name: "dateOfBirth", type: "date", required: true },
-    { label: "Blood Group", name: "bloodGroup", type: "text" },
-    { label: "Address", name: "address", type: "text" },
-    { label: "Emergency Contact Name", name: "emergencyContactName", type: "text" },
-    { label: "Emergency Contact Number", name: "emergencyContactNumber", type: "text" },
-    { label: "Health Insurance Provider", name: "healthInsuranceProvider", type: "text" },
-    { label: "Medical History", name: "medicalHistory", type: "textarea" },
+    { label: "Pharmacy Name", name: "pharmacyName", type: "text", required: true },
+    { label: "License Number", name: "licenseNumber", type: "text", required: true },
+    { label: "Pharmacy Address", name: "pharmacyAddress", type: "text", required: true },
+    { label: "Working Hours", name: "workingHours", type: "text" },
+    { label: "Services Offered", name: "servicesOffered", type: "text" },
     { label: "Profile Image URL", name: "profileImage", type: "url", required: true },
-    { label: "Marital Status", name: "maritalStatus", type: "text" },
-    { label: "Allergies", name: "allergies", type: "text" },
-    { label: "Chronic Diseases", name: "chronicDiseases", type: "text" },
-    { label: "Medications", name: "medications", type: "text" },
   ];
 
   const handleInputChange = (e) => {
@@ -45,10 +38,6 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
         newErrors[field.name] = `${field.label} is required.`;
       }
 
-      if (field.name === "confirmPassword" && formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match.";
-      }
-
       if (field.name === "dateOfBirth" && formData.dateOfBirth && new Date(formData.dateOfBirth) > new Date()) {
         newErrors.dateOfBirth = "Date of birth cannot be in the future.";
       }
@@ -61,29 +50,30 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    
     // Check if the form data has changed before submitting
     const hasChanges = Object.keys(formData).some(key => formData[key] !== "");
     if (!hasChanges) {
       toast.warning("No changes detected.");
       return;
     }
+
     try {
-      const response = await handleUpdatePatient(formData);
+      const response = await handleUpdatePharmacist(formData);
       if (response?.success) {
         toast.success(response.message);
         setShowEditModal(false);
       }
     } catch (error) {
-      console.error("Error during patient edit:", error);
-      toast.error("Error during patient edit: " + error.message);
+      console.error("Error during pharmacist edit:", error);
+      toast.error("Error during pharmacist edit: " + error.message);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
-      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Edit Patient Information</h2>
+      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Edit Pharmacist Information</h2>
 
-      {/* Scrollable form container */}
       <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <table className="table-auto w-full text-left">
@@ -107,15 +97,6 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
                           </option>
                         ))}
                       </select>
-                    ) : field.type === "textarea" ? (
-                      <textarea
-                        id={field.name}
-                        name={field.name}
-                        value={formData[field.name]}
-                        onChange={handleInputChange}
-                        className="p-3 border rounded-lg w-full text-gray-800 bg-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
-                        placeholder={`Enter ${field.label}`}
-                      />
                     ) : (
                       <input
                         id={field.name}
@@ -150,4 +131,4 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
   );
 };
 
-export default PatientEditForm;
+export default PharmacistEditForm;

@@ -135,9 +135,10 @@ const usePatientManagement = () => {
         setFormData({
           patientId: response.patientId || "",
           fullName: response.fullName || "",
+          email: response.email || "",
           phoneNumber: response.phoneNumber || "",
           gender: response.gender || "",
-          dateOfBirth: response.dateOfBirth || "",
+          dateOfBirth: response.dateOfBirth ? formatDate(response.dateOfBirth) : "",
           bloodGroup: response.bloodGroup || "",
           address: response.address || "",
           emergencyContactName: response.emergencyContactName || "",
@@ -151,6 +152,13 @@ const usePatientManagement = () => {
           medications: response.medications || "",
           updatedAt: response.updatedAt || "",
         });
+        function formatDate(date) {
+          const d = new Date(date);
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0'); // Ensure two digits for the month
+          const day = String(d.getDate()).padStart(2, '0'); // Ensure two digits for the day
+          return `${year}-${month}-${day}`;
+        }
         
         setShowEditModal(true); // This triggers the modal visibility
       } else {

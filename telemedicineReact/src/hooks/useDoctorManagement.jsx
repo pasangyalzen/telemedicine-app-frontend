@@ -43,6 +43,7 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
   const handleEditClick = async (doctorId) => {
     try {
       const doctor = await fetchDoctorById(doctorId);
+      console.log(doctor.email);
       setEditDoctor(doctor);
       setFormData({
         doctorId: doctor.doctorId || "",

@@ -60,7 +60,9 @@ export const fetchPatientById = async (patientId) => {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
     });
+    console.log("Here",response.data);
     return response.data;
+    
   } catch (error) {
     console.error("🚨 Error fetching patient details:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "Error fetching patient details");

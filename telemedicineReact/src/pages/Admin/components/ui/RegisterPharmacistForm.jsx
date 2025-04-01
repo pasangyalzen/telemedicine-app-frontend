@@ -1,42 +1,55 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import usePatientManagement from "../../../../hooks/usePatientManagement";
-
-const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, cancelEdit }) => {
-  const { handleEditPatient, cancelEditForm, setShowEditModal, showEditModal, closeEditModal } = usePatientManagement();
+import usePharmacistManagement from "../../../../hooks/usePharmacistManagement"; // Assuming the hook for pharmacist management exists
 
 
+const RegisterPharmacistForm = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phoneNumber: "",
+    gender: "",
+    dateOfBirth: "",
+    pharmacyName: "",
+    licenseNumber: "",
+    pharmacyAddress: "",
+    workingHours: "",
+    servicesOffered: "",
+    profileImage: "",
+  });
+
+  const { handleCreatePharmacist, cancelCreateForm, setShowCreateModal, showCreateModal } = usePharmacistManagement();
   const [errors, setErrors] = useState({});
-  console.log(formData);
 
+  // Form field configuration
   const formFields = [
     { label: "Full Name", name: "fullName", type: "text", required: true },
     { label: "Email", name: "email", type: "email", required: true },
+    { label: "Password", name: "password", type: "password", required: true },
+    { label: "Confirm Password", name: "confirmPassword", type: "password", required: true },
     { label: "Phone Number", name: "phoneNumber", type: "text", required: true },
     { label: "Gender", name: "gender", type: "select", options: ["Male", "Female", "Other"], required: true },
     { label: "Date of Birth", name: "dateOfBirth", type: "date", required: true },
-    { label: "Blood Group", name: "bloodGroup", type: "text" },
-    { label: "Address", name: "address", type: "text" },
-    { label: "Emergency Contact Name", name: "emergencyContactName", type: "text" },
-    { label: "Emergency Contact Number", name: "emergencyContactNumber", type: "text" },
-    { label: "Health Insurance Provider", name: "healthInsuranceProvider", type: "text" },
-    { label: "Medical History", name: "medicalHistory", type: "textarea" },
+    { label: "Pharmacy Name", name: "pharmacyName", type: "text" },
+    { label: "License Number", name: "licenseNumber", type: "text" },
+    { label: "Pharmacy Address", name: "pharmacyAddress", type: "text" },
+    { label: "Working Hours", name: "workingHours", type: "text" },
+    { label: "Services Offered", name: "servicesOffered", type: "text" },
     { label: "Profile Image URL", name: "profileImage", type: "url", required: true },
-    { label: "Marital Status", name: "maritalStatus", type: "text" },
-    { label: "Allergies", name: "allergies", type: "text" },
-    { label: "Chronic Diseases", name: "chronicDiseases", type: "text" },
-    { label: "Medications", name: "medications", type: "text" },
   ];
 
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  useEffect(() => {
-    console.log("Modal state has changed:", showEditModal);
-  }, [showEditModal]);
-
+  // Validate the form before submitting
   const validateForm = () => {
     const newErrors = {};
 
@@ -58,30 +71,26 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
+
     if (!validateForm()) return;
-    // Check if the form data has changed before submitting
-    const hasChanges = Object.keys(formData).some(key => formData[key] !== "");
-    if (!hasChanges) {
-      toast.warning("No changes detected.");
-      return;
-    }
+
     try {
-      const response = await handleUpdatePatient(formData);
+      const response = await handleCreatePharmacist(formData); // Pass only formData to handleCreatePharmacist
       if (response?.success) {
-        toast.success(response.message);
-        setShowEditModal(false);
+        setShowCreateModal(false);
       }
     } catch (error) {
-      console.error("Error during patient edit:", error);
-      toast.error("Error during patient edit: " + error.message);
+      console.error("Error during pharmacist creation:", error);
+      toast.error("Error during pharmacist creation: " + error.message);
     }
   };
-
+  
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
-      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Edit Patient Information</h2>
+      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Register a New Pharmacist</h2>
 
       {/* Scrollable form container */}
       <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
@@ -138,7 +147,7 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
                     type="submit"
                     className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700"
                   >
-                    Save Changes
+                    Register Pharmacist
                   </button>
                 </td>
               </tr>
@@ -150,4 +159,4 @@ const PatientEditForm = ({ formData = {}, setFormData, handleUpdatePatient, canc
   );
 };
 
-export default PatientEditForm;
+export default RegisterPharmacistForm;
