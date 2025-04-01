@@ -41,16 +41,16 @@ const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
   // Update menuItems to use the PATHS object for routing
   const menuItems = [
     { name: "Dashboard", icon: <LayoutDashboard />, path: PATHS.ADMINDASHBOARD },
-    { name: "Users", icon: <Users />, path: PATHS.USERS },
+    // { name: "Users", icon: <Users />, path: PATHS.USERS },
     { name: "Doctors", icon: <Stethoscope />, path: PATHS.DOCTORS },
     { name: "Patients", icon: <User />, path: PATHS.PATIENTS },
     { name: "Pharmacists", icon: <Pill />, path: PATHS.PHARMACISTS },
     { name: "Appointments", icon: <Calendar />, path: PATHS.APPOINTMENTS },
     { name: "Payments", icon: <CreditCard />, path: PATHS.PAYMENTS },
-    { name: "Reports", icon: <BarChart />, path: PATHS.REPORTS },
-    { name: "Security", icon: <Shield />, path: PATHS.SECURITY },
-    { name: "Notifications", icon: <Bell />, path: PATHS.NOTIFICATIONS },
-    { name: "Settings", icon: <Settings />, path: PATHS.SETTINGS },
+    // { name: "Reports", icon: <BarChart />, path: PATHS.REPORTS },
+    // { name: "Security", icon: <Shield />, path: PATHS.SECURITY },
+    // { name: "Notifications", icon: <Bell />, path: PATHS.NOTIFICATIONS },
+    // { name: "Settings", icon: <Settings />, path: PATHS.SETTINGS },
   ];
 
   // Function to handle logout

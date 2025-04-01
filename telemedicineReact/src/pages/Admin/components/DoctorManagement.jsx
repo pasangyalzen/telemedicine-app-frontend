@@ -6,7 +6,7 @@ import ConfirmationModal from "../../../components/ConfirmationModal";
 import SearchBar from "./ui/SearchBar"; // Import SearchBar
 import { deleteDoctor } from "../services/doctorApi";
 import useUserManagement from "../../../hooks/useUserManagement";
-import RegisterUser from "../../../components/RegisterUser";
+import RegisterUser from "./ui/RegisterDoctorForms";
 
 const DoctorManagement = () => {
   const navigate = useNavigate();

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import useUserManagement from '../hooks/useUserManagement'; // Ensure the hook is imported correctly
+import useUserManagement from '../../../../hooks/useUserManagement'; // Ensure the hook is imported correctly
 import toast from 'react-hot-toast';
 
-const RegisterUser = ({ setShowRegisterForm }) => {
+const RegisterDoctorForms = ({ setShowRegisterForm }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'Doctor', // Default role set to Doctor
     fullName: '',
     phoneNumber: '',
     gender: '',
@@ -44,7 +43,7 @@ const RegisterUser = ({ setShowRegisterForm }) => {
     }
 
     try {
-      const response = await handleRegisterUser(formData);
+      const response = await handleRegisterUser({ ...formData, role: 'Doctor' });
       if (response?.success) {
         toast.success(response.message); // Show success message
         setShowRegisterForm(false); // Close the form after success
@@ -54,7 +53,6 @@ const RegisterUser = ({ setShowRegisterForm }) => {
           email: '',
           password: '',
           confirmPassword: '',
-          role: 'Doctor',
           fullName: '',
           phoneNumber: '',
           gender: '',
@@ -97,7 +95,7 @@ const RegisterUser = ({ setShowRegisterForm }) => {
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
-      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Register a New User</h2>
+      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Register a New Doctor</h2>
 
       {/* Scrollable form container */}
       <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
@@ -115,31 +113,12 @@ const RegisterUser = ({ setShowRegisterForm }) => {
                       onChange={handleChange}
                       placeholder={field.placeholder}
                       required
-                      className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
-                      style={{ backgroundColor: '#333', color: 'white', border: '1px solid #555' }}
+                      className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
+                     
                     />
                   </td>
                 </tr>
               ))}
-
-              {/* Role */}
-              <tr>
-                <td className="py-2 px-4 font-medium text-gray-700">Role</td>
-                <td className="py-2 px-4">
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
-                    style={{ backgroundColor: '#333', color: 'white', border: '1px solid #555' }}
-                  >
-                    <option value="Doctor">Doctor</option>
-                    <option value="Patient">Patient</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Pharmacist">Pharmacist</option>
-                  </select>
-                </td>
-              </tr>
 
               {/* Submit Button */}
               <tr>
@@ -148,7 +127,7 @@ const RegisterUser = ({ setShowRegisterForm }) => {
                     type="submit"
                     className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700"
                   >
-                    Register User
+                    Register Doctor
                   </button>
                 </td>
               </tr>
@@ -156,10 +135,8 @@ const RegisterUser = ({ setShowRegisterForm }) => {
           </table>
         </form>
       </div>
-
-      
     </div>
   );
 };
 
-export default RegisterUser;
+export default RegisterDoctorForms;
