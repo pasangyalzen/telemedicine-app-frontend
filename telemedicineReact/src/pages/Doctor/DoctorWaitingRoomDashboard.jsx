@@ -1,15 +1,26 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import useDoctorDashboard from "../../hooks/useDoctorDashboard";
+import PatientQueue from "./ui/PatientQueue";
+import { useNavigate } from 'react-router-dom';
+import { PATHS } from "../../constants/path";
+
 
 export default function DoctorWaitingRoomDashboard() {
-  // Sample patient queue data (replace with real data)
-  const [patients] = useState(["John Doe", "Jane Smith", "Emily Johnson", "Michael Brown"]);
-
-  // Invite link (replace with actual logic)
-  const inviteLink = "https://telemedicineapp.com/invite/12345";
-
-  // Dropdown state
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { patients, inviteLink, dropdownOpen, toggleDropdown } = useDoctorDashboard();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    // Clear the localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+    localStorage.removeItem("id");
+  
+    console.log("Logging out... Redirecting to login page.");
+  
+    // Navigate to the login page
+    navigate("/login");  // This should work if PATHS.LOGIN is defined correctly
+  };
 
   return (
     <div className="flex h-screen w-screen">
@@ -18,21 +29,8 @@ export default function DoctorWaitingRoomDashboard() {
         <div>
           <h2 className="text-2xl font-light p-4 border-b text-[#65cccc] border-white">TELECHAUKI</h2>
 
-          {/* Patient Queue */}
-          <div className="p-4">
-            <h3 className="text-lg font-light text-[#65cccc] mb-2">Patient Queue</h3>
-            <ul className="space-y-2">
-              {patients.length > 0 ? (
-                patients.map((patient, index) => (
-                  <li key={index} className="text-gray-600 font-montserrat font-medium p-2 rounded hover:text-white">
-                    {patient}
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-400">No patients waiting</li>
-              )}
-            </ul>
-          </div>
+          {/* Patient Queue Component */}
+          <PatientQueue patients={patients} />
 
           {/* General Navigation */}
           <div className="p-4 border-t border-white">
@@ -52,9 +50,14 @@ export default function DoctorWaitingRoomDashboard() {
         </div>
 
         {/* My Account (Bottom) */}
+        {/* My Account (Bottom) */}
         <div className="p-4 border-t border-gray-700">
-          <Link to="/my-account" className="block p-2 rounded text-gray-500 hover:text-white">
-            My Account
+          <Link
+            to="#"
+            onClick={handleLogout} // Add the logout handler
+            className="block p-2 rounded text-gray-500 hover:text-white"
+          >
+            Logout
           </Link>
         </div>
       </aside>
@@ -85,7 +88,7 @@ export default function DoctorWaitingRoomDashboard() {
             <div className="relative">
               <button
                 className="px-3 py-1 bg-white text-[#65cccc] rounded-md ml-2 hover:bg-[#65cccc] hover:text-white"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onClick={toggleDropdown}
               >
                 Invite Via
               </button>
@@ -112,18 +115,17 @@ export default function DoctorWaitingRoomDashboard() {
       </div>
 
       {/* Rightmost Video Section */}
-        <div className="w-1/3 bg-white shadow-lg flex flex-col p-6 h-full">
+      <div className="w-1/3 bg-white shadow-lg flex flex-col p-6 h-full">
         {/* Video Placeholder */}
         <div className="flex-grow w-full bg-black flex items-center justify-center text-white">
-            Video Here
+          Video Here
         </div>
 
         {/* Precall Test Button */}
         <button className="w-full mt-auto px-6 py-3 bg-[#65cccc] text-white rounded-md hover:bg-[#45cccc]">
-            Precall Test
+          Precall Test
         </button>
-        </div>
-
+      </div>
     </div>
   );
 }

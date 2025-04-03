@@ -19,6 +19,7 @@ export const handleLogin = async (credentials, redirectUser, setErrorMessage) =>
         // Store JWT token and role in localStorage
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
+        localStorage.setItem("id", user.id);
 
         // Redirect based on role
         redirectUser(role);

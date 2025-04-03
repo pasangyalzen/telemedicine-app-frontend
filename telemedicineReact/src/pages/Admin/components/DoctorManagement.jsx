@@ -180,4 +180,4 @@ const DoctorManagement = () => {
   );
 };
 
-export default DoctorManagement;
+export default DoctorManagement;  
