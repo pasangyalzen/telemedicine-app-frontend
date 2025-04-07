@@ -32,7 +32,7 @@ export default function LoginPage() {
                 navigate(PATHS.DOCTORWAITINGROOMDASHBOARD);
                 break;
             case "Patient":
-                navigate(PATHS.PATIENTVIDEOCALLDASHBOARD);
+                navigate(PATHS.PATIENTDASHBOARD);
                 break;
             case "Pharmacist":
                 navigate(PATHS.PHARMACIST_DASHBOARD);

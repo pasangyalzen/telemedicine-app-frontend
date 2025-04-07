@@ -19,18 +19,25 @@ import ReportsManagement from "../pages/Admin/components/ReportsManagement";
 import SecuritySettings from "../pages/Admin/components/SecuritySettings";
 import NotificationsSettings from "../pages/Admin/components/NotificationsSettings";
 import SettingsPage from "../pages/Admin/components/SettingsPage";
+import PatientDashboard from "../pages/Patient/PatientDashboard";
+import LobbyScreen from "../screens/Lobby";
+import { SocketProvider } from "../context/SocketProvider";
+import RoomPage from "../screens/Room";
 
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+    <SocketProvider>
       <Routes>
         <Route path={PATHS.HOME} element={<Home />} />
         <Route path={PATHS.LOGIN} element={<LoginPage />} />
         <Route path={PATHS.REGISTER} element={<RegisterPage />} />
         <Route path={PATHS.PATIENTVIDEOCALLDASHBOARD} element={<PatientVideoCallDashboard />} />
+        <Route path={PATHS.PATIENTDASHBOARD} element={<PatientDashboard/>}/>
         <Route path={PATHS.DOCTORWAITINGROOMDASHBOARD} element={<DoctorWaitingRoomDashboard />} />
-
+        <Route path={PATHS.LOBBY} element = {<LobbyScreen/>}/>
+        <Route path={PATHS.ROOM} element={<RoomPage />} />
         {/* Admin Dashboard with Nested Routes */}
         <Route path={PATHS.ADMINDASHBOARD} element={<AdminDashboard />}>
           {/* Nested Routes for Admin Dashboard */}
@@ -49,6 +56,7 @@ export default function AppRoutes() {
 
         <Route path="*" element={<NotFoundPage />} /> {/* 404 Page */}
       </Routes>
+      </SocketProvider>
     </BrowserRouter>
   );
 }

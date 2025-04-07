@@ -10,6 +10,7 @@ import {
   fetchUserIdByPatientId} from "../pages/Admin/services/patientApi"// Import the methods from patientApi
 
 const usePatientManagement = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [patients, setPatients] = useState([]);
   const [filteredPatients, setFilteredPatients] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -218,6 +219,28 @@ const usePatientManagement = () => {
   // const handleDeleteCancel = () => {
   //   setShowConfirmationModal(false); // Close the modal on cancel
   // };
+  const history = useHistory();  // Hook to navigate programmatically
+
+  // Trigger logout confirmation modal
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true); // Show confirmation modal
+  };
+
+  // Handle logout confirmation
+  const handleLogoutConfirm = () => {
+    // Logic to handle logout
+    // For example, clearing user data or tokens
+    localStorage.removeItem("authToken"); // Assuming you store token in localStorage
+    toast.success("You have successfully logged out.");
+    
+    // Redirect to login page after logout
+    history.push("/login");  // Redirect to login page
+  };
+
+  // Handle cancel logout
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false); // Close modal without doing anything
+  };
 
   // Handle delete patient
   const handleDeletePatient = async (patientId) => {

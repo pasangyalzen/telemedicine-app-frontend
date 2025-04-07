@@ -1,7 +1,10 @@
+import PatientDashboard from "../pages/Patient/PatientDashboard";
+
 export const PATHS = {
     HOME: "/",
     LOGIN: "/login",
     REGISTER: "/register",
+    PATIENTDASHBOARD:"/patientdashboard",
     PATIENTVIDEOCALLDASHBOARD: "/patient-video-call-dashboard",
     DOCTORWAITINGROOMDASHBOARD: "/doctor-waiting-room-dashboard",
     ADMINDASHBOARD: "/admin-dashboard",
@@ -15,4 +18,6 @@ export const PATHS = {
     SECURITY: "/admin-dashboard/security",
     NOTIFICATIONS: "/admin-dashboard/notifications",
     SETTINGS: "/admin-dashboard/settings",
+    LOBBY:"/LOBBY",
+    ROOM:"/room/:roomId",
 }
