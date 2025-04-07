@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { fetchTodaysAppointments, getDoctorIdByUserId } from "../pages/Doctor/services/doctorAppointmentApi"; // Import the fetch function
+import { fetchTodaysAppointments, getDoctorIdByUserId,  rescheduleAppointment} from "../pages/Doctor/services/doctorAppointmentApi"; // Import the fetch function
+import { deleteAppointment } from "../pages/Admin/services/appointmentApi";
 
 const useDoctorDashboard = () => {
   const [appointments, setAppointments] = useState([]);
@@ -36,7 +37,7 @@ const useDoctorDashboard = () => {
         console.log("data",data);
         setAppointments(data); // Set appointments state
       } catch (error) {
-        setError("Failed to fetch today's appointments.");
+        setError(data.data);
         console.log(error);
       } finally {
         setLoading(false); // Ensure loading is set to false once the request completes
@@ -46,8 +47,39 @@ const useDoctorDashboard = () => {
     fetchData(); // Call fetchData once on mount
 
   }, []); // Empty dependency array means it runs only once on mount
+  const handleCancelAppointment = async (appointmentId) => {
+    setLoading(true);
+    setError(null);
+    try {
+       const result = await deleteAppointment(appointmentId);
+      console.log("Appointment canceled:", result);
+      return result;
+    } catch (err) {
+      setError(err.message);
+      console.error("Cancel error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  return { appointments, loading, error };
+  const handleRescheduleAppointment = async (appointmentId, newDateTime) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await rescheduleAppointment(appointmentId, {
+        newDateTime,
+      });
+      console.log("Appointment rescheduled:", result);
+      return result;
+    } catch (err) {
+      setError(err.message);
+      console.error("Reschedule error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { appointments, loading, error, handleCancelAppointment, handleRescheduleAppointment };
 };
 
 export default useDoctorDashboard;

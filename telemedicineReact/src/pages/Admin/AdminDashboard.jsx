@@ -21,7 +21,7 @@ import DashboardContent from "./components/DashboardContent";
 const AdminDashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // For handling the logout modal
-  const [selectedMenu, setSelectedMenu] = useState("Dashboard"); // Track selected menu
+  const [selectedMenu, setSelectedMenu] = useState("DoctorManagement"); // Track selected menu
   const navigate = useNavigate(); // useNavigate hook for navigation
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
         return <SettingsPage />;
       default:
         console.log("❌ No match found for:", selectedMenu, "Rendering default: UserManagement");
-        return <UserManagement />;
+        return <DoctorManagement/>;
     }
   };
 

@@ -46,7 +46,7 @@ const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
     { name: "Patients", icon: <User />, path: PATHS.PATIENTS },
     { name: "Pharmacists", icon: <Pill />, path: PATHS.PHARMACISTS },
     { name: "Appointments", icon: <Calendar />, path: PATHS.APPOINTMENTS },
-    { name: "Payments", icon: <CreditCard />, path: PATHS.PAYMENTS },
+    //{ name: "Payments", icon: <CreditCard />, path: PATHS.PAYMENTS },
     // { name: "Reports", icon: <BarChart />, path: PATHS.REPORTS },
     // { name: "Security", icon: <Shield />, path: PATHS.SECURITY },
     // { name: "Notifications", icon: <Bell />, path: PATHS.NOTIFICATIONS },

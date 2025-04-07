@@ -53,7 +53,7 @@ const AppointmentTable = ({ appointments = [], handleEditAppointmentClick, handl
   return (
     <div className="overflow-x-auto shadow-lg rounded-lg text-black">
       <Table>
-        <Thead className="bg-teal-600 ">
+        <Thead className="bg-teal-600 text-white">
           <Tr>
             <Th className="p-4 border border-gray-300 text-sm font-semibold text-center">ID</Th>
             <Th className="p-4 border border-gray-300 text-sm font-semibold text-center">Patient Name</Th>

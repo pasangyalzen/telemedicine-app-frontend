@@ -22,7 +22,8 @@ export const fetchTodaysAppointments = async (doctorId) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching today's appointments:", error);
-    throw new Error(error.response?.data?.message || "Error fetching today's appointments");
+    throw new Error(error.response?.data || "There is no appointments today.");
+    
   }
 };
 
@@ -41,3 +42,21 @@ export const getDoctorIdByUserId = async (userId) => {
     throw new Error(error.response?.data?.message || "Error fetching DoctorId");
   }
 };
+
+export const rescheduleAppointment = async (appointmentId, newDateTime) => {
+    try {
+      const response = await apiClient.put(
+        `/RescheduleAppointment/${appointmentId}`,
+        newDateTime, // this must be in proper ISO format
+        {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error rescheduling appointment:", error);
+      throw new Error(error.response?.data?.message || "Error rescheduling appointment");
+    }
+  };
