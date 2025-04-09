@@ -2,16 +2,31 @@
   import useDoctorDashboard from "../../hooks/useDoctorDashboard";
   import PatientQueue from "./ui/PatientQueue";
   import { useNavigate } from 'react-router-dom';
-  import { useState } from "react";
+  import { useState, useEffect } from "react";
   import DoctorDashboardHome from "./components/DoctorDashboardHome";
   import DoctorAnalytics from "./components/DoctorAppointments";
   import DoctorMeetingHistory from "./components/DoctorMeetingHistory";
   import VideoPreview from "./components/VideoPreview";
   import ConfirmationModal from "../../components/ConfirmationModal";
   import { ChevronDown, Settings, LogOut } from "lucide-react";
-
+  import RescheduleForm from "./components/RescheduleForm";
   export default function DoctorWaitingRoomDashboard() {
-    const { patients, inviteLink } = useDoctorDashboard();
+    const {
+      appointments,
+      appointmentToReschedule,
+      showForm,
+      handleRescheduleButtonClick,
+      handleRescheduleSubmit,
+      setShowForm,
+      setAppointmentToReschedule,
+      patients,
+      inviteLink,
+    } = useDoctorDashboard();
+    
+    useEffect(() => {
+      console.log("Updated fadsfasstate in DoctorWaitingRoom - showForm:", showForm);
+      console.log("Updated dsfadstate in DoctorWaitingRoom - appointmentToReschedule:", appointmentToReschedule);
+    }, [showForm, appointmentToReschedule]);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [dropdownOpen,setDropdownOpen] = useState(false);
     const [accountdropdownOpen, setAccountDropdownOpen] = useState(false);
@@ -22,18 +37,14 @@
     const [selectedMenu, setSelectedMenu] = useState("dashboard");
     const handleLogout = () => {
       // Clear the localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("role");
-      localStorage.removeItem("id");
+      localStorage.clear();
     
       console.log("Logging out... Redirecting to login page.");
     
       // Navigate to the login page
       navigate("/login");  // This should work if PATHS.LOGIN is defined correctly
     };
-
+    
     return (
       <div className="h-screen w-screen flex flex-col">
 
@@ -86,7 +97,10 @@
             {/* <h2 className="text-2xl font-light p-4 border-b text-[#65cccc] border-white">TELECHAUKI</h2> */}
 
             {/* Patient Queue Component */}
-            <PatientQueue patients={patients} />
+            <PatientQueue 
+              appointments={appointments}
+              handleRescheduleButtonClick={handleRescheduleButtonClick}
+            />
 
             {/* General Navigation */}
             <div className="p-4 border-t border-white">
@@ -186,8 +200,24 @@
             console.log("Logout cancelled");
             setShowLogoutModal(false);
           }}
+          
         />
+        
       )}
+      {showForm && appointmentToReschedule && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+          <RescheduleForm
+            appointmentId={appointmentToReschedule.appointmentId}
+            onSubmit={handleRescheduleSubmit}
+            onCancel={() => {
+              setShowForm(false);
+              setAppointmentToReschedule(null);
+            }}
+          />
+        </div>
+      </div>
+    )}
       </div>
     );
   }

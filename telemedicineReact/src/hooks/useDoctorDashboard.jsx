@@ -1,57 +1,54 @@
 import { useState, useEffect } from "react";
-import { fetchTodaysAppointments, getDoctorIdByUserId,  rescheduleAppointment} from "../pages/Doctor/services/doctorAppointmentApi"; // Import the fetch function
-import { deleteAppointment } from "../pages/Admin/services/appointmentApi";
+import { fetchTodaysAppointments, getDoctorIdByUserId, rescheduleAppointment } from "../pages/Doctor/services/doctorAppointmentApi"; // Import the fetch function
+import { deleteAppointment } from "../pages/Admin/services/appointmentApi"; 
 
 const useDoctorDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  
+  // Handle state for appointment cancellation and rescheduling
+  // const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [appointmentToReschedule, setAppointmentToReschedule] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
-        console.log("hello");
       try {
-        // Get userId from localStorage
-        const userId = localStorage.getItem("id"); 
-
-        // If there's no userId in localStorage, handle the error
+        const userId = localStorage.getItem("id");
         if (!userId) {
           setError("Doctor ID not found.");
           setLoading(false);
           return;
         }
 
-        // Fetch doctorId using userId
         const doctorId = await getDoctorIdByUserId(userId);
-        console.log("doctt",doctorId);
-
-        // If the doctorId is undefined or invalid, handle the error
         if (!doctorId) {
           setError("Failed to fetch Doctor ID.");
           setLoading(false);
           return;
         }
 
-        // Fetch today's appointments using doctorId
         const data = await fetchTodaysAppointments(doctorId);
-        console.log("data",data);
-        setAppointments(data); // Set appointments state
+        setAppointments(data);
       } catch (error) {
-        setError(data.data);
-        console.log(error);
+        setError(error.message || "Failed to fetch appointments.");
+        console.error(error);
       } finally {
-        setLoading(false); // Ensure loading is set to false once the request completes
+        setLoading(false);
       }
     };
 
-    fetchData(); // Call fetchData once on mount
+    fetchData();
+  }, []);
 
-  }, []); // Empty dependency array means it runs only once on mount
+  // Handle canceling an appointment
   const handleCancelAppointment = async (appointmentId) => {
     setLoading(true);
     setError(null);
     try {
-       const result = await deleteAppointment(appointmentId);
+      const result = await deleteAppointment(appointmentId);
       console.log("Appointment canceled:", result);
       return result;
     } catch (err) {
@@ -62,24 +59,44 @@ const useDoctorDashboard = () => {
     }
   };
 
-  const handleRescheduleAppointment = async (appointmentId, newDateTime) => {
-    setLoading(true);
-    setError(null);
+  // Handle rescheduling a button click
+  const handleRescheduleButtonClick = (patient) => {
+    console.log("Fulllllll", patient);
+    setAppointmentToReschedule(patient);
+    console.log("OKkkk");
+    setShowForm(true);
+    console.log("Appointment to reschedule:", appointmentToReschedule);  
+  };
+  useEffect(() => {
+    console.log("Updated state in PatientQueue - showForm:", showForm);
+    console.log("Updated state in PatientQueue - appointmentToReschedule:", appointmentToReschedule);
+  }, [showForm, appointmentToReschedule]);
+
+  // Handle the reschedule form submission
+  const handleRescheduleSubmit = async (appointmentId,newDate) => {
+    console.log("Appointment ID:", appointmentId);  // Log Appointment ID
+    console.log("New Date:", newDate); // Log New Date
+  
     try {
-      const result = await rescheduleAppointment(appointmentId, {
-        newDateTime,
-      });
-      console.log("Appointment rescheduled:", result);
-      return result;
+      console.log("Calling rescheduleAppointment function");
+      const result = await rescheduleAppointment(appointmentId, newDate);
+      console.log("Appointment successfully rescheduled:pfdgsfgsg", result);
     } catch (err) {
-      setError(err.message);
-      console.error("Reschedule error:", err);
-    } finally {
-      setLoading(false);
+      console.error("Error rescheduling appointment:", err);
     }
   };
-
-  return { appointments, loading, error, handleCancelAppointment, handleRescheduleAppointment };
+  return {
+    appointments,
+    loading,
+    error,
+    handleCancelAppointment,
+    handleRescheduleButtonClick,
+    handleRescheduleSubmit,
+    setAppointmentToReschedule,
+    setShowForm,
+    appointmentToReschedule,
+    showForm,
+  };
 };
 
 export default useDoctorDashboard;

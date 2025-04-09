@@ -33,7 +33,9 @@ const AdminDashboard = () => {
   };
 
   const handleLogoutConfirm = () => {
-    handleLogout(navigate); // Pass navigate as argument to handleLogout
+    handleLogout(); 
+    localStorage.clear();
+    navigate("/");
     setShowLogoutModal(false); // Close the modal
   };
 

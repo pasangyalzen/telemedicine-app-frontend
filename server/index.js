@@ -2,7 +2,7 @@ const {Server, Socket} = require("socket.io");
 
 const io = new Server(8000, {
   cors: {
-    origin: ["http://localhost:5174" ,'http://192.168.1.65:5173'],  // Add the front-end URL here
+    origin: ["http://localhost:5173" ,'http://192.168.1.65:5173'],  // Add the front-end URL here
     methods: ["GET", "POST"]
   }
 });

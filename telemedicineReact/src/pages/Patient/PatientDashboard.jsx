@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Video, Calendar, Clock, User } from 'lucide-react';
 import ConfirmationModal from '../../components/ConfirmationModal'; // Ensure the path is correct
+import { useNavigate } from 'react-router-dom';
 
 const PatientDashboard = () => {
   const [inCall, setInCall] = useState(false);
   const [doctorJoined, setDoctorJoined] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const appointment = {
     doctorName: "Dr. Sarah Johnson",
@@ -31,12 +34,12 @@ const PatientDashboard = () => {
 
   const handleLogout = () => {
     localStorage.clear(); // Clears all data stored in local storage
-    window.location.href = '/login'; // Redirect to the login page
+    navigate("/"); // Redirect to the login page
   };
 
   const handleLogoutConfirm = () => {
     setShowLogoutModal(false);
-    handleLogout(); // Actual logout functionality
+    handleLogout();
   };
 
   const handleLogoutCancel = () => {

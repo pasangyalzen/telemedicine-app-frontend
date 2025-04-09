@@ -44,19 +44,23 @@ export const getDoctorIdByUserId = async (userId) => {
 };
 
 export const rescheduleAppointment = async (appointmentId, newDateTime) => {
-    try {
-      const response = await apiClient.put(
-        `/RescheduleAppointment/${appointmentId}`,
-        newDateTime, // this must be in proper ISO format
-        {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error rescheduling appointment:", error);
-      throw new Error(error.response?.data?.message || "Error rescheduling appointment");
-    }
-  };
+  try {
+    console.log("Appointment ID:", appointmentId); // Log the appointmentId
+    console.log("New DateTime being passed:", newDateTime); // Log the newDateTime being passed to verify
+
+    const response = await apiClient.put(
+      `/RescheduleAppointment/${appointmentId}`,
+      newDateTime, 
+      {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error rescheduling appointment:", error);
+    throw new Error(error.response?.data?.message || "Error rescheduling appointment");
+  }
+};

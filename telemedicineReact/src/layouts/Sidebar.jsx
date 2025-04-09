@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom'; 
-import { useState, useEffect  } from 'react'; 
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useLocation } from "react-router-dom"; // Add this line
 import { Link } from "react-router-dom";
 import { PATHS } from "../constants/path"; // Import the PATHS object
@@ -16,6 +16,7 @@ import {
   Bell,
   Settings,
   LogOut,
+
   Menu,
   X,
   UserCircle,
@@ -37,7 +38,7 @@ const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
     setAdmin({ name: storedEmail, role: storedRole });
   }, []);
 
- 
+
   // Update menuItems to use the PATHS object for routing
   const menuItems = [
     { name: "Dashboard", icon: <LayoutDashboard />, path: PATHS.ADMINDASHBOARD },
@@ -55,7 +56,8 @@ const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
 
   // Function to handle logout
   const handleConfirmLogout = () => {
-    handleLogout(navigate); // Call handleLogout function here
+    handleLogout();
+    navigate("/");
     setIsModalOpen(false); // Close the modal after logout
   };
 
@@ -93,9 +95,8 @@ const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
               <Link
                 to={item.path}
                 onClick={() => setSelectedMenu(item.name)} // Update selected menu when clicked
-                className={`flex items-center p-3 rounded-lg hover:bg-primary-light hover:text-white text-[#81e3e3] transition ${
-                  selectedMenu === item.name ? "bg-gray-800" : ""
-                }`}
+                className={`flex items-center p-3 rounded-lg hover:bg-primary-light hover:text-white text-[#81e3e3] transition ${selectedMenu === item.name ? "bg-gray-800" : ""
+                  }`}
               >
                 <span className="w-6 h-6">{item.icon}</span>
                 {!isCollapsed && <span className="ml-3">{item.name}</span>}

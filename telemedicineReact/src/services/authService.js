@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config.js";
 import axios from "axios";
 
@@ -35,20 +36,22 @@ export const handleLogin = async (credentials, redirectUser, setErrorMessage) =>
  * Logs out the user, clears storage, and redirects to login.
  * @param {Function} navigate - React Router navigate function
  */
-export const handleLogout = async (navigate) => {
+export const handleLogout = async () => {
+    const navigate = useNavigate();
     try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found, forcing logout.");
-
-        await axios.post(`${API_URL}/admin/account/logout`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        // Clear Local Storage Data
+        localStorage.clear();
+        navigate("/");
+        window.location.reload();
+        
     } catch (error) {
         console.error("Logout failed:", error.response?.data?.message || error.message);
     }
-
-    // Clear session
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    navigate("/login");
+    
+    
 };
+// await axios.post(`${API_URL}/admin/account/logout`, {}, {
+//     headers: { Authorization: `Bearer ${token}` },
+// });

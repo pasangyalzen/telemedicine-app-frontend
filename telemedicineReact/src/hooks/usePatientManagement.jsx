@@ -219,7 +219,7 @@ const usePatientManagement = () => {
   // const handleDeleteCancel = () => {
   //   setShowConfirmationModal(false); // Close the modal on cancel
   // };
-  const history = useHistory();  // Hook to navigate programmatically
+   // Hook to navigate programmatically
 
   // Trigger logout confirmation modal
   const handleLogoutClick = () => {

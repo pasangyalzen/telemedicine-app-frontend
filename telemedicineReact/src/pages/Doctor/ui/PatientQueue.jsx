@@ -1,48 +1,12 @@
-import React from "react";
-import useDoctorDashboard from "../../../hooks/useDoctorDashboard"; // Import the custom hook
+import React, {useEffect} from "react";
+// import useDoctorDashboard from "../../../hooks/useDoctorDashboard"; // Import the custom hook
 import { FaVideo, FaRegCalendarAlt, FaTrashAlt } from 'react-icons/fa'; // Importing icons
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import { useState } from "react";
+import RescheduleForm from "../components/RescheduleForm";
+import {rescheduleAppointment} from "../services/doctorAppointmentApi";
 
-export default function PatientQueue() {
-  const { appointments, loading, error, handleCancelAppointment, handleRescheduleAppointment } = useDoctorDashboard(); 
-  const [showModal, setShowModal] = useState(false); // State for the modal visibility
-  const [appointmentToCancel, setAppointmentToCancel] = useState(null); // Store the appointment to cancel
-
-  console.log("Appointments", appointments); // Use the hook to get data
-
-  if (loading) {
-    return <div className="text-center text-lg text-gray-500">Loading today's appointments...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
-
-  const handleRescheduleClick = () => {
-    const response = handleRescheduleAppointment(appointments.appointmentId);
-    return response;
-    
-  }
-
-  const handleCancelClick = (appointmentId) => {
-    setAppointmentToCancel(appointmentId); // Set the appointment to cancel
-    setShowModal(true); // Show the confirmation modal
-  };
-
-  const handleConfirmCancel = async () => {
-    if (appointmentToCancel) {
-      const response = await handleCancelAppointment(appointmentToCancel.appointmentId);
-      if (response) {
-        setShowModal(false); // Close the modal on successful cancellation
-      }
-    }
-  };
-
-  const handleCancelModal = () => {
-    setShowModal(false); // Close the modal without canceling
-    setAppointmentToCancel(null); // Reset the appointment to cancel
-  };
+export default function PatientQueue({ appointments, handleRescheduleButtonClick }) { 
   return (
     <div className="w-64 p-4 bg-black shadow-lg rounded-lg">
       <h3 className="text-lg font-semibold text-teal-500 mb-4 border-b border-teal-500 pb-2">Patient Queue</h3>
@@ -78,17 +42,19 @@ export default function PatientQueue() {
                 >
                   <FaVideo className="mr-1" /> Join
                 </a>
-                <button onClick={handleRescheduleClick} className="flex items-center justify-center px-3 py-1 bg-teal-500 text-white text-xs rounded-md hover:bg-teal-600 transition-all duration-200 ease-in-out">
+                <button onClick={() => handleRescheduleButtonClick(patient)} className="flex items-center justify-center px-3 py-1 bg-teal-500 text-white text-xs rounded-md hover:bg-teal-600 transition-all duration-200 ease-in-out">
                   <FaRegCalendarAlt className="mr-1" /> Reschedule
                 </button>
-                <button onClick={() => handleCancelClick(appointments.appointmentId)}  className="flex items-center justify-center px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600 transition-all duration-200 ease-in-out">
+                <button onClick={() => handleCancelClick(patient.appointmentId)}  className="flex items-center justify-center px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600 transition-all duration-200 ease-in-out">
                   <FaTrashAlt className="mr-1" /> Cancel
                 </button>
               </div>
             </div>
           ))}
         </div>
+        
       )}
+
     </div>
   );
 }
