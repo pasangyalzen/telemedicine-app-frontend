@@ -80,6 +80,14 @@ const useDoctorDashboard = () => {
     try {
       console.log("Calling rescheduleAppointment function");
       const result = await rescheduleAppointment(appointmentId, newDate);
+      
+      setAppointments(prevAppointments => 
+        prevAppointments.map(appointment => 
+          appointment.appointmentId === appointmentId
+            ? { ...appointment, scheduledTime: newDate } // Update scheduled time with new date
+            : appointment
+        )
+      );
       console.log("Appointment successfully rescheduled:pfdgsfgsg", result);
     } catch (err) {
       console.error("Error rescheduling appointment:", err);

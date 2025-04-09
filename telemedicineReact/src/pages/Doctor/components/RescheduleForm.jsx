@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { fetchTodaysAppointments } from '../services/doctorAppointmentApi';
 
 const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
   const [newDate, setNewDate] = useState('');
@@ -9,7 +10,19 @@ const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
 
     // Convert the local time (from input) to UTC using toISOString
     const localDate = new Date(newDate); // Create Date object from input
-    const isoDate = localDate.toISOString(); // This automatically converts to UTC
+
+    // Create a new Date object with the same values but manually treating it as UTC
+    const isoDate = new Date(Date.UTC(
+      localDate.getFullYear(),        // Year
+      localDate.getMonth(),           // Month (0-based index)
+      localDate.getDate(),            // Day
+      localDate.getHours(),           // Hour
+      localDate.getMinutes(),         // Minutes
+      localDate.getSeconds(),         // Seconds
+      localDate.getMilliseconds()     // Milliseconds
+    )).toISOString(); // Get ISO string in UTC format
+    
+    console.log("ISO Date treated as UTC:", isoDate); // This automatically converts to UTC
 
     console.log("ISO formatted date being sent to backend:", isoDate); // Logging to verify
 
