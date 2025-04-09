@@ -14,11 +14,17 @@
     const {
       appointments,
       appointmentToReschedule,
+      setAppointmentToCancel,
       showForm,
       handleRescheduleButtonClick,
+      handleCancelClick,
       handleRescheduleSubmit,
       setShowForm,
       setAppointmentToReschedule,
+      showCancelModal,
+      setShowCancelModal,
+      handleCancelAppointment,
+      appointmentToCancel,
       patients,
       inviteLink,
     } = useDoctorDashboard();
@@ -100,6 +106,7 @@
             <PatientQueue 
               appointments={appointments}
               handleRescheduleButtonClick={handleRescheduleButtonClick}
+              handleCancelClick={handleCancelClick}
             />
 
             {/* General Navigation */}
@@ -218,6 +225,19 @@
         </div>
       </div>
     )}
+    {/* Confirmation Modal for Appointment Cancellation */}
+    {showCancelModal && appointmentToCancel && (
+        <ConfirmationModal
+          message="Are you sure you want to cancel this appointment?"
+          actionLabel="Cancel Appointment"
+          onConfirm={() => handleCancelAppointment(appointmentToCancel)} // Calls the cancellation function
+          onCancel={() => {
+            console.log("Cancel appointment action was aborted");
+            setShowCancelModal(false); // Close the modal
+            setAppointmentToCancel(null); // Reset appointment to cancel
+          }}
+        />
+      )}
       </div>
     );
   }

@@ -6,7 +6,7 @@ import { useState, useMemo } from "react";
 import RescheduleForm from "../components/RescheduleForm";
 import {rescheduleAppointment} from "../services/doctorAppointmentApi";
 
-export default function PatientQueue({ appointments, handleRescheduleButtonClick }) {
+export default function PatientQueue({ appointments, handleCancelClick, handleRescheduleButtonClick }) {
   function useFormattedTime(time) {
     return useMemo(() => {
       // If time is provided, extract hours and minutes

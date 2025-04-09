@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { fetchTodaysAppointments, getDoctorIdByUserId, rescheduleAppointment } from "../pages/Doctor/services/doctorAppointmentApi"; // Import the fetch function
-import { deleteAppointment } from "../pages/Admin/services/appointmentApi"; 
+import { cancelDoctorAppointment } from "../pages/Doctor/services/doctorAppointmentApi";
+import toast from "react-hot-toast";
 
 const useDoctorDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [appointmentToCancel, setAppointmentToCancel] = useState(null);
   
   // Handle state for appointment cancellation and rescheduling
   // const [appointmentToCancel, setAppointmentToCancel] = useState(null);
@@ -43,13 +46,22 @@ const useDoctorDashboard = () => {
     fetchData();
   }, []);
 
+  const handleCancelClick = (appointmentId) => {
+    console.log("Iskiri",appointmentId);
+    setAppointmentToCancel(appointmentId); // Set the appointment ID to cancel
+    setShowCancelModal(true); // Show confirmation modal
+  };
+
   // Handle canceling an appointment
-  const handleCancelAppointment = async (appointmentId) => {
+  const handleCancelAppointment = async (appointmentIdToCancel) => {
+    console.log("Ola",appointmentIdToCancel);
     setLoading(true);
     setError(null);
     try {
-      const result = await deleteAppointment(appointmentId);
+      const result = await cancelDoctorAppointment(appointmentIdToCancel);
       console.log("Appointment canceled:", result);
+      toast.success("Appointment was successfully cancelled");
+      setShowCancelModal(false);
       return result;
     } catch (err) {
       setError(err.message);
@@ -61,11 +73,8 @@ const useDoctorDashboard = () => {
 
   // Handle rescheduling a button click
   const handleRescheduleButtonClick = (patient) => {
-    console.log("Fulllllll", patient);
     setAppointmentToReschedule(patient);
-    console.log("OKkkk");
     setShowForm(true);
-    console.log("Appointment to reschedule:", appointmentToReschedule);  
   };
   useEffect(() => {
     console.log("Updated state in PatientQueue - showForm:", showForm);
@@ -74,12 +83,12 @@ const useDoctorDashboard = () => {
 
   // Handle the reschedule form submission
   const handleRescheduleSubmit = async (appointmentId,newDate) => {
-    console.log("Appointment ID:", appointmentId);  // Log Appointment ID
-    console.log("New Date:", newDate); // Log New Date
-  
     try {
-      console.log("Calling rescheduleAppointment function");
       const result = await rescheduleAppointment(appointmentId, newDate);
+      console.log("Hello",result);
+      if (result == "200"){
+        toast.success("The appointment was rescheduled.");
+      }
       
       setAppointments(prevAppointments => 
         prevAppointments.map(appointment => 
@@ -88,7 +97,7 @@ const useDoctorDashboard = () => {
             : appointment
         )
       );
-      console.log("Appointment successfully rescheduled:pfdgsfgsg", result);
+      await fetchData();
     } catch (err) {
       console.error("Error rescheduling appointment:", err);
     }
@@ -97,13 +106,18 @@ const useDoctorDashboard = () => {
     appointments,
     loading,
     error,
+    handleCancelClick,
     handleCancelAppointment,
     handleRescheduleButtonClick,
     handleRescheduleSubmit,
     setAppointmentToReschedule,
     setShowForm,
     appointmentToReschedule,
+    appointmentToCancel,
     showForm,
+    showCancelModal,
+    setShowCancelModal,
+    setAppointmentToCancel,
   };
 };
 

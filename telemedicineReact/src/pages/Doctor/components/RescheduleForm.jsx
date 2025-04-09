@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { fetchTodaysAppointments } from '../services/doctorAppointmentApi';
 
 const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
@@ -29,11 +30,10 @@ const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
     try {
       // Pass the appointmentId and newDate (in ISO format) to the onSubmit function
       await onSubmit(appointmentId, isoDate);
-      alert('Appointment rescheduled!');
       onCancel(); // Close the form once rescheduling is done
     } catch (err) {
       console.error('Failed to reschedule:', err);
-      alert('Error rescheduling appointment.');
+      toast.error("Failed to reschedule");
     }
   };
 

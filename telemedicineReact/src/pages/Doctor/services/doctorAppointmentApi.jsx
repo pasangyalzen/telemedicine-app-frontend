@@ -57,10 +57,32 @@ export const rescheduleAppointment = async (appointmentId, newDateTime) => {
         },
       }
     );
+    
 
-    return response.data;
+    return response.status;
   } catch (error) {
     console.error("Error rescheduling appointment:", error);
     throw new Error(error.response?.data?.message || "Error rescheduling appointment");
+  }
+};
+
+export const cancelDoctorAppointment = async (appointmentId) => {
+  try {
+    console.log("Appointment ID:", appointmentId); // Log the appointmentId being passed
+
+    const response = await apiClient.put(
+      `/CancelAppointment/${appointmentId}`, // The API endpoint to cancel the appointment
+      null, // No body required for this request
+      {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+        },
+      }
+    );
+
+    return response.data; // Return the response data after successful cancellation
+  } catch (error) {
+    console.error("Error canceling appointment:", error); // Log the error if any
+    throw new Error(error.response?.data?.message || "Error canceling appointment");
   }
 };
