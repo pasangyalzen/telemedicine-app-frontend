@@ -186,17 +186,17 @@
         </div> */}
       </div>
         {/* Rightmost Video Section */}
-        <div className="w-1/3 bg-white shadow-lg flex flex-col p-6 h-full">
+        {/* <div className="w-1/3 bg-white shadow-lg flex flex-col p-6 h-full"> */}
           {/* Video Placeholder */}
-          <div className="flex-grow w-full bg-black rounded overflow-hidden">
-          <VideoPreview />
-        </div>
+          {/* <div className="flex-grow w-full bg-black rounded overflow-hidden"> */}
+          {/* <VideoPreview /> */}
+        {/* </div> */}
 
           {/* Precall Test Button */}
-          <button className="w-full mt-auto px-6 py-3 bg-[#65cccc] text-white rounded-md hover:bg-[#45cccc]">
-            Precall Test
-          </button>
-        </div>
+          {/* <button className="w-full mt-auto px-6 py-3 bg-[#65cccc] text-white rounded-md hover:bg-[#45cccc]"> */}
+            {/* Precall Test */}
+          {/* </button> */}
+        {/* </div> */}
         </div>
         {showLogoutModal && (
         <ConfirmationModal
@@ -230,7 +230,7 @@
         <ConfirmationModal
           message="Are you sure you want to cancel this appointment?"
           actionLabel="Cancel Appointment"
-          onConfirm={() => handleCancelAppointment(appointmentToCancel)} // Calls the cancellation function
+          onConfirm={() => handleCancelAppointment(appointmentToCancel)}// Calls the cancellation function
           onCancel={() => {
             console.log("Cancel appointment action was aborted");
             setShowCancelModal(false); // Close the modal

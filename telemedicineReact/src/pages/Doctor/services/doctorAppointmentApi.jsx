@@ -86,3 +86,101 @@ export const cancelDoctorAppointment = async (appointmentId) => {
     throw new Error(error.response?.data?.message || "Error canceling appointment");
   }
 };
+
+// Fetch past appointments for the doctor
+export const fetchPastAppointments = async (doctorId) => {
+  try {
+    const response = await apiClient.get(`/GetPastAppointments/${doctorId}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+      },
+    });
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching past appointments:", error);
+    throw new Error(error.response?.data || "There are no past appointments.");
+  }
+};
+
+// Fetch upcoming appointments for the doctor
+export const fetchUpcomingAppointments = async (doctorId) => {
+  try {
+    const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+      },
+    });
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching upcoming appointments:", error);
+    throw new Error(error.response?.data || "There are no upcoming appointments.");
+  }
+};
+
+// Fetch cancelled appointments for the doctor
+export const fetchCancelledAppointments = async (doctorId) => {
+  try {
+    const response = await apiClient.get(`/GetCancelledAppointments/${doctorId}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+      },
+    });
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cancelled appointments:", error);
+    throw new Error(error.response?.data || "There are no cancelled appointments.");
+  }
+};
+
+// Update the appointment status
+export const updateAppointmentStatus = async (appointmentId, newStatus) => {
+  try {
+    const response = await apiClient.put(
+      `/UpdateAppointmentStatus/${appointmentId}`,
+      { status: newStatus },
+      {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+        },
+      }
+    );
+    console.log("Appointment status updated:", response);
+    return response.status;
+  } catch (error) {
+    console.error("Error updating appointment status:", error);
+    throw new Error(error.response?.data?.message || "Error updating appointment status.");
+  }
+};
+
+export const getDoctorUpcomingAppointments = async (doctorId) => {
+  try {
+    console.log("Fetching appointments for doctorId:", doctorId); 
+    const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    console.log("Responseeeee", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching doctor's upcoming appointments:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch upcoming appointments.");
+  }
+};
+
+export const getDoctorIdByEmail = async (email) => {
+  try {
+    const response = await apiClient.get(`GetDoctorIdByEmail/${email}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching doctor ID by email:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch doctor ID.");
+  }
+};

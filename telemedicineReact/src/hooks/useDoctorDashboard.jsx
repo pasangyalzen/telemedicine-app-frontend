@@ -54,7 +54,7 @@ const useDoctorDashboard = () => {
 
   // Handle canceling an appointment
   const handleCancelAppointment = async (appointmentIdToCancel) => {
-    console.log("Ola",appointmentIdToCancel);
+    console.log("Olaaaaa",appointmentIdToCancel);
     setLoading(true);
     setError(null);
     try {
@@ -73,6 +73,7 @@ const useDoctorDashboard = () => {
 
   // Handle rescheduling a button click
   const handleRescheduleButtonClick = (patient) => {
+    console.log("patient",patient);
     setAppointmentToReschedule(patient);
     setShowForm(true);
   };
@@ -83,9 +84,11 @@ const useDoctorDashboard = () => {
 
   // Handle the reschedule form submission
   const handleRescheduleSubmit = async (appointmentId,newDate) => {
+    console.log("afdasfadsfa",appointmentId);
+    console.log("dafdafDSFASDFADSFASDFAS",newDate);
     try {
       const result = await rescheduleAppointment(appointmentId, newDate);
-      console.log("Hello",result);
+      console.log("Helloww",result);
       if (result == "200"){
         toast.success("The appointment was rescheduled.");
       }
@@ -102,6 +105,8 @@ const useDoctorDashboard = () => {
       console.error("Error rescheduling appointment:", err);
     }
   };
+  
+
   return {
     appointments,
     loading,

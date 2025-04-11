@@ -5,8 +5,9 @@ import ConfirmationModal from "../../../components/ConfirmationModal";
 import { useState, useMemo } from "react";
 import RescheduleForm from "../components/RescheduleForm";
 import {rescheduleAppointment} from "../services/doctorAppointmentApi";
+import { getEmailFromToken } from "../../auth/auth";
 
-export default function PatientQueue({ appointments, handleCancelClick, handleRescheduleButtonClick }) {
+export default function PatientQueue({ appointments, handleJoinRoom, handleCancelClick, handleRescheduleButtonClick }) {
   function useFormattedTime(time) {
     return useMemo(() => {
       // If time is provided, extract hours and minutes
@@ -49,14 +50,24 @@ export default function PatientQueue({ appointments, handleCancelClick, handleRe
 
               {/* Action Buttons */}
               <div className="flex flex-col space-y-1">
-                <a
-                  href={patient.videoCallLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center px-3 py-1 bg-green-500 text-white text-xs rounded-md hover:bg-green-600 transition-all duration-200 ease-in-out"
-                >
-                  <FaVideo className="mr-1" /> Join
-                </a>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const email = getEmailFromToken(); // Extract email from the token
+                  const appointmentId = patient.appointmentId; // Extract the appointment ID
+                  console.log(patient.appointmentId);
+
+                  if (email && appointmentId) {
+                    handleJoinRoom({ email, room: appointmentId }); // Join room with the email and appointmentId
+                  } else {
+                    console.error("Error: Missing email or appointmentId");
+                  }
+                }}
+                className="flex items-center justify-center px-3 py-1 bg-green-500 text-white text-xs rounded-md hover:bg-green-600 transition-all duration-200 ease-in-out"
+              >
+                <FaVideo className="mr-1" /> Join
+              </a>
                 <button onClick={() => handleRescheduleButtonClick(patient)} className="flex items-center justify-center px-3 py-1 bg-teal-500 text-white text-xs rounded-md hover:bg-teal-600 transition-all duration-200 ease-in-out">
                   <FaRegCalendarAlt className="mr-1" /> Reschedule
                 </button>

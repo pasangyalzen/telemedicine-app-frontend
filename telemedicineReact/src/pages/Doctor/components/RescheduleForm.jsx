@@ -23,7 +23,7 @@ const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
       localDate.getMilliseconds()     // Milliseconds
     )).toISOString(); // Get ISO string in UTC format
     
-    console.log("ISO Date treated as UTC:", isoDate); // This automatically converts to UTC
+    console.log("KOKOKOKKOKO", appointmentId); // This automatically converts to UTC
 
     console.log("ISO formatted date being sent to backend:", isoDate); // Logging to verify
 

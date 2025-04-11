@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import { Video, Calendar, Clock, User } from 'lucide-react';
 import ConfirmationModal from '../../components/ConfirmationModal'; // Ensure the path is correct
 import { useNavigate } from 'react-router-dom';
+import useDoctorDashboard from '../../hooks/useDoctorDashboard';
+import { FaVideo } from 'react-icons/fa';
 
 const PatientDashboard = () => {
   const [inCall, setInCall] = useState(false);
   const [doctorJoined, setDoctorJoined] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const {
+    handleJoinRoom,
+    getEmailFromToken,
+  } = useDoctorDashboard();
+
+  
+
+  
 
   const navigate = useNavigate();
 
@@ -51,6 +61,24 @@ const PatientDashboard = () => {
       {/* Header */}
       <header className="bg-teal-600 py-4 px-6 shadow w-full flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">TeleChauki</h1>
+        <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const email = "P@gmail.com" // Extract email from the token
+                          const appointmentId = 2036; // Extract the appointment ID
+                         
+        
+                          if (email && appointmentId) {
+                            handleJoinRoom({ email, room: appointmentId }); // Join room with the email and appointmentId
+                          } else {
+                            console.error("Error: Missing email or appointmentId");
+                          }
+                        }}
+                        className="flex items-center justify-center px-3 py-1 bg-green-500 text-white text-xs rounded-md hover:bg-green-600 transition-all duration-200 ease-in-out"
+                      >
+                        <FaVideo className="mr-1" /> Join
+                      </a>
 
         <div className="relative">
           <button
@@ -82,6 +110,7 @@ const PatientDashboard = () => {
           )}
         </div>
       </header>
+      
 
       {/* Logout Modal */}
       {showLogoutModal && (
