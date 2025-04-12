@@ -10,6 +10,7 @@ import VideoPreview from "./components/VideoPreview";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { ChevronDown, Settings, LogOut, Home, Calendar, Clock, User, Menu } from "lucide-react";
 import RescheduleForm from "./components/RescheduleForm";
+import PendingConsultations from "./components/PastAppointment";
 
 export default function DoctorWaitingRoomDashboard() {
   const {
@@ -158,11 +159,12 @@ export default function DoctorWaitingRoomDashboard() {
                   
                   <button 
                     onClick={() => {
-                      setSelectedMenu("meetingHistory");
+                      console.log("Setting selectedMenu to meetingHistory");
+                      setSelectedMenu("pendingConsultations");
                       setMobileSidebarOpen(false);
                     }} 
                     className={`w-full h-12 flex items-center px-4 rounded-lg transition duration-300 ${
-                      selectedMenu === "meetingHistory" 
+                      selectedMenu === "pendingConsultations" 
                         ? "bg-teal-600 text-white" 
                         : "text-gray-300 hover:bg-gray-700"
                     }`}
@@ -210,7 +212,7 @@ export default function DoctorWaitingRoomDashboard() {
 
           {selectedMenu === "analytics" && <DoctorAnalytics />}
 
-          {selectedMenu === "meetingHistory" && <DoctorMeetingHistory />}
+          {selectedMenu === "pendingConsultations" && <PendingConsultations />}
         </div>
       </div>
 

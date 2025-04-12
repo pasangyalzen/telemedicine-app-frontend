@@ -143,11 +143,22 @@ const RoomPage = () => {
     setMyStream(null);
     setRemoteStream(null);
     setIsCallActive(false);
+    const role = localStorage.getItem("role"); // Or from context or decoded JWT
+    switch (role) {
+      case "Doctor":
+        navigate("/doctor-waiting-room-dashboard");
+        break;
+      case "Patient":
+        navigate("/patient-video-call-dashboard");
+        break;
+      default:
+        navigate("/");
+  }
     navigate("/");
-  }, [myStream]);
+  }, [myStream, navigate]);
 
   return (
-    <div className="bg-teal-900 min-h-screen h-screen flex flex-col overflow-hidden">
+    <div className="fixed inset-0 w-full h-screen bg-teal-900 flex flex-col overflow-hidden">
       {/* Header */}
       <header className="bg-teal-800 py-4 px-6 flex justify-between items-center shadow-lg">
         <div className="flex items-center">
