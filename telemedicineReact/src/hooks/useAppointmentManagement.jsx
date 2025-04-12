@@ -218,7 +218,7 @@ const useAppointmentManagement = () => {
       setAppointments((prevAppointments) =>
         prevAppointments.filter((appt) => appt.appointmentId !== appointmentId)
       );
-      fetchAppointments();
+      // fetchAppointments();
       toast.success("Appointment deleted successfully!");
   
       console.log("✅ Appointment deleted successfully:", result);

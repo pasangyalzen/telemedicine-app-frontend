@@ -1,250 +1,248 @@
 import React, { useState } from 'react';
-import { Video, Calendar, Clock, User } from 'lucide-react';
-import ConfirmationModal from '../../components/ConfirmationModal'; // Ensure the path is correct
 import { useNavigate } from 'react-router-dom';
-import useDoctorDashboard from '../../hooks/useDoctorDashboard';
-import { FaVideo } from 'react-icons/fa';
+import { Home, Calendar, Clock, FileText, User, Settings, LogOut, ChevronDown, Menu, X } from 'lucide-react';
+import TodayAppointments from './components/TodayPatientAppointment';
+import UpcomingAppointments from './components/UpcomingPatientAppointment';
+import PastAppointments from './components/PastPatientAppointment';
+import PrescriptionDetails from './components/PrescriptionDetails';
+import ConsultationDetails from './components/ConsultationDetails';
+
+const ConfirmationModal = ({ message, actionLabel, onConfirm, onCancel }) => {
+  return (
+    <div className="fixed inset-0 min-h-screen w-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-semibold mb-4">{message}</h3>
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            {actionLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const PatientDashboard = () => {
-  const [inCall, setInCall] = useState(false);
-  const [doctorJoined, setDoctorJoined] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('today');
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const {
-    handleJoinRoom,
-    getEmailFromToken,
-  } = useDoctorDashboard();
-
-  
-
-  
-
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const navigate = useNavigate();
+  
+  // Mock patient ID - in a real app this would come from authentication context
+  const patientId = "12345";
 
-  const appointment = {
-    doctorName: "Dr. Sarah Johnson",
-    doctorSpecialty: "Cardiologist",
-    date: "April 7, 2025",
-    time: "11:30 AM",
-    duration: "30 minutes",
-    reason: "Follow-up consultation"
-  };
-
-  const startCall = () => {
-    setInCall(true);
-    setTimeout(() => {
-      setDoctorJoined(true);
-    }, 5000);
-  };
-
-  const endCall = () => {
-    setInCall(false);
-    setDoctorJoined(false);
+  // Mock patient details - in a real app these would come from API or auth context
+  const patientDetails = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    patientId: patientId
   };
 
   const handleLogout = () => {
-    localStorage.clear(); // Clears all data stored in local storage
-    navigate("/"); // Redirect to the login page
+    // Clear token from localStorage
+    localStorage.removeItem('token');
+    // Redirect to login page
+    navigate('/login');
   };
 
-  const handleLogoutConfirm = () => {
-    setShowLogoutModal(false);
-    handleLogout();
-  };
+  const menuItems = [
+    { id: 'today', label: 'Today\'s Appointments', icon: <Clock className="w-5 h-5" /> },
+    { id: 'upcoming', label: 'Upcoming Appointments', icon: <Calendar className="w-5 h-5" /> },
+    { id: 'past', label: 'Consultation History', icon: <FileText className="w-5 h-5" /> },
+    { id: 'profile', label: 'My Profile', icon: <User className="w-5 h-5" /> },
+    { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
+  ];
 
-  const handleLogoutCancel = () => {
-    setShowLogoutModal(false);
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'today':
+        return <TodayAppointments patientId={patientId} />;
+      case 'upcoming':
+        return <UpcomingAppointments patientId={patientId} />;
+      case 'past':
+        return <PastAppointments patientId={patientId} />;
+      case 'profile':
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">My Profile</h2>
+            <p className="text-gray-600">Profile content would go here.</p>
+          </div>
+        );
+      case 'settings':
+        return (
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Settings</h2>
+            <p className="text-gray-600">Settings content would go here.</p>
+          </div>
+        );
+      default:
+        return <TodayAppointments patientId={patientId} />;
+    }
   };
 
   return (
-    <div className="flex flex-col bg-gray-50 min-h-screen w-screen">
-      {/* Header */}
-      <header className="bg-teal-600 py-4 px-6 shadow w-full flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">TeleChauki</h1>
-        <a
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const email = "P@gmail.com" // Extract email from the token
-                          const appointmentId = 2036; // Extract the appointment ID
-                         
-        
-                          if (email && appointmentId) {
-                            handleJoinRoom({ email, room: appointmentId }); // Join room with the email and appointmentId
-                          } else {
-                            console.error("Error: Missing email or appointmentId");
-                          }
-                        }}
-                        className="flex items-center justify-center px-3 py-1 bg-green-500 text-white text-xs rounded-md hover:bg-green-600 transition-all duration-200 ease-in-out"
-                      >
-                        <FaVideo className="mr-1" /> Join
-                      </a>
-
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center text-white font-medium focus:outline-none"
-          >
-            <User className="mr-2" size={20} />
-            <span>Patient</span>
-            <svg
-              className="ml-1 w-4 h-4 fill-current"
-              viewBox="0 0 20 20"
-            >
-              <path d="M5.25 7.5L10 12.25L14.75 7.5H5.25Z" />
-            </svg>
-          </button>
-
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-10">
-              <ul className="py-2 text-sm text-gray-700">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-                <li
-                  onClick={() => setShowLogoutModal(true)}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                >
-                  Logout
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
-      </header>
-      
-
-      {/* Logout Modal */}
-      {showLogoutModal && (
-        <ConfirmationModal
-          message={
-            <>
-              <p className="mb-2">Are you sure you want to logout?</p>
-              <p className="text-sm text-gray-400">You will be redirected to the login page.</p>
-            </>
-          }
-          actionLabel="Logout"
-          onConfirm={handleLogoutConfirm}
-          onCancel={handleLogoutCancel}
+    <div className="fixed inset-0 w-full h-screen bg-gray-100 overflow-hidden">
+      {/* Mobile sidebar backdrop */}
+      {showMobileSidebar && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+          onClick={() => setShowMobileSidebar(false)}
         />
       )}
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto w-full">
-        <div className="w-full px-6 py-6">
-          {/* Appointment Card */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Appointment Details</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center">
-                  <User className="text-blue-600 mr-2" size={20} />
-                  <div>
-                    <p className="text-sm text-gray-600">Doctor</p>
-                    <p className="font-medium">{appointment.doctorName}</p>
-                    <p className="text-sm text-gray-600">{appointment.doctorSpecialty}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="text-blue-600 mr-2" size={20} />
-                  <div>
-                    <p className="text-sm text-gray-600">Date</p>
-                    <p className="font-medium">{appointment.date}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="text-blue-600 mr-2" size={20} />
-                  <div>
-                    <p className="text-sm text-gray-600">Time</p>
-                    <p className="font-medium">{appointment.time} ({appointment.duration})</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Reason for Visit</p>
-                  <p className="font-medium">{appointment.reason}</p>
-                </div>
+      {/* Sidebar */}
+      <div 
+        className={`fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-30 transform ${
+          showMobileSidebar ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 transition-transform duration-200 ease-in-out`}
+      >
+        <div className="flex flex-col h-full">
+          <div className="p-5 border-b border-gray-200 bg-teal-600 text-white">
+            <h1 className="text-xl font-bold">TeleChauki</h1>
+            <p className="text-sm text-teal-100">Patient Portal</p>
+          </div>
+          
+          {/* Patient Details Section */}
+          <div className="p-4 border-b border-gray-200 bg-teal-50">
+            <div className="flex items-center mb-2">
+              <div className="w-10 h-10 bg-teal-200 rounded-full flex items-center justify-center mr-3">
+                <User className="w-6 h-6 text-teal-700" />
               </div>
+              <div>
+                <h3 className="font-medium text-teal-800">{patientDetails.name}</h3>
+                <p className="text-xs text-teal-600">{patientDetails.email}</p>
+              </div>
+            </div>
+            <div className="mt-2 pt-2 border-t border-teal-200">
+              <p className="text-xs text-teal-600">
+                <span className="font-semibold">Patient ID:</span> {patientDetails.patientId}
+              </p>
             </div>
           </div>
-
-          {/* Upload Medical Papers Section */}
-          <div className="bg-white rounded-lg shadow mt-6">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Previous Medical Papers</h2>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <p className="text-gray-500 mb-2">Please upload your previous medical records if you have any. Your doctor will review them before or during your appointment.</p>
-                <input type="file" accept="image/*,.pdf" className="block mx-auto mb-4" multiple />
-                <button className="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded">
-                  Upload
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Video Call Section */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="p-6 border-b">
-              <h2 className="text-xl font-bold text-gray-800">Video Consultation</h2>
-            </div>
-
-            {!inCall ? (
-              <div className="p-6 text-center">
-                <div className="mx-auto bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mb-4">
-                  <Video className="text-blue-600" size={32} />
-                </div>
-                <h3 className="text-lg font-medium mb-4">Ready for your appointment?</h3>
-                <button
-                  onClick={startCall}
-                  className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-lg flex items-center mx-auto"
-                >
-                  <Video className="mr-2" size={20} />
-                  Join Video Call
-                </button>
-              </div>
-            ) : (
-              <div className="p-6">
-                <div className="bg-gray-900 rounded-lg aspect-video relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {!doctorJoined ? (
-                      <div className="text-center text-white">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-4"></div>
-                        <p className="text-lg font-medium">Waiting for Dr. Johnson to join...</p>
-                        <p className="text-sm text-gray-300">Your camera is active</p>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                        <img
-                          src="/api/placeholder/400/320"
-                          alt="Doctor video feed"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="absolute bottom-4 right-4 w-1/5 aspect-video bg-gray-700 rounded border-2 border-white shadow-lg">
-                    <div className="w-full h-full bg-gray-600 rounded flex items-center justify-center">
-                      <User className="text-white" size={24} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-center">
+          
+          <nav className="flex-1 overflow-y-auto p-4">
+            <ul className="space-y-2">
+              {menuItems.map((item) => (
+                <li key={item.id}>
                   <button
-                    onClick={endCall}
-                    className="bg-pink-600 hover:bg-pink-700 text-white py-3 px-8 rounded-lg"
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setShowMobileSidebar(false);
+                    }}
+                    className={`w-full flex items-center px-4 py-3 rounded-lg text-left transition ${
+                      activeTab === item.id
+                        ? 'bg-teal-100 text-teal-800 font-medium'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   >
-                    End Call
+                    <span className={`mr-3 ${activeTab === item.id ? 'text-teal-700' : 'text-gray-500'}`}>
+                      {item.icon}
+                    </span>
+                    <span>{item.label}</span>
                   </button>
-                </div>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="p-4 border-t border-gray-200">
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="w-full flex items-center px-4 py-3 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg"
+            >
+              <LogOut className="w-5 h-5 mr-3 text-red-600" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-col w-full h-full lg:pl-64">
+        {/* Top Navigation */}
+        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
+          <div className="flex items-center">
+            <button
+              className="text-gray-600 lg:hidden mr-4"
+              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+            >
+              {showMobileSidebar ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+            <h1 className="text-xl font-semibold text-teal-700 lg:hidden">TeleChauki</h1>
+          </div>
+          
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none"
+            >
+              <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-teal-700" />
+              </div>
+              <span className="hidden md:inline-block">Patient</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                <button
+                  onClick={() => {
+                    setActiveTab('profile');
+                    setShowUserMenu(false);
+                  }}
+                  className="flex items-center w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  My Profile
+                </button>
+                <div className="border-t border-gray-200"></div>
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    setShowLogoutModal(true);
+                  }}
+                  className="flex items-center w-full px-4 py-3 text-left text-red-600 hover:bg-red-50"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </button>
               </div>
             )}
           </div>
-        </div>
-      </main>
+        </header>
 
-      {/* Footer (optional) */}
-      <footer className="bg-gray-100 text-center text-sm py-4 text-gray-500">
-        &copy; 2025 TeleChauki. All rights reserved.
-      </footer>
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50 w-full">
+          {renderContent()}
+        </main>
+      </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <ConfirmationModal
+          message="Are you sure you want to logout?"
+          actionLabel="Logout"
+          onConfirm={handleLogout}
+          onCancel={() => {
+            console.log("Logout cancelled");
+            setShowLogoutModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };

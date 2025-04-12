@@ -99,9 +99,9 @@ const AdminDashboard = () => {
 
       <div className="flex-1 min-h-screen flex flex-col">
         {/* Top Navbar */}
-        <div className="bg-primary shadow-sm px-6 py-4 flex justify-between items-center border-b border-gray-100">
+        <div className="bg-teal-800 shadow-sm px-6 py-4 flex justify-between items-center border-b border-gray-100">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-800">{getPageTitle()}</h1>
+            <h1 className="text-2xl font-bold text-black">{getPageTitle()}</h1>
           </div>
 
           {/* Search Bar */}

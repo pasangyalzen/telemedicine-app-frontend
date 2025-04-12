@@ -112,7 +112,7 @@ const usePatientManagement = () => {
         
         // Optionally, you can return the response to handle it further in the parent component
       } else {
-        toast.error(response.data); // Show error toast if not successful
+        toast.error("An error occured"); // Show error toast if not successful
         // Handle error from the API response
       }
     } catch (error) {

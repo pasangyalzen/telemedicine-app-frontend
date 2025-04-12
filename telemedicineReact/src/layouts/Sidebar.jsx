@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom"; // Add this line
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { PATHS } from "../constants/path"; // Import the PATHS object
+import { PATHS } from "../constants/path";
 import {
   LayoutDashboard,
   Users,
@@ -16,104 +16,121 @@ import {
   Bell,
   Settings,
   LogOut,
-
   Menu,
   X,
   UserCircle,
+  ChevronRight
 } from "lucide-react";
-import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
-import { handleLogout } from "../services/authService"; // Import the logout function
+import ConfirmationModal from "../components/ConfirmationModal";
+import { handleLogout } from "../services/authService";
 
 const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
-  const location = useLocation(); // Get current route
-  const [isCollapsed, setIsCollapsed] = useState(false); // Sidebar collapse state
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
-  const navigate = useNavigate(); // For redirecting after logout
-  const [admin, setAdmin] = useState({ name: "", role: "" }); // Admin details state
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [admin, setAdmin] = useState({ name: "", role: "" });
 
-  // Load admin details from localStorage
   useEffect(() => {
-    const storedEmail = localStorage.getItem("email") || "Admin"; // Fallback name
-    const storedRole = localStorage.getItem("role") || "Administrator"; // Fallback role
+    const storedEmail = localStorage.getItem("email") || "Admin";
+    const storedRole = localStorage.getItem("role") || "Administrator";
     setAdmin({ name: storedEmail, role: storedRole });
   }, []);
 
-
-  // Update menuItems to use the PATHS object for routing
   const menuItems = [
     { name: "Dashboard", icon: <LayoutDashboard />, path: PATHS.ADMINDASHBOARD },
-    // { name: "Users", icon: <Users />, path: PATHS.USERS },
     { name: "Doctors", icon: <Stethoscope />, path: PATHS.DOCTORS },
     { name: "Patients", icon: <User />, path: PATHS.PATIENTS },
     { name: "Pharmacists", icon: <Pill />, path: PATHS.PHARMACISTS },
     { name: "Appointments", icon: <Calendar />, path: PATHS.APPOINTMENTS },
-    //{ name: "Payments", icon: <CreditCard />, path: PATHS.PAYMENTS },
-    // { name: "Reports", icon: <BarChart />, path: PATHS.REPORTS },
-    // { name: "Security", icon: <Shield />, path: PATHS.SECURITY },
-    // { name: "Notifications", icon: <Bell />, path: PATHS.NOTIFICATIONS },
-    // { name: "Settings", icon: <Settings />, path: PATHS.SETTINGS },
   ];
 
-  // Function to handle logout
   const handleConfirmLogout = () => {
     handleLogout();
     navigate("/");
-    setIsModalOpen(false); // Close the modal after logout
+    setIsModalOpen(false);
   };
 
   return (
     <div
-      className={`h-screen ${isCollapsed ? "w-16" : "w-64"} bg-primary-dark text-[#65cccc] flex flex-col transition-all duration-300`}
+      className={`h-screen ${
+        isCollapsed ? "w-20" : "w-72"
+      } bg-gradient-to-b from-teal-800 to-[#0a1f30] text-white flex flex-col transition-all duration-300 shadow-xl`}
     >
       {/* Sidebar Header */}
-      <div className="p-4 flex justify-between items-center border-b border-gray-700">
-        {!isCollapsed && <h1 className="text-2xl font-bold">TELECHAUKI</h1>}
+      <div className="px-6 py-8 flex justify-between items-center border-b border-opacity-20 border-[#65cccc]">
+        {!isCollapsed && (
+          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#65cccc] to-[#49cccc]">
+            TELECHAUKI
+          </h1>
+        )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-[#65cccc] bg-primary-light hover:text-white hover:bg-[#49cccc]"
+          className="text-[#65cccc] hover:text-white p-2 rounded-full hover:bg-[#1d3b4d] transition-all duration-200"
         >
-          {isCollapsed ? <Menu size={18} /> : <X size={18} />}
+          {isCollapsed ? <Menu size={22} /> : <X size={22} />}
         </button>
       </div>
 
       {/* Admin Profile Section */}
-      <div className="flex items-center space-x-3 p-4 border-b border-gray-700">
-        <UserCircle className="w-10 h-10 text-white" /> {/* Placeholder Avatar */}
+      <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start space-x-3'} p-6 border-b border-opacity-20 border-[#65cccc]`}>
+        <div className="relative">
+          <UserCircle className="w-12 h-12 text-[#65cccc]" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#123456]"></div>
+        </div>
         {!isCollapsed && (
           <div>
-            <p className="text-sm font-semibold">{admin.name}</p>
-            <p className="text-xs text-gray-400">{admin.role}</p>
+            <p className="font-semibold text-[#65cccc]">{admin.name}</p>
+            <p className="text-xs text-[#65cccc80]">{admin.role}</p>
           </div>
         )}
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 px-4 py-6 overflow-y-auto scrollbar-hide">
         <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.name}>
-              <Link
-                to={item.path}
-                onClick={() => setSelectedMenu(item.name)} // Update selected menu when clicked
-                className={`flex items-center p-3 rounded-lg hover:bg-primary-light hover:text-white text-[#81e3e3] transition ${selectedMenu === item.name ? "bg-gray-800" : ""
+          {menuItems.map((item) => {
+            const isActive = selectedMenu === item.name;
+            return (
+              <li key={item.name}>
+                <Link
+                  to={item.path}
+                  onClick={() => setSelectedMenu(item.name)}
+                  className={`flex items-center py-3 px-4 rounded-xl transition-all duration-200 group ${
+                    isActive 
+                      ? "bg-[#65cccc] text-[#0a1f30] font-medium" 
+                      : "text-[#81e3e3] hover:bg-[#1d3b4d] hover:text-white"
                   }`}
-              >
-                <span className="w-6 h-6">{item.icon}</span>
-                {!isCollapsed && <span className="ml-3">{item.name}</span>}
-              </Link>
-            </li>
-          ))}
+                >
+                  <div className={`${isActive ? "text-[#0a1f30]" : "text-[#65cccc]"} ${isCollapsed ? "mx-auto" : ""}`}>
+                    {item.icon}
+                  </div>
+                  {!isCollapsed && (
+                    <>
+                      <span className="ml-4">{item.name}</span>
+                      <ChevronRight 
+                        className={`w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${isActive ? "opacity-100" : ""}`} 
+                      />
+                    </>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
       {/* Logout Button */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-6 border-t border-opacity-20 border-[#65cccc]">
         <button
-          onClick={() => setIsModalOpen(true)} // Open the confirmation modal on click
-          className="w-full flex items-center justify-center p-3 bg-[#49cccc] text-primary-dark rounded-lg hover:bg-[#49ccccd7] hover:text-white transition"
+          onClick={() => setIsModalOpen(true)}
+          className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-between"} p-3 bg-gradient-to-r from-[#49cccc] to-[#65cccc] text-[#0a1f30] rounded-xl font-medium hover:shadow-lg hover:from-[#3dbdbd] hover:to-[#54bcbc] transition-all duration-200`}
         >
-          <LogOut className="w-5 h-5 inline mr-2" />
-          {!isCollapsed && "Logout"}
+          <div className="flex items-center">
+            <LogOut className="w-5 h-5" />
+            {!isCollapsed && <span className="ml-3">Logout</span>}
+          </div>
+          {!isCollapsed && <ChevronRight className="w-5 h-5" />}
         </button>
       </div>
 

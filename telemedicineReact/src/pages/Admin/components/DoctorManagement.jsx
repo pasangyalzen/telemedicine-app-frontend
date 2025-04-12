@@ -3,7 +3,7 @@ import useDoctorManagement from "../../../hooks/useDoctorManagement";
 import DoctorTable from "./ui/DoctorTable";
 import EditDoctorForm from "./ui/EditDoctorForm";
 import ConfirmationModal from "../../../components/ConfirmationModal";
-import SearchBar from "./ui/SearchBar"; // Import SearchBar
+import SearchBar from "./ui/SearchBar";
 import { deleteDoctor } from "../services/doctorApi";
 import useUserManagement from "../../../hooks/useUserManagement";
 import RegisterUser from "./ui/RegisterDoctorForms";
@@ -12,8 +12,8 @@ const DoctorManagement = () => {
   const navigate = useNavigate();
   const {
     handleRegisterClick,  
-    showRegisterForm, // From useUserManagement hook
-    setShowRegisterForm, // Ensure this is destructured properly
+    showRegisterForm,
+    setShowRegisterForm,
   } = useUserManagement();
   const {
     doctors,
@@ -29,8 +29,8 @@ const DoctorManagement = () => {
     showDeleteModal,
     successMessage,
     setSuccessMessage,
-    errorMessage, // Add state for error message
-    setErrorMessage, // Function to set error message
+    errorMessage,
+    setErrorMessage,
     setEditDoctor,
     searchQuery,
     setSearchQuery,
@@ -38,7 +38,7 @@ const DoctorManagement = () => {
     setSortColumn,
     sortOrder,
     setSortOrder,
-    userIdToDelete, // To store the userId of the doctor to be deleted
+    userIdToDelete,
     setUserIdToDelete, 
   } = useDoctorManagement();
 
@@ -50,19 +50,15 @@ const DoctorManagement = () => {
   };
 
   const handleSubmit = async () => {
-  
-   handleRegisterClick();
-   console.log(handleRegisterClick);
-     // See if it's a function in the console
-  //  console.log("Button Clicked");
+    handleRegisterClick();
+    console.log(handleRegisterClick);
   }
 
   // Handle Delete Confirmation
   const handleDeleteDoctor = async (userId) => {
     console.log("hellosdas");
-    console.log("her",userId)// Set the userId to be deleted and show the confirmation modal
+    console.log("her",userId);
     setUserIdToDelete(userId);
-    
     setShowDeleteModal(true);
   };
 
@@ -72,112 +68,125 @@ const DoctorManagement = () => {
     try {
       const responseMessage = await deleteDoctor(userIdToDelete);
       console.log("hello");
-      setSuccessMessage(responseMessage); // Set success message
-      setErrorMessage(""); // Clear error message
-      setShowDeleteModal(false); // Close modal after successful deletion
+      setSuccessMessage(responseMessage);
+      setErrorMessage("");
+      setShowDeleteModal(false);
       
-      // Clear the success message after 5 seconds
-      setTimeout(() => setSuccessMessage(""), 5000); // Clear after 5 seconds
+      setTimeout(() => setSuccessMessage(""), 5000);
     } catch (error) {
-      setErrorMessage(error.message); // Set error message
-      setSuccessMessage(""); // Clear success message
-      setShowDeleteModal(false); // Close modal after failed deletion
+      setErrorMessage(error.message);
+      setSuccessMessage("");
+      setShowDeleteModal(false);
 
-      // Clear the error message after 5 seconds
-      setTimeout(() => setErrorMessage(""), 5000); // Clear after 5 seconds
+      setTimeout(() => setErrorMessage(""), 5000);
     }
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg border border-gray-300">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Doctor Management</h2>
+    <div className="p-8 bg-gradient-to-br from-white to-teal-50 shadow-lg rounded-xl border border-teal-100">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-teal-800">Doctor Management</h2>
+        
+        {/* Register Doctor Button */}
+        <button 
+          onClick={handleRegisterClick}
+          className="px-6 py-3 text-white font-semibold rounded-lg shadow-md bg-teal-700 hover:bg-teal-600 transition-all flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+          Register Doctor
+        </button>
+      </div>
 
       {/* Display Success Message */}
       {successMessage && (
-        <div className="bg-green-500 text-white p-4 mb-4 rounded-lg text-center font-medium">
-          {successMessage}
+        <div className="bg-gradient-to-r from-teal-500 to-green-500 text-white p-4 mb-6 rounded-lg text-center font-medium shadow-md flex items-center justify-center space-x-2 animate-fadeIn">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span>{successMessage}</span>
         </div>
       )}
 
       {/* Display Error Message */}
       {errorMessage && (
-        <div className="bg-red-500 text-white p-4 mb-4 rounded-lg text-center font-medium">
-          {errorMessage}
+        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 mb-6 rounded-lg text-center font-medium shadow-md flex items-center justify-center space-x-2 animate-fadeIn">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Search and Action Section */}
-      <div className="flex justify-between items-center mb-6 gap-4">
-        {/* Search Bar Component */}
-        <div className="w-3/4">
-          <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        </div>
+      {/* Search Bar Component */}
+      <div className="mb-8">
+        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      </div>
 
-        {/* Register Doctor Button */}
-        <button 
-          onClick={handleRegisterClick} // Directly show the form when clicked
-          className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
-        >
-          Register Doctor
-        </button>
+      {/* Doctor Table */}
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-teal-100">
+        <DoctorTable
+          doctors={doctors}
+          handleEditClick={handleEditClick}
+          handleDeleteClick={handleDeleteClick}
+        />
       </div>
 
       {/* Show Registration Form Modal */}
       {showRegisterForm && (
-      <div className="fixed inset-0 bg-primary bg-opacity-80 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
-          {/* Modal content */}
-          <RegisterUser setShowRegisterForm={setShowRegisterForm} />
-          
-          {/* Close button */}
-          <button
-            onClick={() => setShowRegisterForm(false)} // Close form when clicked
-            className="absolute top-2 right-5 text-xl text-teal-700 bg-teal-900 hover:bg-teal-600 hover:text-black"
-          >
-            X
-          </button>
+        <div className="fixed inset-0 bg-teal-900 bg-opacity-70 flex justify-center items-center z-50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl relative border-l-4 border-teal-600">
+            <h3 className="text-2xl font-bold text-teal-800 mb-6">Register New Doctor</h3>
+            <RegisterUser setShowRegisterForm={setShowRegisterForm} />
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowRegisterForm(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-teal-800 transition-colors p-2 rounded-full hover:bg-teal-50"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-    )}
+      )}
 
       {/* Show Edit Form as a Modal */}
       {editDoctor && (
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
-          <EditDoctorForm
-            formData={formData}
-            setFormData={setFormData}
-            handleUpdate={handleUpdate}
-            cancelEdit={cancelEdit} // Pass cancel function to navigate back
-          />
-          <button
-            onClick={(e) => cancelEdit(e)} // Close form when clicked
-            className="absolute top-2 right-5 text-xl text-teal-700 bg-teal-900 hover:bg-teal-600 hover:text-black"
-          >
-            X
-          </button>
+        <div className="fixed inset-0 bg-teal-900 bg-opacity-70 flex justify-center items-center z-50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl relative border-l-4 border-teal-600">
+            <h3 className="text-2xl font-bold text-teal-800 mb-6">Edit Doctor Information</h3>
+            <EditDoctorForm
+              formData={formData}
+              setFormData={setFormData}
+              handleUpdate={handleUpdate}
+              cancelEdit={cancelEdit}
+            />
+            <button
+              onClick={(e) => cancelEdit(e)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-teal-800 transition-colors p-2 rounded-full hover:bg-teal-50"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-    )}
-
-      {/* Doctor Table */}
-      <DoctorTable
-        doctors={doctors}
-        handleEditClick={handleEditClick}
-        handleDeleteClick={handleDeleteClick} // Call the handleDeleteDoctor function here
-      />
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <ConfirmationModal
           message="Are you sure you want to delete this doctor? This action cannot be undone."
           actionLabel="Delete"
-          onConfirm={handleConfirmDelete} // Call handleConfirmDelete on confirmation
-          onCancel={() => setShowDeleteModal(false)} // Close modal without deleting
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteModal(false)}
         />
       )}
     </div>
   );
 };
 
-export default DoctorManagement;  
+export default DoctorManagement;
