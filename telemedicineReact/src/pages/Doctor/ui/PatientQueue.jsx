@@ -1,6 +1,5 @@
 import React, {useEffect} from "react";
-// import useDoctorDashboard from "../../../hooks/useDoctorDashboard"; // Import the custom hook
-import { FaVideo, FaRegCalendarAlt, FaTrashAlt } from 'react-icons/fa'; // Importing icons
+import { FaVideo, FaRegCalendarAlt, FaTrashAlt, FaUserCircle } from 'react-icons/fa';
 import ConfirmationModal from "../../../components/ConfirmationModal";
 import { useState, useMemo } from "react";
 import RescheduleForm from "../components/RescheduleForm";
@@ -28,59 +27,77 @@ export default function PatientQueue({ appointments, handleJoinRoom, handleCance
   }
  
   return (
-    <div className="w-64 p-4 bg-black shadow-lg rounded-lg">
-      <h3 className="text-lg font-semibold text-teal-500 mb-4 border-b border-teal-500 pb-2">Patient Queue</h3>
+    <div className="w-full bg-gray-900 shadow-md rounded-lg border border-teal-800">
+      <h3 className="text-lg font-semibold text-teal-400 p-3 border-b border-teal-700 flex items-center">
+        <span className="bg-teal-600 text-white p-1 rounded-md mr-2 flex items-center justify-center w-6 h-6 text-sm">
+          {appointments.length}
+        </span>
+        Patient Queue
+      </h3>
 
       {appointments.length === 0 ? (
-        <p className="text-gray-400 text-center">No patients waiting</p>
+        <div className="py-8 flex flex-col items-center justify-center text-gray-400">
+          <FaUserCircle className="text-4xl mb-2 text-teal-800 opacity-50" />
+          <p className="text-center text-sm">No patients waiting</p>
+        </div>
       ) : (
-        <div className="max-h-[300px] bg-gray-800 overflow-y-auto space-y-3">
+        <div className="max-h-[300px] overflow-y-auto space-y-2 p-2">
           {appointments.map((patient) => (
             <div
               key={patient.appointmentId}
-              className="p-4 bg-white border border-gray-600 rounded-lg shadow-md flex justify-between items-center"
+              className="p-3 bg-gray-800 border-l-4 border-teal-500 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
             >
               {/* Patient Info */}
-              <div className="text-sm text-black">
-                <p className="font-semibold">Name: {patient.patientName}</p>
-                <p className="text-gray-700">
-                Time: {useFormattedTime(patient.scheduledTime)}
-                </p>
+              <div className="flex items-center mb-2">
+                <div className="w-8 h-8 rounded-full bg-teal-700 flex items-center justify-center text-white font-bold text-sm mr-2">
+                  {patient.patientName.charAt(0).toUpperCase()}
+                </div>
+                <div className="overflow-hidden">
+                  <p className="font-semibold text-white text-sm truncate">{patient.patientName}</p>
+                  <div className="flex items-center text-teal-300 text-xs">
+                    <FaRegCalendarAlt className="mr-1" />
+                    <span>{useFormattedTime(patient.scheduledTime)}</span>
+                  </div>
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col space-y-1">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const email = getEmailFromToken(); // Extract email from the token
-                  const appointmentId = patient.appointmentId; // Extract the appointment ID
-                  console.log(patient.appointmentId);
+              <div className="grid grid-cols-3 gap-1 mt-2">
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const email = getEmailFromToken(); // Extract email from the token
+                    const appointmentId = patient.appointmentId; // Extract the appointment ID
+                    console.log(patient.appointmentId);
 
-                  if (email && appointmentId) {
-                    handleJoinRoom({ email, room: appointmentId }); // Join room with the email and appointmentId
-                  } else {
-                    console.error("Error: Missing email or appointmentId");
-                  }
-                }}
-                className="flex items-center justify-center px-3 py-1 bg-green-500 text-white text-xs rounded-md hover:bg-green-600 transition-all duration-200 ease-in-out"
-              >
-                <FaVideo className="mr-1" /> Join
-              </a>
-                <button onClick={() => handleRescheduleButtonClick(patient)} className="flex items-center justify-center px-3 py-1 bg-teal-500 text-white text-xs rounded-md hover:bg-teal-600 transition-all duration-200 ease-in-out">
-                  <FaRegCalendarAlt className="mr-1" /> Reschedule
+                    if (email && appointmentId) {
+                      handleJoinRoom({ email, room: appointmentId }); // Join room with the email and appointmentId
+                    } else {
+                      console.error("Error: Missing email or appointmentId");
+                    }
+                  }}
+                  className="flex items-center justify-center py-1 px-2 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors shadow-sm"
+                >
+                  <FaVideo className="mr-1" /> Join
+                </a>
+                <button 
+                  onClick={() => handleRescheduleButtonClick(patient)} 
+                  className="flex items-center justify-center py-1 px-2 bg-teal-600 text-white text-xs rounded hover:bg-teal-700 transition-colors shadow-sm"
+                >
+                  <FaRegCalendarAlt className="mr-1" /> Re
                 </button>
-                <button onClick={() => handleCancelClick(patient.appointmentId)}  className="flex items-center justify-center px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600 transition-all duration-200 ease-in-out">
-                  <FaTrashAlt className="mr-1" /> Cancel
+                <button 
+                  onClick={() => handleCancelClick(patient.appointmentId)}  
+                  className="flex items-center justify-center py-1 px-2 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors shadow-sm"
+                >
+                  <FaTrashAlt />
                 </button>
               </div>
             </div>
           ))}
         </div>
-        
       )}
-
     </div>
   );
 }

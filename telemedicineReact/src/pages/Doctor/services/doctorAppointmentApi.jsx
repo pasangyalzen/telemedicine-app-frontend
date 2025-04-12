@@ -104,20 +104,20 @@ export const fetchPastAppointments = async (doctorId) => {
 };
 
 // Fetch upcoming appointments for the doctor
-export const fetchUpcomingAppointments = async (doctorId) => {
-  try {
-    const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
-      },
-    });
-    console.log("response", response);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching upcoming appointments:", error);
-    throw new Error(error.response?.data || "There are no upcoming appointments.");
-  }
-};
+// export const fetchUpcomingAppointments = async (doctorId) => {
+//   try {
+//     const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
+//       headers: {
+//         "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+//       },
+//     });
+//     console.log("response", response);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching upcoming appointments:", error);
+//     throw new Error(error.response?.data || "There are no upcoming appointments.");
+//   }
+// };
 
 // Fetch cancelled appointments for the doctor
 export const fetchCancelledAppointments = async (doctorId) => {
@@ -182,5 +182,35 @@ export const getDoctorIdByEmail = async (email) => {
   } catch (error) {
     console.error("Error fetching doctor ID by email:", error);
     throw new Error(error.response?.data?.message || "Failed to fetch doctor ID.");
+  }
+};
+
+export const fetchAppointmentSummary = async (doctorId) => {
+  try {
+    const response = await apiClient.get(`/GetAppointmentsSummary/${doctorId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching appointment summary:", error);
+    throw error;
+  }
+};
+
+export const getDoctorPastAppointments = async (doctorId) => {
+  try {
+    console.log("Fetching past appointments for doctorId:", doctorId);
+    const response = await apiClient.get(`/GetPastAppointments/${doctorId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    console.log("Past Appointments Response:", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching doctor's past appointments:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch past appointments.");
   }
 };
