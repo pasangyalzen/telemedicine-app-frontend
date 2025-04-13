@@ -3,6 +3,7 @@ import { fetchTodaysAppointments, cancelAppointment } from '../services/patientA
 import { CalendarDays, Clock, Video, X } from 'lucide-react';
 import RescheduleForm from '../../Doctor/components/RescheduleForm';
 import toast from 'react-hot-toast';
+import { getEmailFromToken } from '../../auth/auth';
 
 const TodayAppointments = ({ patientId }) => {
   const [appointments, setAppointments] = useState([]);
@@ -40,6 +41,14 @@ const TodayAppointments = ({ patientId }) => {
       }
     }
   };
+  
+  
+  // const handleJoinCallClick = () => {
+  //     // Replace this with your actual logic, e.g., opening a video call link
+  //     email = getEmailFromToken();
+  //     setEmail(email);
+  //     // window.open("https://your-video-call-link.com", "_blank"); // or navigate somewhere
+  //   };
 
   const openRescheduleForm = (appointment) => {
     setSelectedAppointment(appointment);
@@ -59,6 +68,7 @@ const TodayAppointments = ({ patientId }) => {
     }
   };
 
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-48">
@@ -71,6 +81,12 @@ const TodayAppointments = ({ patientId }) => {
     return (
       <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
         <p>{error}</p>
+        {/* <button
+      onClick={handleJoinCallClick}
+      className="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg shadow transition duration-300"
+    >
+      Join Call
+    </button> */}
       </div>
     );
   }

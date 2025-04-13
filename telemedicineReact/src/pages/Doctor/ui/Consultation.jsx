@@ -54,7 +54,7 @@ const Consultation = ({ appointmentId, setShowConsultationForm, onClose, refetch
             value={formData.appointmentId}
             onChange={handleChange}
             placeholder="Appointment ID"
-            className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-3 border text-gray-300 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400"
             required
             readOnly
           />
@@ -63,7 +63,7 @@ const Consultation = ({ appointmentId, setShowConsultationForm, onClose, refetch
             value={formData.notes}
             onChange={handleChange}
             placeholder="Notes"
-            className="w-full p-3 border border-gray-300 rounded-xl h-24 resize-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-3 border text-gray-300 border-gray-300 rounded-xl h-24 resize-none focus:ring-2 focus:ring-indigo-400"
             required
           />
           <textarea
@@ -71,7 +71,7 @@ const Consultation = ({ appointmentId, setShowConsultationForm, onClose, refetch
             value={formData.recommendations}
             onChange={handleChange}
             placeholder="Recommendations"
-            className="w-full p-3 border border-gray-300 rounded-xl h-24 resize-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-3 border text-gray-300 border-gray-300 rounded-xl h-24 resize-none focus:ring-2 focus:ring-indigo-400"
             required
           />
           <button

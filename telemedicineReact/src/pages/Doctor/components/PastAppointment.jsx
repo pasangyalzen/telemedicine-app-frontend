@@ -16,6 +16,8 @@ import { getEmailFromToken } from "../../auth/auth";
 import Consultation from "../ui/Consultation";
 import { apiClient } from "../services/doctorAppointmentApi";
 import Prescription from "../ui/Prescription";
+import ViewDetailsButton from "../ui/ViewDetailsButton";
+import toast from "react-hot-toast";
 
 // AppointmentCard component
 const AppointmentCard = ({
@@ -36,6 +38,11 @@ const AppointmentCard = ({
       day: "numeric",
     });
 
+    const handleAddConsultation = () => {
+      console.log("Add Consultation clicked for appointment:", appointment.appointmentId);
+      // You can navigate or open a modal here
+    };
+
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-xl shadow-sm mb-4 hover:shadow-md transition-all duration-300 border border-gray-100">
       <div className="w-1 self-stretch rounded-full mr-4 bg-gray-400"></div>
@@ -53,13 +60,14 @@ const AppointmentCard = ({
         </div>
 
         <div className="flex gap-3">
-          <button
-            onClick={() => onAddConsultation(appointment.appointmentId)}
-            className="flex items-center bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-3 py-1.5 text-sm rounded-md transition-all"
-          >
-            <Stethoscope size={16} className="mr-1" />
-            Add Consultation
-          </button>
+        <button
+            //  onClick={handleAddConsultation}
+             onClick={() => onAddConsultation(appointment.appointmentId)}
+             className="flex items-center bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-3 py-1.5 text-sm rounded-md transition-all"
+           >
+             <Stethoscope size={16} className="mr-1" />
+             Add Consultation
+           </button>
           <button
             onClick={() => onAddPrescription(appointment.appointmentId)}
             className="flex items-center bg-green-100 text-green-600 hover:bg-green-200 px-3 py-1.5 text-sm rounded-md transition-all"
@@ -67,6 +75,7 @@ const AppointmentCard = ({
             <FilePlus2 size={16} className="mr-1" />
             Add Prescription
           </button>
+          <ViewDetailsButton appointmentId={appointment.appointmentId} />
         </div>
       </div>
     </div>
@@ -88,8 +97,13 @@ const PendingConsultations = () => {
     try {
       const email = getEmailFromToken();
       const doctorId = await getDoctorIdByEmail(email);
-      const data = await getDoctorPastAppointments(doctorId);
-      setAppointments(data);
+      if(doctorId){
+
+        const data = await getDoctorPastAppointments(doctorId);
+        setAppointments(data);
+      }
+      
+      
     } catch (err) {
       console.error(err);
       setError("Failed to load past appointments. Please try again later.");
@@ -132,6 +146,7 @@ const PendingConsultations = () => {
         console.error("Consultation not found for Appointment ID:", appointmentId);
       }
     } catch (error) {
+      toast.error("Please create consultation first");
       console.error("Error fetching consultation ID:", error);
     }
   };

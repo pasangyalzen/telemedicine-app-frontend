@@ -11,6 +11,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import { ChevronDown, Settings, LogOut, Home, Calendar, Clock, User, Menu } from "lucide-react";
 import RescheduleForm from "./components/RescheduleForm";
 import PendingConsultations from "./components/PastAppointment";
+import { getEmailFromToken } from "../auth/auth";
 
 export default function DoctorWaitingRoomDashboard() {
   const {
@@ -41,6 +42,7 @@ export default function DoctorWaitingRoomDashboard() {
   const [accountdropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
+  const email = getEmailFromToken();
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
   };
@@ -183,7 +185,7 @@ export default function DoctorWaitingRoomDashboard() {
                   LS
                 </div>
                 <div>
-                  <p className="text-sm text-white font-medium">Lakpa Sherpa</p>
+                  <p className="text-sm text-white font-medium">{email}</p>
                   <p className="text-xs text-gray-400">Doctor</p>
                 </div>
               </div>

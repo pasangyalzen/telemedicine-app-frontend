@@ -1,145 +1,321 @@
-import React from "react";
-import Card from "../../../components/ui/Card"; // ✅ Fixed import
-import { Bar, Pie } from "react-chartjs-2";
-import Button from "../../../components/Button";
-import UserManagement from './UserManagement';
-import {
-  Users,
-  Calendar,
-  DollarSign,
-  PlusCircle,
-  ClipboardList,
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { 
+  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+} from "recharts";
+import { Users, UserCheck, UserPlus, Stethoscope, Calendar, Activity, Pill } from "lucide-react";
 
-// ✅ Register required Chart.js components
-import { Chart as ChartJS, BarElement, ArcElement, CategoryScale, LinearScale } from "chart.js";
-ChartJS.register(BarElement, ArcElement, CategoryScale, LinearScale);
+const API_URL = "http://localhost:5186/api";
 
-const DashboardContent = () => {
-  // Dummy Data for Stats
-  const stats = [
-    { title: "Total Users", value: 500, icon: <Users className="text-blue-500" /> },
-    { title: "Total Doctors", value: 120, icon: <Users className="text-green-500" /> },
-    { title: "Total Patients", value: 350, icon: <Users className="text-purple-500" /> },
-    { title: "Total Appointments", value: 75, icon: <Calendar className="text-yellow-500" /> },
-    { title: "Total Revenue ($)", value: "12,500", icon: <DollarSign className="text-teal-500" /> },
-  ];
+// Axios instance to configure headers
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
+  },
+});
 
-  // Dummy Data for Appointments
-  const appointments = [
-    { id: 1, doctor: "Dr. John Doe", patient: "Alice", date: "2025-03-17", status: "Pending" },
-    { id: 2, doctor: "Dr. Smith", patient: "Bob", date: "2025-03-18", status: "Completed" },
-  ];
+const UserManagement = () => {
+  const [dashboardCounts, setDashboardCounts] = useState(null);
+  const [appointmentStatuses, setAppointmentStatuses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('pie');
 
-  // Dummy Data for Recent Activity
-  const activities = [
-    "Dr. Jane registered as a doctor.",
-    "Payment of $50 received from Patient XYZ.",
-    "Appointment #2345 was canceled.",
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [dashboardRes, statusRes] = await Promise.all([
+          apiClient.get("/Admin/Account/GetDashboardCounts"),
+          apiClient.get("/Admin/Account")
+        ]);
 
-  // Dummy Data for Revenue Chart
-  const revenueData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-    datasets: [{ label: "Revenue ($)", data: [5000, 7000, 12000, 8000, 15000], backgroundColor: "#4CAF50" }],
+        setDashboardCounts(dashboardRes.data);
+        setAppointmentStatuses(statusRes.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // Prepare data for user distribution chart
+  const prepareUserChartData = () => {
+    if (!dashboardCounts) return [];
+    
+    return [
+      { name: 'Doctors', value: dashboardCounts.totalDoctors },
+      { name: 'Patients', value: dashboardCounts.totalPatients },
+      { name: 'Pharmacists', value: dashboardCounts.totalPharmacists }
+    ];
   };
 
-  // Dummy Data for User Engagement
-  const userEngagementData = {
-    labels: ["Active", "Inactive"],
-    datasets: [{ label: "Users", data: [400, 100], backgroundColor: ["#3498db", "#e74c3c"] }],
+  // Colors for charts
+  const COLORS = ['#4F46E5', '#16A34A', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
+
+  // Prepare data for appointment status chart
+  const prepareAppointmentStatusData = () => {
+    return appointmentStatuses.map((status, index) => ({
+      name: status.status,
+      value: status.count,
+      fill: COLORS[index % COLORS.length]
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Get status color based on status name
+  const getStatusColor = (status) => {
+    const statusMap = {
+      'Scheduled': 'bg-blue-600',
+      'Completed': 'bg-green-600',
+      'Cancelled': 'bg-red-600',
+      'Pending': 'bg-yellow-600',
+      'In Progress': 'bg-purple-600',
+      'No Show': 'bg-gray-600'
+    };
+    
+    return statusMap[status] || 'bg-gray-600';
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen text-black border-2 border-gray-300">
-      {/* Top Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-        {stats.map((stat, index) => (
-          <Card key={index} className="p-4 flex items-center justify-between shadow-md">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">{stat.title}</h3>
-              <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Dashboard Overview</h2>
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="flex">
+              <button 
+                className={`px-4 py-2 ${activeTab === 'pie' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+                onClick={() => setActiveTab('pie')}
+              >
+                Pie Chart
+              </button>
+              <button 
+                className={`px-4 py-2 ${activeTab === 'bar' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+                onClick={() => setActiveTab('bar')}
+              >
+                Bar Chart
+              </button>
             </div>
-            {stat.icon}
-          </Card>
-        ))}
-      </div>
+          </div>
+        </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Appointments */}
-        <Card className="col-span-2 p-4 shadow-md">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Appointments Overview</h3>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-200 text-gray-900">
-                <th className="p-2 text-left">Doctor</th>
-                <th className="p-2 text-left">Patient</th>
-                <th className="p-2 text-left">Date</th>
-                <th className="p-2 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {appointments.map((appt) => (
-                <tr key={appt.id} className="border-b">
-                  <td className="p-2 text-gray-800">{appt.doctor}</td>
-                  <td className="p-2 text-gray-800">{appt.patient}</td>
-                  <td className="p-2 text-gray-800">{appt.date}</td>
-                  <td className="p-2">
-                    <span
-                      className={`px-2 py-1 rounded ${
-                        appt.status === "Pending" ? "bg-yellow-300 text-gray-900" : "bg-green-300 text-white"
-                      }`}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-blue-500">
+            <div className="flex p-5">
+              <div className="mr-4">
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <Users size={24} className="text-blue-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Total Users</p>
+                <p className="text-2xl font-bold text-gray-800">{dashboardCounts.totalUsers}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-green-500">
+            <div className="flex p-5">
+              <div className="mr-4">
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <Stethoscope size={24} className="text-green-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Doctors</p>
+                <p className="text-2xl font-bold text-gray-800">{dashboardCounts.totalDoctors}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-yellow-500">
+            <div className="flex p-5">
+              <div className="mr-4">
+                <div className="bg-yellow-100 p-3 rounded-lg">
+                  <UserPlus size={24} className="text-yellow-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Patients</p>
+                <p className="text-2xl font-bold text-gray-800">{dashboardCounts.totalPatients}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-purple-500">
+            <div className="flex p-5">
+              <div className="mr-4">
+                <div className="bg-purple-100 p-3 rounded-lg">
+                  <Pill size={24} className="text-purple-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Pharmacists</p>
+                <p className="text-2xl font-bold text-gray-800">{dashboardCounts.totalPharmacists}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-indigo-500">
+            <div className="flex p-5">
+              <div className="mr-4">
+                <div className="bg-indigo-100 p-3 rounded-lg">
+                  <Calendar size={24} className="text-indigo-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 font-medium">Appointments</p>
+                <p className="text-2xl font-bold text-gray-800">{dashboardCounts.totalAppointments}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Chart Section */}
+          <div className="bg-white p-6 rounded-xl shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">User Distribution</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                {activeTab === 'pie' ? (
+                  <PieChart>
+                    <Pie
+                      data={prepareUserChartData()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     >
-                      {appt.status}
-                    </span>
-                  </td>
-                </tr>
+                      {prepareUserChartData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                ) : (
+                  <BarChart
+                    data={prepareUserChartData()}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" name="Count">
+                      {prepareUserChartData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Appointment Statuses Section */}
+          <div className="bg-white p-6 rounded-xl shadow-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">Appointments by Status</h3>
+              <div className="bg-indigo-100 px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-indigo-800">
+                  Total: {appointmentStatuses.reduce((sum, status) => sum + status.count, 0)}
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {appointmentStatuses.map((status, index) => (
+                <div key={index} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                  <div className={`h-2 ${getStatusColor(status.status)}`}></div>
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-gray-500">{status.status}</span>
+                      <span className={`h-3 w-3 rounded-full ${getStatusColor(status.status)}`}></span>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-800">{status.count}</p>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </Card>
+            </div>
+          </div>
+        </div>
 
-        {/* Recent Activities */}
-        <Card className="p-4 shadow-md">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Recent Activities</h3>
-          <ul className="space-y-2">
-            {activities.map((activity, index) => (
-              <li key={index} className="p-2 bg-gray-100 text-gray-800 rounded">{activity}</li>
-            ))}
-          </ul>
-        </Card>
-
-        {/* Revenue Chart */}
-        <Card className="p-4 shadow-md">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Revenue Analytics</h3>
-          <Bar data={revenueData} />
-        </Card>
-
-        {/* User Engagement Chart */}
-        <Card className="p-4 shadow-md">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">User Engagement</h3>
-          <Pie data={userEngagementData} />
-        </Card>
-      </div>
-
-      {/* ✅ Quick Actions Section */}
-      <div className="mt-6 flex flex-wrap gap-4">
-        <Button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded shadow-md">
-          <PlusCircle className="w-5 h-5" />
-          Add Doctor
-        </Button>
-        <Button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow-md">
-          <PlusCircle className="w-5 h-5" />
-          Add Patient
-        </Button>
-        <Button className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded shadow-md">
-          <ClipboardList className="w-5 h-5" />
-          Manage Appointments
-        </Button>
+        {/* Appointment Status Chart */}
+        <div className="bg-white p-6 rounded-xl shadow-md">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800">Appointment Status Analysis</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              {activeTab === 'pie' ? (
+                <PieChart>
+                  <Pie
+                    data={prepareAppointmentStatusData()}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {prepareAppointmentStatusData().map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              ) : (
+                <BarChart
+                  data={prepareAppointmentStatusData()}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" name="Count">
+                    {prepareAppointmentStatusData().map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default DashboardContent;
+export default UserManagement;

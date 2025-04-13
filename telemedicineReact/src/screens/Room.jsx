@@ -166,7 +166,7 @@ const RoomPage = () => {
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
             <path d="M14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path>
           </svg>
-          <h1 className="text-xl font-bold text-white ml-2">TealMeet</h1>
+          <h1 className="text-xl font-bold text-white ml-2">TELECHAUKI</h1>
         </div>
         <div className="flex items-center">
           <span className="text-teal-100 mr-4">
@@ -271,7 +271,7 @@ const RoomPage = () => {
                   <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
                   <path d="M14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
                 </svg>
-                <h2 className="text-2xl font-semibold mb-2">Welcome to TealMeet</h2>
+                <h2 className="text-2xl font-semibold mb-2">Welcome to Telechauki</h2>
                 <p className="text-teal-200 mb-6">Start a video call to connect with others</p>
                 
                 {remoteSocketId ? (
@@ -342,7 +342,7 @@ const RoomPage = () => {
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
               </svg>
-              Send Stream
+              Join
             </button>
             
             <button

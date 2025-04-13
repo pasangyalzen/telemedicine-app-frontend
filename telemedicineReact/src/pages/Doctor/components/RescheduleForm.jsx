@@ -77,10 +77,10 @@ const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
                   console.log("New date set:", e.target.value); // Log the value immediately after setting
                 }}
                 required
-                className="w-full p-3 pl-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                className="w-full p-3 pl-4 border text-white border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
               />
               {newDate && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-sm text-white">
                   <p>Selected: {new Date(newDate).toLocaleString('en-US', {
                     weekday: 'long',
                     year: 'numeric',

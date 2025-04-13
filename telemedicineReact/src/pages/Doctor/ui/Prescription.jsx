@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { apiClient } from "../services/doctorAppointmentApi"; // Adjust path as needed
+import toast from "react-hot-toast";
 
-const Prescription = ({ consultationId, setShowPrescriptionForm, onClose }) => {
+const Prescription = ({ consultationId, setConsultationId, setShowPrescriptionForm, onClose }) => {
 //   const [consultationId, setConsultationId] = useState("");
   const [items, setItems] = useState([
     { medicineName: "", dosage: "", frequency: "", duration: "", notes: "" },
@@ -40,7 +41,9 @@ const Prescription = ({ consultationId, setShowPrescriptionForm, onClose }) => {
         }
       );
       setMessage("Prescription created successfully!");
+      toast.success("Prescription created successfully");
       console.log(response.data);
+      setShowPrescriptionForm(false);
     } catch (error) {
       console.error("Error creating prescription:", error);
       setMessage("Error creating prescription");
@@ -58,14 +61,14 @@ const Prescription = ({ consultationId, setShowPrescriptionForm, onClose }) => {
             placeholder="Consultation ID"
             value={consultationId}
             onChange={(e) => setConsultationId(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400"
+            className="w-full p-3 border text-white border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400"
             required
           />
 
           {/* Scrollable container for prescription items */}
           <div className="max-h-96 overflow-y-auto space-y-4">
             {items.map((item, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-xl">
+              <div key={index} className="grid text-white grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-xl">
                 <input
                   type="text"
                   placeholder="Medicine Name"
@@ -79,7 +82,7 @@ const Prescription = ({ consultationId, setShowPrescriptionForm, onClose }) => {
                   placeholder="Dosage"
                   value={item.dosage}
                   onChange={(e) => handleItemChange(index, "dosage", e.target.value)}
-                  className="p-2 border border-gray-300 rounded-xl"
+                  className="p-2 border text-white border-gray-300 rounded-xl"
                   required
                 />
                 <input
@@ -87,7 +90,7 @@ const Prescription = ({ consultationId, setShowPrescriptionForm, onClose }) => {
                   placeholder="Frequency"
                   value={item.frequency}
                   onChange={(e) => handleItemChange(index, "frequency", e.target.value)}
-                  className="p-2 border border-gray-300 rounded-xl"
+                  className="p-2 border text-white border-gray-300 rounded-xl"
                   required
                 />
                 <input
@@ -95,14 +98,14 @@ const Prescription = ({ consultationId, setShowPrescriptionForm, onClose }) => {
                   placeholder="Duration"
                   value={item.duration}
                   onChange={(e) => handleItemChange(index, "duration", e.target.value)}
-                  className="p-2 border border-gray-300 rounded-xl"
+                  className="p-2 border text-white border-gray-300 rounded-xl"
                   required
                 />
                 <textarea
                   placeholder="Notes"
                   value={item.notes}
                   onChange={(e) => handleItemChange(index, "notes", e.target.value)}
-                  className="col-span-1 md:col-span-2 p-2 border border-gray-300 rounded-xl resize-none"
+                  className="col-span-1 text-white md:col-span-2 p-2 border border-gray-300 rounded-xl resize-none"
                 />
               </div>
             ))}
