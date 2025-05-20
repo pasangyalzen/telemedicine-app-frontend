@@ -98,7 +98,7 @@ const PharmacistManagement = () => {
           onClick={openCreateModal}
           className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
         >
-          Create Pharmacist
+          Register Pharmacist
         </button>
       </div>
 

@@ -19,8 +19,6 @@ export const fetchAppointments = async (page = 1, pageSize = 5, sortColumn = "Cr
       params: { page, pageSize, sortColumn, sortOrder },
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
-
-    console.log("✅ API Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("🚨 Error fetching appointments:", error.response?.data || error.message);
@@ -31,7 +29,8 @@ export const fetchAppointments = async (page = 1, pageSize = 5, sortColumn = "Cr
 // ✅ Create a new appointment
 export const createAppointment = async (appointmentData) => {
   try {
-    const response = await apiClient.post("/appointments/CreateAppointment", appointmentData);
+    const response = await apiClient.post("/appointments/CreateAppointment", appointmentData);  
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("🚨 Error creating appointment:", error.response?.data || error.message);
