@@ -26,16 +26,20 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
   });
 
   // Fetch doctors
+  const loadDoctors = async () => {
+    try {
+      const response = await fetchDoctors(0, 10, searchQuery, sortColumn, sortOrder);
+      const doctorList = response.doctors || [];
+      setDoctors(doctorList);
+      setFilteredDoctors(doctorList);
+    } catch (error) {
+      console.error("Error loading doctors:", error);
+      setDoctors([]);
+      setFilteredDoctors([]);
+    }
+  };
+  
   useEffect(() => {
-    const loadDoctors = async () => {
-      try {
-        const data = await fetchDoctors(0, 10, searchQuery, sortColumn, sortOrder); // Pagination added
-        setDoctors(data);
-        setFilteredDoctors(data);
-      } catch (error) {
-        console.error("Error loading doctors:", error);
-      }
-    };
     loadDoctors();
   }, [searchQuery, sortColumn, sortOrder]);
 
@@ -127,6 +131,7 @@ const useDoctorManagement = (searchQuery, sortColumn, sortOrder) => {
   return {
     doctors,
     filteredDoctors,
+    loadDoctors,
     editDoctor,
     setEditDoctor,
     formData,

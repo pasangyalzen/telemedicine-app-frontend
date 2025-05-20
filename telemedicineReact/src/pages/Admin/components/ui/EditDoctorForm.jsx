@@ -32,7 +32,11 @@ const EditDoctorForm = ({ formData = {}, setFormData, handleUpdate, cancelEdit }
                       id={field.name}
                       type={field.type}
                       name={field.name}
-                      value={formData[field.name] || ""}
+                      value={
+                        field.name === "dateOfBirth"
+                          ? formData[field.name]?.slice(0, 10) || ""
+                          : formData[field.name] || ""
+                      }
                       onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
                       className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
                       placeholder={`Enter ${field.label}`}

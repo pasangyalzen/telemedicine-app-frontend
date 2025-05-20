@@ -55,11 +55,8 @@ const PharmacistManagement = () => {
         <div className="fixed inset-0 bg-primary bg-opacity-80 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
             <PharmacistCreateForm
-              handleCreatePharmacist={handleCreatePharmacist}
-              cancelCreateForm={closeCreateModal} // Closing the create modal
-              setFormData={setFormData}
-              formData={formData}
-              
+              isOpen={showCreateModal} // ✅ Add this line
+              onClose={closeCreateModal}
             />
             <button
               onClick={() => closeCreateModal()} // Close the modal when clicked

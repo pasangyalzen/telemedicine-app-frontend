@@ -1,174 +1,128 @@
 import React, { useState } from "react";
+import axios from "axios";
 import toast from "react-hot-toast";
-import usePatientManagement from "../../../../hooks/usePatientManagement";
-import { useEffect } from "react";
 
-const RegisterPatientForm = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phoneNumber: "",
-    gender: "",
-    dateOfBirth: "",
-    bloodGroup: "",
-    address: "",
-    emergencyContactName: "",
-    emergencyContactNumber: "",
-    healthInsuranceProvider: "",
-    medicalHistory: "",
-    profileImage: "",
-    maritalStatus: "",
-    allergies: "",
-    chronicDiseases: "",
-    medications: "",
-  });
-  const {handleCreatePatient, cancelCreateForm, setShowCreateModal,showCreateModal,closeCreateModal} = usePatientManagement();
-  const [errors, setErrors] = useState({});
+const RegisterPatientForm = ({ isOpen, onClose, role = "Patient" }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Form field configuration
-  const formFields = [
-    { label: "Full Name", name: "fullName", type: "text", required: true },
-    { label: "Email", name: "email", type: "email", required: true },
-    { label: "Password", name: "password", type: "password", required: true },
-    { label: "Confirm Password", name: "confirmPassword", type: "password", required: true },
-    { label: "Phone Number", name: "phoneNumber", type: "text", required: true },
-    { label: "Gender", name: "gender", type: "select", options: ["Male", "Female", "Other"], required: true },
-    { label: "Date of Birth", name: "dateOfBirth", type: "date", required: true },
-    { label: "Blood Group", name: "bloodGroup", type: "text" },
-    { label: "Address", name: "address", type: "text" },
-    { label: "Emergency Contact Name", name: "emergencyContactName", type: "text" },
-    { label: "Emergency Contact Number", name: "emergencyContactNumber", type: "text" },
-    { label: "Health Insurance Provider", name: "healthInsuranceProvider", type: "text" },
-    { label: "Medical History", name: "medicalHistory", type: "textarea" },
-    { label: "Profile Image URL", name: "profileImage", type: "url", required: true },
-    { label: "Marital Status", name: "maritalStatus", type: "text" },
-    { label: "Allergies", name: "allergies", type: "text" },
-    { label: "Chronic Diseases", name: "chronicDiseases", type: "text" },
-    { label: "Medications", name: "medications", type: "text" },
-  ];
-  
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-  useEffect(() => {
-    console.log("Modal state has changed:", showCreateModal);
-  }, [showCreateModal]); // This will run every time showCreateModal changes
+  if (!isOpen) return null;
 
-  // Validate the form before submitting
-  const validateForm = () => {
-    const newErrors = {};
+  const API_URL = "http://localhost:5186/api/Admin/Account";
 
-    formFields.forEach((field) => {
-      if (field.required && !formData[field.name]) {
-        newErrors[field.name] = `${field.label} is required.`;
-      }
-
-      if (field.name === "confirmPassword" && formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match.";
-      }
-
-      if (field.name === "dateOfBirth" && formData.dateOfBirth && new Date(formData.dateOfBirth) > new Date()) {
-        newErrors.dateOfBirth = "Date of birth cannot be in the future.";
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-    };
-
-    // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-  
-    console.log("Hello");
-  
-    if (!validateForm()) return;
-  
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter your email.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
     try {
-      const response = await handleCreatePatient(formData); // Pass only formData to handleCreatePatient
-      if (response?.success) {
-        toast.success(response.message);
-        var poke = setShowCreateModal(false);
-        console.log(showCreateModal);
-        return response;
-    } }catch (error) {
-      console.error("Error during patient creation:", error);
-      toast.error("Error during patient creation: " + error.message);
+      setLoading(true);
+
+      // Call your Register API directly
+      const response = await axios.post(`${API_URL}/Register`, {
+        Email: email,
+        Password: password,
+        ConfirmPassword: confirmPassword,
+        Role: role,
+      });
+
+      toast.success(response.data.message || "Registration successful! Credentials emailed.");
+      onClose();
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        "Registration failed, please try again.";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg overflow-hidden">
-      <h2 className="text-2xl font-semibold text-teal-800 text-center mb-6">Register a New User</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-semibold transition"
+          aria-label="Close modal"
+        >
+          &times;
+        </button>
 
-      {/* Scrollable form container */}
-      <div className="max-h-[600px] overflow-y-auto p-4 border border-gray-300 rounded-lg">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <table className="table-auto w-full text-left">
-            <tbody>
-              {formFields.map((field, index) => (
-                <tr key={index}>
-                  <td className="py-2 px-4 font-medium text-gray-700">{field.label}</td>
-                  <td className="py-2 px-4">
-                    {field.type === "select" ? (
-                      <select
-                        id={field.name}
-                        name={field.name}
-                        value={formData[field.name]}
-                        onChange={handleInputChange}
-                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none"
-                      >
-                        <option value="">Select {field.label}</option>
-                        {field.options.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    ) : field.type === "textarea" ? (
-                      <textarea
-                        id={field.name}
-                        name={field.name}
-                        value={formData[field.name]}
-                        onChange={handleInputChange}
-                        className="p-3 border rounded-lg w-full text-gray-800 bg-white focus:ring-2 focus:ring-teal-600 focus:outline-none"
-                        placeholder={`Enter ${field.label}`}
-                      />
-                    ) : (
-                      <input
-                        id={field.name}
-                        type={field.type}
-                        name={field.name}
-                        value={formData[field.name]}
-                        onChange={handleInputChange}
-                        required={field.required}
-                        className="p-3 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-teal-600 focus:outline-none bg-white"
-                        placeholder={`Enter ${field.label}`}
-                      />
-                    )}
-                    {errors[field.name] && <span className="text-red-500 text-sm mt-1">{errors[field.name]}</span>}
-                  </td>
-                </tr>
-              ))}
-              <tr>
-                <td colSpan="2" className="py-4 px-4 text-center">
-                  <button
-                    type="submit"
-                    className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700"
-                  >
-                    Register Patient
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <h2 className="text-3xl font-extrabold mb-8 text-center text-teal-700 tracking-wide">
+          Register {role}
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-semibold text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="example@mail.com"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-3 focus:ring-teal-500 focus:border-teal-500 shadow-sm transition"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block mb-2 text-sm font-semibold text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter your password"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-3 focus:ring-teal-500 focus:border-teal-500 shadow-sm transition"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block mb-2 text-sm font-semibold text-gray-700"
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder="Confirm your password"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-3 focus:ring-teal-500 focus:border-teal-500 shadow-sm transition"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-md shadow-md transition"
+          >
+            {loading ? "Processing..." : "Register"}
+          </button>
         </form>
       </div>
     </div>

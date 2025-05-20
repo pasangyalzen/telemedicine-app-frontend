@@ -101,14 +101,14 @@ export default function Navbar({ backgroundColor }) {
           {showSignupOptions && (
             <div className="absolute top-full right-1 mt-4 mb-0 bg-[#012f33] rounded-md shadow-lg z-10 w-60 flex flex-col gap-4 p-4 border border-x-primary-light border-y-primary-light">
               {/* Provider Button */}
-              <Link to={PATHS.PROVIDER_SIGNUP}>
+              <Link to={PATHS.REGISTER} state={{ role: "doctor" }}>
                 <button className="flex items-center justify-center w-full px-3 py-3 bg-[#65cccc] text-black rounded-md font-medium shadow-md hover:bg-[#52b5b6] transition">
-                  <span>I'm a Provider</span>
+                  <span>I'm a Doctor</span>
                 </button>
               </Link>
 
               {/* Patient Button */}
-              <Link to={PATHS.PATIENT_SIGNUP}>
+              <Link to={PATHS.REGISTER} state={{ role: "patient" }}>
                 <button className="flex items-center justify-center w-full px-3 py-3 bg-[#ffaa33] text-black rounded-md font-medium shadow-md hover:bg-[#e6992d] transition">
                   <span>I'm a Patient</span>
                 </button>

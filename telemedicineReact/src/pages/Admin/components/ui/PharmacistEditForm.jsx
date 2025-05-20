@@ -5,7 +5,7 @@ import usePharmacistManagement from "../../../../hooks/usePharmacistManagement";
 const PharmacistEditForm = ({ formData = {}, setFormData, handleUpdatePharmacist, cancelEdit }) => {
   const { setShowEditModal, showEditModal } = usePharmacistManagement();
   const [errors, setErrors] = useState({});
-  console.log(formData);
+  console.log("adsfdsafdasf",formData);
 
   const formFields = [
     { label: "Full Name", name: "fullName", type: "text", required: true },

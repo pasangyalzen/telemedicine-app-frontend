@@ -166,8 +166,8 @@ export const getDoctorUpcomingAppointments = async (doctorId) => {
     console.log("Responseeeee", response);
     return response.data;
   } catch (error) {
-    console.error("Error fetching doctor's upcoming appointments:", error);
-    throw new Error(error.response?.data?.message || "Failed to fetch upcoming appointments.");
+    console.error("Error fetching doctor's upcoming appointments:", response.data);
+    throw new Error(error?.response?.data || "Failed to fetch upcoming appointments.");
   }
 };
 
@@ -180,6 +180,10 @@ export const getDoctorIdByEmail = async (email) => {
     });
     return response.data;
   } catch (error) {
+    if (error.response?.status === 404) {
+      console.warn("Doctor not found for email:", email);
+      return null; // 👈 return null instead of throwing
+    }
     console.error("Error fetching doctor ID by email:", error);
     throw new Error(error.response?.data?.message || "Failed to fetch doctor ID.");
   }

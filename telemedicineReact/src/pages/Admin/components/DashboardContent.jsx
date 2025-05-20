@@ -27,7 +27,7 @@ const UserManagement = () => {
       try {
         const [dashboardRes, statusRes] = await Promise.all([
           apiClient.get("/Admin/Account/GetDashboardCounts"),
-          apiClient.get("/Admin/Account")
+          apiClient.get("/Admin/Account/appointment-status-counts")
         ]);
 
         setDashboardCounts(dashboardRes.data);

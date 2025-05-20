@@ -21,6 +21,7 @@ export const fetchPatients = async () => {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
     });
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("🚨 Error fetching patients:", error.response?.data || error.message);

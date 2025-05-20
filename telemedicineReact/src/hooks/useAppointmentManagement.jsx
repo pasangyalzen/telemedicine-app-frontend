@@ -22,12 +22,14 @@ const useAppointmentManagement = () => {
   
   
   const [formData, setFormData] = useState({
+    appointmentId:"",
     patientName: "",
     doctorName: "",
     scheduledTime: new Date().toISOString(), // Default value for scheduled time
     status: "Scheduled",
     videoCallLink: "",
   });
+  console.log("ddddddd",formData);
 
   const fetchAppointments = async () => {
     setLoading(true);
@@ -108,10 +110,11 @@ const useAppointmentManagement = () => {
       });
   
       const appointment = response.data;
-      console.log("Fetched appointment:", appointment);  // Add detailed logs for debugging
+      console.log("Fetched appointment haiiiii:", appointment);  // Add detailed logs for debugging
   
       // Set the appointment data to the formData state
       setFormData({
+        appointmentId: appointment.appointmentId,
         patientName: appointment.patientName,
         doctorName: appointment.doctorName,
         scheduledTime: appointment.scheduledTime,

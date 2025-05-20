@@ -10,6 +10,7 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
     doctorName: "",
     status: "Scheduled",
     scheduledTime: "",
+    videoCallLink:"",
   });
 
   useEffect(() => {
@@ -117,7 +118,7 @@ const AppointmentEditForm = ({ appointment, handleUpdate, cancelEdit }) => {
             name="videoCallLink"
             value={formData.videoCallLink || ""}
             onChange={(e) => setFormData({ ...formData, videoCallLink: e.target.value })}
-            placeholder="Video Call Link"
+            placeholder="Reason for the visit"
             className="bg-white text-black p-3 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-teal-500"
           />
         </div>

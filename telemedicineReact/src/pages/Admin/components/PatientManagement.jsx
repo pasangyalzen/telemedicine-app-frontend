@@ -38,7 +38,7 @@ const PatientManagement = () => {
     setFormData,
     handleUpdate,
   } = usePatientManagement(); // Custom hook managing state and logic
-  console.log("Modal Status:", showEditModal, "Edit Patient:", editPatient);
+  console.log("Modal pppp Status:", filteredPatients, "Edit Patient:", editPatient);
   const cancelEdit = () => {
     setEditPatient(null);
     navigate(-1); // Go back to the previous page
@@ -53,12 +53,14 @@ const PatientManagement = () => {
       {showCreateModal && (
         <div className="fixed inset-0 bg-primary bg-opacity-80 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
-            <PatientCreateForm
-              handleCreatePatient={handleCreatePatient}
-              cancelCreateForm={closeCreateModal} // Closing the create modal
-              setFormData={setFormData}
-              formData={formData}
-            />
+          <PatientCreateForm
+            handleCreatePatient={handleCreatePatient}
+            isOpen={showCreateModal}
+            onClose={closeCreateModal}
+            cancelCreateForm={closeCreateModal}
+            setFormData={setFormData}
+            formData={formData}
+          />
             <button
               onClick={() => closeCreateModal()} // Close the modal when clicked
               className="absolute top-2 right-2 text-xl text-gray-700"
@@ -99,7 +101,7 @@ const PatientManagement = () => {
           onClick={openCreateModal}
           className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
         >
-          Create Patient
+          Register Patient
         </button>
       </div>
 

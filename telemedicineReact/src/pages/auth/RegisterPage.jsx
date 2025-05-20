@@ -1,10 +1,54 @@
 import { Link } from "react-router-dom";
 import { PATHS } from "../../constants/path";
-import { useNavigate } from "react-router-dom";
-import RegisterVideo from "../../assets/RegisterVideo.mp4"; // Replace with the path to your video
+import { useNavigate, useLocation } from "react-router-dom";
+import RegisterVideo from "../../assets/RegisterVideo.mp4";
+import { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import OtpVerificationForm from "./OtpVerificationForm"; // Import OTP verification component
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const role = location.state?.role || "guest";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showOtpForm, setShowOtpForm] = useState(false); // State to toggle OTP form display
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      // Send OTP request
+      const response = await axios.post("http://localhost:5186/api/OtpAuthentication/send-code", email, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("OTP sent successfully:", response.data);
+      toast.success("Verification code sent to your email!");
+
+      // Show OTP form on successful registration
+      setShowOtpForm(true); // Display OTP form
+
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Failed to send verification code.");
+    }
+  };
 
   return (
     <main className="fixed inset-0 bg-primary bg-gradient-to-r from-primary to-primary-light">
@@ -13,10 +57,7 @@ export default function RegisterPage() {
       </span>
 
       <div className="h-full w-full flex items-center justify-center px-4">
-        {/* Main container */}
         <div className="w-full max-w-3xl flex bg-primary-light bg-gradient-to-r from-primary to-primary-light backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-          
-          {/* Video Section (Left Column) */}
           <div className="w-1/2 flex justify-center items-center">
             <video
               className="w-full h-full object-cover rounded-xl shadow-lg"
@@ -25,55 +66,77 @@ export default function RegisterPage() {
               muted
             >
               <source src={RegisterVideo} type="video/mp4" />
-              {/* Add other video formats if needed */}
               Your browser does not support the video tag.
             </video>
           </div>
 
-          {/* Registration Form Section (Right Column) */}
           <div className="w-1/2 flex flex-col justify-center items-center space-y-6 ml-5">
             <h1 className="text-4xl font-semibold text-white mb-8 text-center bg-gradient-to-r from-primary-light via-[#036f72] to-primary bg-clip-text text-transparent">
-              REGISTER
+              REGISTER AS {role.toUpperCase()}
             </h1>
 
-            <form className="space-y-6 w-full">
-              <div className="space-y-2 text-start">
-                <label className="text-sm text-gray-300">Username</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
-                />
-              </div>
-              <div className="space-y-2 text-start">
-                <label className="text-sm text-gray-300">Password</label>
-                <input
-                  type="password"
-                  className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
-                />
-              </div>
-              <div className="space-y-2 text-start">
-                <label className="text-sm text-gray-300">Confirm Password</label>
-                <input
-                  type="password"
-                  className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-primary text-white py-2 rounded-md hover:bg-[#036f72] transition-colors"
-              >
-                REGISTER
-              </button>
-              <div className="w-full text-center">
-                <span className="text-gray-300">Already have an account?</span>{" "}
-                <Link
-                  onClick={() => navigate(PATHS.LOGIN)}
-                  className="text-gray-300 underline hover:text-white"
+            {!showOtpForm ? (
+              // Registration Form
+              <form onSubmit={handleSubmit} className="space-y-6 w-full">
+                <div className="space-y-2 text-start">
+                  <label className="text-sm text-gray-300">Email</label>
+                  <input
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
+                  />
+                </div>
+                <div className="space-y-2 text-start">
+                  <label className="text-sm text-gray-300">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
+                  />
+                </div>
+                <div className="space-y-2 text-start">
+                  <label className="text-sm text-gray-300">Confirm Password</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-primary text-white py-2 rounded-md hover:bg-[#036f72] transition-colors"
                 >
-                  Login
-                </Link>
+                  REGISTER
+                </button>
+                <div className="w-full text-center">
+                  <span className="text-gray-300">Already have an account?</span>{" "}
+                  <Link
+                    onClick={() => navigate(PATHS.LOGIN)}
+                    className="text-gray-300 underline hover:text-white"
+                  >
+                    Login
+                  </Link>
+                </div>
+              </form>
+            ) : (
+              // OTP Verification Form (after registration)
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                <OtpVerificationForm
+                email={email}
+                password={password}
+                confirmPassword={confirmPassword}
+                role={role}
+                onRegisterSuccess={() => {
+                  // Redirect to login or show a success toast
+                  toast.success("Registered successfully!");
+                  navigate("/login");
+                }}
+              />
               </div>
-            </form>
+            )}
           </div>
         </div>
       </div>

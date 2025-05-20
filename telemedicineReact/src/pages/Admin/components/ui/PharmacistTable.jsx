@@ -1,108 +1,181 @@
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import usePharmacistManagement from "../../../../hooks/usePharmacistManagement";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const PharmacistTable = ({ pharmacists, handleEditPharmacistClick, handleDeleteClick }) => {
+const API_URL = "http://localhost:5186/api";
+
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+});
+
+const PharmacistTable = ({ pharmacists, refreshPharmacists }) => {
+  console.log("Hellllllooooo",pharmacists);
+  const pharmacistList = pharmacists?.pharmacists || [];
+
+  const [expandedId, setExpandedId] = useState(null);
+  const [modalData, setModalData] = useState({ open: false, pharmacistId: null, currentStatus: false });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [localPharmacists, setLocalPharmacists] = useState(pharmacistList);
+
+  useEffect(() => {
+    setLocalPharmacists(pharmacistList);
+  }, [pharmacistList]);
+
+  const toggleExpand = (id) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
+
+  const openModal = (pharmacistId, currentStatus) => {
+    setModalData({ open: true, pharmacistId, currentStatus });
+    setError(null);
+  };
+
+  const closeModal = () => {
+    setModalData({ open: false, pharmacistId: null, currentStatus: false });
+    setError(null);
+  };
+
+  const confirmToggleStatus = async () => {
+    if (!modalData.pharmacistId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      await apiClient.put(`/Pharmacist/TogglePharmacistStatus/${modalData.pharmacistId}`);
+
+      setLocalPharmacists(prev =>
+        prev.map(p =>
+          p.pharmacistId === modalData.pharmacistId
+            ? { ...p, status: !modalData.currentStatus }
+            : p
+        )
+      );
+
+      setLoading(false);
+      closeModal();
+      if (typeof refreshPharmacists === "function") {
+        refreshPharmacists();
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Failed to toggle status.");
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="overflow-hidden rounded-xl shadow-md">
-      <table className="min-w-full divide-y divide-teal-200">
-        <thead className="bg-gradient-to-r from-teal-600 to-teal-700">
+    <div className="w-full overflow-x-auto rounded-xl shadow-xl bg-white p-4">
+      <table className="w-full table-auto text-sm text-gray-700">
+        <thead className="bg-gradient-to-r from-green-600 to-green-700 text-white text-[13px] uppercase">
           <tr>
-            <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
-              Name
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
-              Gender
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
-              Phone
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
-              Pharmacy
-            </th>
-            <th className="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider">
-              Actions
-            </th>
+            <th className="px-3 py-3 text-left">Pharmacist</th>
+            <th className="px-3 py-3 text-left">Gender</th>
+            <th className="px-3 py-3 text-left">DOB</th>
+            <th className="px-3 py-3 text-left">Phone</th>
+            <th className="px-3 py-3 text-center">Status</th>
+            <th className="px-3 py-3 text-center">Actions</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-teal-100">
-          {pharmacists.length === 0 ? (
-            <tr>
-              <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
-                <div className="flex flex-col items-center">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-12 w-12 text-teal-300 mb-4" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" 
+        <tbody className="bg-white divide-y divide-green-100">
+          {localPharmacists.length > 0 ? (
+            localPharmacists.map((pharmacist) => (
+              <React.Fragment key={pharmacist.pharmacistId}>
+                <tr className="hover:bg-green-50 transition-all duration-200">
+                  <td className="px-3 py-4 whitespace-nowrap flex items-center space-x-3">
+                    <img
+                      src={
+                        pharmacist.profileImage?.startsWith("http")
+                          ? pharmacist.profileImage
+                          : `http://localhost:5186${pharmacist.profileImage || ""}`
+                      }
+                      alt="Pharmacist"
+                      className="w-10 h-10 rounded-full object-cover border border-green-500"
                     />
+                    <span className="font-medium">{pharmacist.fullName}</span>
+                  </td>
+                  <td className="px-3 py-4">{pharmacist.gender}</td>
+                  <td className="px-3 py-4">{new Date(pharmacist.dateOfBirth).toLocaleDateString()}</td>
+                  <td className="px-3 py-4">{pharmacist.phoneNumber}</td>
+                  <td className="px-3 py-4 text-center">
+                    <button
+                      onClick={() => openModal(pharmacist.pharmacistId, pharmacist.status)}
+                      className={`inline-block px-4 py-2 rounded-full font-semibold text-white transition-colors duration-300 ${
+                        pharmacist.status
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-rose-600 hover:bg-rose-700"
+                      }`}
+                    >
+                      {pharmacist.status ? "Active" : "Inactive"}
+                    </button>
+                  </td>
+                  <td className="px-3 py-4 text-center">
+                    <button
+                      onClick={() => toggleExpand(pharmacist.pharmacistId)}
+                      className="text-sm text-green-700 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-full transition"
+                    >
+                      {expandedId === pharmacist.pharmacistId ? "Hide" : "See Full Detail"}
+                    </button>
+                  </td>
+                </tr>
+
+                {expandedId === pharmacist.pharmacistId && (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-4 bg-gray-50 text-xs text-gray-800">
+                      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                        <div><strong>Email:</strong> {pharmacist.email}</div>
+                        <div><strong>Pharmacy Name:</strong> {pharmacist.pharmacyName}</div>
+                        <div><strong>License Number:</strong> {pharmacist.licenseNumber}</div>
+                        <div><strong>Pharmacy Address:</strong> {pharmacist.pharmacyAddress}</div>
+                        <div><strong>Working Hours:</strong> {pharmacist.workingHours}</div>
+                        <div><strong>Services Offered:</strong> {pharmacist.servicesOffered}</div>
+                        <div><strong>Created At:</strong> {new Date(pharmacist.createdAt).toLocaleString()}</div>
+                        <div><strong>Updated At:</strong> {new Date(pharmacist.updatedAt).toLocaleString()}</div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                <div className="flex flex-col items-center space-y-2">
+                  <svg className="h-10 w-10 text-green-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.586V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p className="text-lg font-medium">No pharmacists found</p>
-                  <p className="text-sm mt-1">Try adjusting your search or register a new pharmacist</p>
+                  <p className="text-md">No pharmacists found</p>
+                  <p className="text-xs text-gray-400">Try adjusting your search or add a new pharmacist.</p>
                 </div>
               </td>
             </tr>
-          ) : (
-            pharmacists.map((pharmacist) => (
-              <tr 
-                key={pharmacist.pharmacistId} 
-                className="hover:bg-teal-50 transition-colors duration-150 ease-in-out"
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-medium text-gray-800">{pharmacist.fullName}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-3 py-1 inline-flex text-sm rounded-full ${
-                    pharmacist.gender === 'Male' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : pharmacist.gender === 'Female'
-                        ? 'bg-pink-100 text-pink-700'
-                        : 'bg-purple-100 text-purple-700'
-                  }`}>
-                    {pharmacist.gender}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-700">
-                  <a href={`tel:${pharmacist.phoneNumber}`} className="hover:text-teal-600">
-                    {pharmacist.phoneNumber}
-                  </a>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-3 py-1 inline-flex text-sm bg-teal-100 text-teal-700 rounded-full">
-                    {pharmacist.pharmacyName}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex justify-center gap-3">
-                    <button
-                      className="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition-colors duration-150"
-                      onClick={() => handleEditPharmacistClick(pharmacist.pharmacistId)}
-                      aria-label="Edit pharmacist"
-                    >
-                      <FaEdit size={16} className="mr-2" />
-                      Edit
-                    </button>
-                    <button
-                      className="flex items-center px-3 py-2 text-sm font-medium rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors duration-150"
-                      onClick={() => handleDeleteClick(pharmacist.pharmacistId)}
-                      aria-label="Delete pharmacist"
-                    >
-                      <FaTrashAlt size={16} className="mr-2" />
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
           )}
         </tbody>
       </table>
+
+      {modalData.open && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-lg p-6 w-80 max-w-full shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">
+              {modalData.currentStatus ? "Deactivate Pharmacist" : "Activate Pharmacist"}
+            </h3>
+            <p className="mb-6">
+              Are you sure you want to {modalData.currentStatus ? "deactivate" : "activate"} this pharmacist?
+            </p>
+            {error && <p className="text-red-600 mb-2">{error}</p>}
+            <div className="flex justify-end space-x-3">
+              <button onClick={closeModal} disabled={loading} className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50">
+                Cancel
+              </button>
+              <button onClick={confirmToggleStatus} disabled={loading} className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50">
+                {loading ? "Processing..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

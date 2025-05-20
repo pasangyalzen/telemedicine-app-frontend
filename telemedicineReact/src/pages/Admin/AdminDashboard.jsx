@@ -89,7 +89,7 @@ const AdminDashboard = () => {
         return <SettingsPage />;
       default:
         console.log("❌ No match found for:", selectedMenu, "Rendering default: UserManagement");
-        return <DoctorManagement/>;
+        return <DashboardContent/>;
     }
   };
 

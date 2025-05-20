@@ -3,26 +3,27 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:5186/api/Patient";
 
 // Configure Axios instance with default headers
-export const apiClient = axios.create({
+const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
   },
 });
 
 // Add a request interceptor for authentication
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// apiClient.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers["Authorization"] = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 
 // Function to fetch today's appointments for the patient
 export const fetchTodaysAppointments = async (patientId) => {
@@ -113,3 +114,14 @@ export const bookAppointment = async (appointmentData) => {
     throw new Error(error.response?.data || "Failed to book appointment.");
   }
 };
+
+export const getPatientIdByUserId = async (userId) => {
+  try {
+    const response = await apiClient.get(`/GetPatientIdByUserId/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching patient ID by user ID:", error);
+    throw new Error(error.response?.data || "Failed to fetch patient ID.");
+  }
+};
+

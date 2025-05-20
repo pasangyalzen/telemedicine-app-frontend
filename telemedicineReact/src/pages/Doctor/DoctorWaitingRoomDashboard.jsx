@@ -8,10 +8,12 @@ import DoctorAnalytics from "./components/UpcomingAppointments";
 import DoctorMeetingHistory from "./components/PastAppointment";
 import VideoPreview from "./components/VideoPreview";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import { ChevronDown, Settings, LogOut, Home, Calendar, Clock, User, Menu } from "lucide-react";
+import { ChevronDown, Settings, LogOut, Home, Calendar, Clock, User, Menu, RefreshCw, AlertCircle, CalendarIcon } from 'lucide-react';
 import RescheduleForm from "./components/RescheduleForm";
 import PendingConsultations from "./components/PastAppointment";
 import { getEmailFromToken } from "../auth/auth";
+import { DoctorRegisterModal } from "./components/AppointmentSummary";
+import axios from "axios";
 
 export default function DoctorWaitingRoomDashboard() {
   const {
@@ -46,6 +48,9 @@ export default function DoctorWaitingRoomDashboard() {
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
   };
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+
   
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState("dashboard");
@@ -54,6 +59,15 @@ export default function DoctorWaitingRoomDashboard() {
     localStorage.clear();
     console.log("Logging out... Redirecting to login page.");
     navigate("/login");
+  };
+
+  // Function to retry loading data
+  const handleRetryLoading = () => {
+    // Implement your retry logic here
+    console.log("Retrying to load appointments...");
+    // You could call a function from your hook to reload the data
+    // For example: reloadAppointments();
+    window.location.reload(); // Simple reload as fallback
   };
   
   return (
@@ -182,22 +196,15 @@ export default function DoctorWaitingRoomDashboard() {
             <div className="p-4 border-t border-gray-700 bg-gray-800">
               <div className="flex items-center space-x-3 p-2">
                 <div className="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">
-                  LS
+                  {email && email.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-sm text-white font-medium">{email}</p>
+                  <p className="text-sm text-white font-medium truncate max-w-[150px]">{email}</p>
                   <p className="text-xs text-gray-400">Doctor</p>
                 </div>
               </div>
               
-              {/* Logout Button */}
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="mt-3 w-full flex items-center justify-center px-4 py-2 text-xl text-red-600 bg-white hover:bg-red-500 hover:text-white rounded-md transition-colors"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </button>
+
             </div>
           </div>
         </aside>
@@ -209,14 +216,57 @@ export default function DoctorWaitingRoomDashboard() {
               inviteLink={inviteLink}
               dropdownOpen={dropdownOpen}
               toggleDropdown={toggleDropdown}
+              onDoctorNotFound={() => setShowRegisterModal(true)}
             />
           )}
 
-          {selectedMenu === "analytics" && <DoctorAnalytics />}
+          {selectedMenu === "analytics" && (
+            <>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Upcoming Appointments</h2>
+                <span className="text-sm text-gray-500">0 appointments</span>
+              </div>
+              
+              {/* Improved error message styling */}
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div className="p-6">
+                  <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-lg w-full flex items-start mb-8">
+                    <div className="mr-4 flex-shrink-0">
+                      <AlertCircle className="h-6 w-6 text-red-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium text-red-800 mb-1">Unable to load appointments</h3>
+                      <p className="text-red-700">Failed to load appointments. Please try again later.</p>
+                      <div className="mt-3">
+                        <button 
+                          onClick={handleRetryLoading}
+                          className="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        >
+                          <RefreshCw className="mr-2 h-4 w-4" />
+                          Retry
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center py-8">
+                    <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-gray-100">
+                      <CalendarIcon className="h-12 w-12 text-gray-400" />
+                    </div>
+                    <h3 className="mt-4 text-lg font-medium text-gray-900">No appointments found</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      There are no upcoming appointments scheduled at this time.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           {selectedMenu === "pendingConsultations" && <PendingConsultations />}
         </div>
       </div>
+      
 
       {/* Modals */}
       {showLogoutModal && (
@@ -265,6 +315,15 @@ export default function DoctorWaitingRoomDashboard() {
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
           onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+      
+      {showRegisterModal && (
+        <DoctorRegisterModal
+          email={email}
+          password={localStorage.getItem("password")}
+          userId={localStorage.getItem("id")}
+          onClose={() => setShowRegisterModal(false)}
         />
       )}
     </div>

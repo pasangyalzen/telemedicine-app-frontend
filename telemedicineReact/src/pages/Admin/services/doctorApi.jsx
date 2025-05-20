@@ -7,6 +7,7 @@ export const fetchDoctors = async () => {
       headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
     });
     if (!response.ok) throw new Error(`Error fetching doctors: ${response.statusText}`);
+    console.log("REEEE", response);
     return await response.json();
   } catch (error) {
     console.error("Error fetching doctors:", error);

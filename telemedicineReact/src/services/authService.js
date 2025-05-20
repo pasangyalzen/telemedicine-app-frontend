@@ -21,6 +21,8 @@ export const handleLogin = async (credentials, redirectUser, setErrorMessage) =>
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         localStorage.setItem("id", user.id);
+        localStorage.setItem("email", credentials.email);
+        localStorage.setItem("password", credentials.password);
 
         // Redirect based on role
         redirectUser(role);
