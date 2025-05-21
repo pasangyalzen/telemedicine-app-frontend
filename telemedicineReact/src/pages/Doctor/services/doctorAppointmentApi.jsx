@@ -45,30 +45,50 @@ export const getDoctorIdByUserId = async (userId) => {
 
 export const rescheduleAppointment = async (appointmentId, newDateTime) => {
   try {
-    console.log("Appointment ID:", appointmentId); // Log the appointmentId
-    console.log("New DateTime being passed:", newDateTime); // Log the newDateTime being passed to verify
+    console.log("Appointment ID:", appointmentId);
+    console.log("New DateTime payload:", newDateTime);
 
     const response = await apiClient.put(
       `/RescheduleAppointment/${appointmentId}`,
-      newDateTime, 
+      newDateTime,
       {
         headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
-    
 
-    return response.status;
+    console.log("Reschedule response:", response);
+
+    // Return backend success message as is
+    if (response.status === 200 || response.status === 204) {
+      return response.data;  // e.g. "Appointment rescheduled successfully."
+    } else {
+      throw new Error("Unexpected server response");
+    }
   } catch (error) {
     console.error("Error rescheduling appointment:", error);
-    throw new Error(error.response?.data?.message || "Error rescheduling appointment");
+
+    // Extract backend error message exactly as sent
+    const backendMessage = error.response?.data;
+    // If backend sent a string message, throw it directly
+    if (typeof backendMessage === "string") {
+      throw new Error(backendMessage);
+    }
+
+    // If backend sent an object with a message field, throw that
+    if (backendMessage?.message) {
+      throw new Error(backendMessage.message);
+    }
+
+    // Fallback generic message
+    throw new Error("Error rescheduling appointment");
   }
 };
 
 export const cancelDoctorAppointment = async (appointmentId) => {
   try {
-    console.log("Appointment ID:", appointmentId); // Log the appointmentId being passed
+    console.log("Appointment Ito ooooooo caaaa", appointmentId); // Log the appointmentId being passed
 
     const response = await apiClient.put(
       `/CancelAppointment/${appointmentId}`, // The API endpoint to cancel the appointment
@@ -92,32 +112,35 @@ export const fetchPastAppointments = async (doctorId) => {
   try {
     const response = await apiClient.get(`/GetPastAppointments/${doctorId}`, {
       headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      console.warn("No past appointments found.");
+      return []; // Return empty list if no data
+    }
+    console.error("Error fetching past appointments:", error);
+    return []; // or throw a custom error if you want to show error message
+  }
+};
+
+
+export const fetchUpcomingAppointments = async (doctorId) => {
+  try {
+    const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
+      headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
       },
     });
     console.log("response", response);
     return response.data;
   } catch (error) {
-    console.error("Error fetching past appointments:", error);
-    throw new Error(error.response?.data || "There are no past appointments.");
+    console.error("Error fetching upcoming appointments:", error);
+    throw new Error(error.response?.data || "There are no upcoming appointments.");
   }
 };
-
-// Fetch upcoming appointments for the doctor
-// export const fetchUpcomingAppointments = async (doctorId) => {
-//   try {
-//     const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
-//       headers: {
-//         "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
-//       },
-//     });
-//     console.log("response", response);
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching upcoming appointments:", error);
-//     throw new Error(error.response?.data || "There are no upcoming appointments.");
-//   }
-// };
 
 // Fetch cancelled appointments for the doctor
 export const fetchCancelledAppointments = async (doctorId) => {
@@ -157,17 +180,27 @@ export const updateAppointmentStatus = async (appointmentId, newStatus) => {
 
 export const getDoctorUpcomingAppointments = async (doctorId) => {
   try {
-    console.log("Fetching appointments for doctorId:", doctorId); 
     const response = await apiClient.get(`/GetUpcomingAppointments/${doctorId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log("Responseeeee", response);
     return response.data;
   } catch (error) {
-    console.error("Error fetching doctor's upcoming appointments:", response.data);
-    throw new Error(error?.response?.data || "Failed to fetch upcoming appointments.");
+    console.error("Error fetching upcoming appointments:", error);
+
+    // Check for specific error status from the API
+    if (error.response?.status === 404) {
+      throw new Error("No upcoming appointments.");
+    }
+
+    // Use detailed error message if available, otherwise use a fallback
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to fetch upcoming appointments.";
+      
+    throw new Error(message);
   }
 };
 
@@ -205,16 +238,36 @@ export const fetchAppointmentSummary = async (doctorId) => {
 
 export const getDoctorPastAppointments = async (doctorId) => {
   try {
-    console.log("Fetching past appointments for doctorId:", doctorId);
     const response = await apiClient.get(`/GetPastAppointments/${doctorId}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log("Past Appointments Response:", response);
     return response.data;
   } catch (error) {
-    console.error("Error fetching doctor's past appointments:", error);
-    throw new Error(error.response?.data?.message || "Failed to fetch past appointments.");
+    if (error.response?.status === 404) {
+      console.warn("No past appointments found.");
+      return []; // ✅ Return empty array instead of throwing
+    }
+    console.error("Unexpected error fetching past appointments:", error);
+    throw error; // Only throw if it's not a 404
+  }
+};
+
+export const getPatientById = async (patientId) => {
+  const token = localStorage.getItem("token");
+  const url = `http://localhost:5186/api/Patient/GetPatientById/${patientId}`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching patient details:", error);
+    throw error;
   }
 };

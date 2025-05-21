@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchTodaysAppointments, getDoctorIdByUserId, rescheduleAppointment } from "../pages/Doctor/services/doctorAppointmentApi"; // Import the fetch function
 import { cancelDoctorAppointment } from "../pages/Doctor/services/doctorAppointmentApi";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const useDoctorDashboard = () => {
   const [appointments, setAppointments] = useState([]);
@@ -13,6 +14,7 @@ const useDoctorDashboard = () => {
   
   // Handle state for appointment cancellation and rescheduling
   // const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const navigate = useNavigate();
   const [appointmentToReschedule, setAppointmentToReschedule] = useState(null);
 
 
@@ -61,6 +63,7 @@ const useDoctorDashboard = () => {
       const result = await cancelDoctorAppointment(appointmentIdToCancel);
       console.log("Appointment canceled:", result);
       toast.success("Appointment was successfully cancelled");
+      navigate(-1);
       setShowCancelModal(false);
       return result;
     } catch (err) {

@@ -1,133 +1,186 @@
-import React, { useState } from 'react';
-import toast from 'react-hot-toast';
-import { fetchTodaysAppointments } from '../services/doctorAppointmentApi';
-import { Calendar, Clock, X, Check } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { getDoctorIdByUserId } from "../services/doctorAppointmentApi";
+import { getUserIdFromToken } from "../../auth/auth";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { rescheduleAppointment } from "../services/doctorAppointmentApi";
 
-const RescheduleForm = ({ appointmentId, onSubmit, onCancel }) => {
-  const [newDate, setNewDate] = useState('');
+const API_URL = "http://localhost:5186/api";
+
+const RescheduleForm = ({ appointmentId, onClose, onRescheduleSuccess }) => {
+  const navigate = useNavigate();  // Moved inside component
+
+  const apiClient = axios.create({
+    baseURL: API_URL,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  const [formData, setFormData] = useState({
+    doctorId: "",
+    appointmentDate: "",
+    startTime: "",
+    endTime: "",
+  });
+
+  const [availabilities, setAvailabilities] = useState([]);
+  const [availableTimes, setAvailableTimes] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const userId = getUserIdFromToken();
+    if (!userId) return;
+
+    const fetchDoctorId = async () => {
+      try {
+        const doctorId = await getDoctorIdByUserId(userId);
+        setFormData((prev) => ({ ...prev, doctorId }));
+      } catch (error) {
+        console.error("Failed to fetch doctorId:", error);
+        toast.error("Failed to retrieve doctor information");
+      }
+    };
+
+    fetchDoctorId();
+  }, []);
+
+  useEffect(() => {
+    if (!formData.doctorId) return;
+
+    apiClient
+      .get(`/Doctor/GetAvailability/${formData.doctorId}`)
+      .then((res) => setAvailabilities(res.data))
+      .catch((err) => {
+        console.error("Failed to fetch availabilities:", err);
+        setAvailabilities([]);
+        toast.error("Could not retrieve available time slots");
+      });
+  }, [formData.doctorId]);
+
+  useEffect(() => {
+    if (!formData.appointmentDate || !availabilities.length) {
+      setAvailableTimes([]);
+      return;
+    }
+
+    const selectedDay = new Date(formData.appointmentDate).getDay();
+    const times = availabilities
+      .filter((a) => a.dayOfWeek === selectedDay)
+      .map((a) => ({ startTime: a.startTime, endTime: a.endTime }));
+
+    setAvailableTimes(times);
+
+    setFormData((prev) => ({
+      ...prev,
+      startTime: "",
+      endTime: "",
+    }));
+  }, [formData.appointmentDate, availabilities]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log("newDate before ISO conversion:", newDate);
 
-    // Convert the local time (from input) to UTC using toISOString
-    const localDate = new Date(newDate); // Create Date object from input
-
-    // Create a new Date object with the same values but manually treating it as UTC
-    const isoDate = new Date(Date.UTC(
-      localDate.getFullYear(),       // Year
-      localDate.getMonth(),          // Month (0-based index)
-      localDate.getDate(),           // Day
-      localDate.getHours(),          // Hour
-      localDate.getMinutes(),        // Minutes
-      localDate.getSeconds(),        // Seconds
-      localDate.getMilliseconds()    // Milliseconds
-    )).toISOString(); // Get ISO string in UTC format
-    
-    console.log("KOKOKOKKOKO", appointmentId); // This automatically converts to UTC
-    console.log("ISO formatted date being sent to backend:", isoDate); // Logging to verify
+    const payload = {
+      appointmentId,
+      appointmentDate: formData.appointmentDate,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      status: "Rescheduled",
+    };
 
     try {
-      // Pass the appointmentId and newDate (in ISO format) to the onSubmit function
-      await onSubmit(appointmentId, isoDate);
-      toast.success("Appointment successfully rescheduled");
-      onCancel(); // Close the form once rescheduling is done
+      const message = await rescheduleAppointment(appointmentId, payload);
+      toast.success(message);
+
+      onClose?.();
+      onRescheduleSuccess?.();
+      navigate(-1);
     } catch (err) {
-      console.error('Failed to reschedule:', err);
-      toast.error("Failed to reschedule");
+      toast.error(err.message || "Failed to reschedule appointment");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-lg rounded-xl border border-gray-100 shadow-xl p-6 animate-fadeIn">
-        {/* Header with close button */}
-        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-          <h3 className="text-xl font-semibold text-gray-800 flex items-center">
-            <Calendar size={20} className="text-indigo-600 mr-2" />
-            Reschedule Appointment
-          </h3>
-          <button 
-            onClick={onCancel}
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
-          >
-            <X size={20} className="text-gray-500" />
-          </button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md transform transition-all">
+        <div className="bg-teal-700 text-white p-4 rounded-t-xl">
+          <h2 className="text-xl font-bold">Reschedule Appointment</h2>
         </div>
-        
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label htmlFor="newDate" className="text-sm font-medium text-gray-700 flex items-center">
-              <Clock size={16} className="mr-2 text-indigo-500" />
-              Select New Date and Time:
+
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="mb-5">
+            <label className="block mb-2 font-medium text-gray-700">
+              Appointment Date
             </label>
-            
-            <div className="relative">
-              <input
-                id="newDate"
-                type="datetime-local"
-                value={newDate}
-                onChange={(e) => {
-                  setNewDate(e.target.value);
-                  console.log("New date set:", e.target.value); // Log the value immediately after setting
-                }}
-                required
-                className="w-full p-3 pl-4 border text-white border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              />
-              {newDate && (
-                <div className="mt-2 text-sm text-white">
-                  <p>Selected: {new Date(newDate).toLocaleString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}</p>
-                </div>
-              )}
-            </div>
+            <input
+              type="date"
+              className="w-full border-2 border-teal-100 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+              value={formData.appointmentDate}
+              onChange={(e) =>
+                setFormData({ ...formData, appointmentDate: e.target.value })
+              }
+              required
+              min={new Date().toISOString().split("T")[0]}
+            />
           </div>
-          
-          {/* Tips section */}
-          <div className="bg-indigo-50 rounded-lg p-3 text-sm text-indigo-700">
-            <p>Tip: Please ensure the new time is within working hours and is available.</p>
+
+          <div className="mb-5">
+            <label className="block mb-2 font-medium text-gray-700">
+              Available Time Slot
+            </label>
+            <select
+              className="w-full border-2 border-teal-100 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+              value={
+                formData.startTime && formData.endTime
+                  ? `${formData.startTime}-${formData.endTime}`
+                  : ""
+              }
+              onChange={(e) => {
+                if (e.target.value) {
+                  const [start, end] = e.target.value.split("-");
+                  setFormData({ ...formData, startTime: start, endTime: end });
+                } else {
+                  setFormData({ ...formData, startTime: "", endTime: "" });
+                }
+              }}
+              required
+              disabled={!availableTimes.length}
+            >
+              <option value="">-- Select Time Slot --</option>
+              {availableTimes.map((t, idx) => (
+                <option key={idx} value={`${t.startTime}-${t.endTime}`}>
+                  {t.startTime} - {t.endTime}
+                </option>
+              ))}
+            </select>
+            {formData.appointmentDate && !availableTimes.length && (
+              <p className="mt-1 text-sm text-teal-600">
+                No time slots available for selected date
+              </p>
+            )}
           </div>
-          
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+
+          <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"
-              onClick={onCancel}
-              className="px-5 py-2.5 bg-white text-gray-700 rounded-lg hover:bg-gray-100 border border-gray-300 transition-colors duration-200 font-medium flex items-center justify-center"
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg border-2 border-teal-200 text-teal-700 font-medium hover:bg-teal-50 transition focus:outline-none focus:ring-2 focus:ring-teal-500"
+              disabled={isSubmitting}
             >
-              <X size={16} className="mr-2" />
               Cancel
             </button>
             <button
               type="submit"
-              disabled={!newDate || isSubmitting}
-              className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium flex items-center justify-center"
+              className="px-6 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-70"
+              disabled={isSubmitting || !formData.startTime || !formData.endTime}
             >
-              {isSubmitting ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Check size={16} className="mr-2" />
-                  Reschedule
-                </>
-              )}
+              {isSubmitting ? "Processing..." : "Reschedule"}
             </button>
           </div>
         </form>

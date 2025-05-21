@@ -4,13 +4,13 @@ import PatientQueue from "./ui/PatientQueue";
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import DoctorDashboardHome from "./components/DoctorDashboardHome";
-import DoctorAnalytics from "./components/UpcomingAppointments";
-import DoctorMeetingHistory from "./components/PastAppointment";
+import UpcomingAppointments from "./components/UpcomingAppointments";
+import DoctorMeetingHistory from "./components/PendingConsultation";
 import VideoPreview from "./components/VideoPreview";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { ChevronDown, Settings, LogOut, Home, Calendar, Clock, User, Menu, RefreshCw, AlertCircle, CalendarIcon } from 'lucide-react';
 import RescheduleForm from "./components/RescheduleForm";
-import PendingConsultations from "./components/PastAppointment";
+import PendingConsultations from "./components/PendingConsultation";
 import { getEmailFromToken } from "../auth/auth";
 import { DoctorRegisterModal } from "./components/AppointmentSummary";
 import axios from "axios";
@@ -35,15 +35,16 @@ export default function DoctorWaitingRoomDashboard() {
   } = useDoctorDashboard();
   
   useEffect(() => {
-    console.log("Updated fadsfasstate in DoctorWaitingRoom - showForm:", showForm);
-    console.log("Updated dsfadstate in DoctorWaitingRoom - appointmentToReschedule:", appointmentToReschedule);
+    console.log("GGGGGGGGGGGGGG:", showForm);
+    console.log("KKKKKKKKKKKKKK:", appointmentToReschedule);
   }, [showForm, appointmentToReschedule]);
+  
   
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [accountdropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  
+  const [showRescheduleForm, setShowRescheduleForm] = useState(false);
   const email = getEmailFromToken();
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
@@ -54,6 +55,14 @@ export default function DoctorWaitingRoomDashboard() {
   
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState("dashboard");
+  // If your hook provides a function to close the form
+  const handleCloseRescheduleForm = () => {
+    // Use the hook's function if available
+    if (typeof setShowForm === 'function') {
+      setShowForm(false);
+      setAppointmentToReschedule(null); // Also reset the appointment
+    }
+};
   
   const handleLogout = () => {
     localStorage.clear();
@@ -160,7 +169,7 @@ export default function DoctorWaitingRoomDashboard() {
                   
                   <button 
                     onClick={() => {
-                      setSelectedMenu("analytics");
+                      setSelectedMenu("upcomingAppointments");
                       setMobileSidebarOpen(false);
                     }} 
                     className={`w-full h-12 flex items-center px-4 rounded-lg transition duration-300 ${
@@ -220,48 +229,9 @@ export default function DoctorWaitingRoomDashboard() {
             />
           )}
 
-          {selectedMenu === "analytics" && (
-            <>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Upcoming Appointments</h2>
-                <span className="text-sm text-gray-500">0 appointments</span>
-              </div>
-              
-              {/* Improved error message styling */}
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                <div className="p-6">
-                  <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-lg w-full flex items-start mb-8">
-                    <div className="mr-4 flex-shrink-0">
-                      <AlertCircle className="h-6 w-6 text-red-500" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-medium text-red-800 mb-1">Unable to load appointments</h3>
-                      <p className="text-red-700">Failed to load appointments. Please try again later.</p>
-                      <div className="mt-3">
-                        <button 
-                          onClick={handleRetryLoading}
-                          className="inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                          <RefreshCw className="mr-2 h-4 w-4" />
-                          Retry
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center py-8">
-                    <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-gray-100">
-                      <CalendarIcon className="h-12 w-12 text-gray-400" />
-                    </div>
-                    <h3 className="mt-4 text-lg font-medium text-gray-900">No appointments found</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      There are no upcoming appointments scheduled at this time.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+          {selectedMenu === "upcomingAppointments" && (
+              <UpcomingAppointments appointments={appointments} />
+            )}
 
           {selectedMenu === "pendingConsultations" && <PendingConsultations />}
         </div>
@@ -282,19 +252,25 @@ export default function DoctorWaitingRoomDashboard() {
       )}
       
       {showForm && appointmentToReschedule && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <RescheduleForm
-              appointmentId={appointmentToReschedule.appointmentId}
-              onSubmit={handleRescheduleSubmit}
-              onCancel={() => {
-                setShowForm(false);
-                setAppointmentToReschedule(null);
-              }}
-            />
-          </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+          <RescheduleForm
+            appointmentId={appointmentToReschedule?.appointmentId}
+            onClose={() => {
+              console.log("Closing form from DoctorWaitingRoomDashboard");
+              setShowForm(false);
+              setAppointmentToReschedule(null);
+            }}
+            onRescheduleSuccess={(appointmentId, newDate) => {
+              console.log("Rescheduling successful");
+              handleRescheduleSubmit(appointmentId, newDate);
+              setShowForm(false);
+              setAppointmentToReschedule(null);
+            }}
+          />
         </div>
-      )}
+      </div>
+    )}
       
       {/* Confirmation Modal for Appointment Cancellation */}
       {showCancelModal && appointmentToCancel && (
