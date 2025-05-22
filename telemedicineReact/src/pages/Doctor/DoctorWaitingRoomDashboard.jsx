@@ -1,19 +1,19 @@
-import { Link } from "react-router-dom";
 import useDoctorDashboard from "../../hooks/useDoctorDashboard";
 import PatientQueue from "./ui/PatientQueue";
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import DoctorDashboardHome from "./components/DoctorDashboardHome";
 import UpcomingAppointments from "./components/UpcomingAppointments";
-import DoctorMeetingHistory from "./components/PendingConsultation";
-import VideoPreview from "./components/VideoPreview";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { ChevronDown, Settings, LogOut, Home, Calendar, Clock, User, Menu, RefreshCw, AlertCircle, CalendarIcon } from 'lucide-react';
 import RescheduleForm from "./components/RescheduleForm";
 import PendingConsultations from "./components/PendingConsultation";
 import { getEmailFromToken } from "../auth/auth";
 import { DoctorRegisterModal } from "./components/AppointmentSummary";
-import axios from "axios";
+import DoctorAvailabilityTable from "./components/DoctorAvailabilityTable";
+import { getDoctorIdByEmail } from "./services/doctorAppointmentApi";
+
+
 
 export default function DoctorWaitingRoomDashboard() {
   const {
@@ -41,6 +41,7 @@ export default function DoctorWaitingRoomDashboard() {
   
   
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [doctorId, setDoctorId] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [accountdropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -51,7 +52,23 @@ export default function DoctorWaitingRoomDashboard() {
   };
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
+  
 
+  useEffect(() => {
+  const fetchDoctorId = async () => {
+    try {
+      const email = getEmailFromToken();
+      const id = await getDoctorIdByEmail(email);
+      if (id) {
+        setDoctorId(id);
+      }
+    } catch (error) {
+      console.error("Failed to fetch doctorId:", error);
+    }
+  };
+
+  fetchDoctorId();
+}, []);
   
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState("dashboard");
@@ -145,6 +162,7 @@ export default function DoctorWaitingRoomDashboard() {
                   appointments={appointments}
                   handleRescheduleButtonClick={handleRescheduleButtonClick}
                   handleCancelClick={handleCancelClick}
+                  
                 />
               </div>
 
@@ -197,6 +215,21 @@ export default function DoctorWaitingRoomDashboard() {
                     <Clock className="w-5 h-5 mr-3" />
                     <span>Pending Consultations</span>
                   </button>
+                  {/* Availability */}
+                  <button 
+                    onClick={() => {
+                      setSelectedMenu("availability");
+                      setMobileSidebarOpen(false);
+                    }} 
+                    className={`w-full h-12 flex items-center px-4 rounded-lg transition duration-300 ${
+                      selectedMenu === "availability" 
+                        ? "bg-teal-600 text-white" 
+                        : "text-gray-300 hover:bg-gray-700"
+                    }`}
+                  >
+                    <CalendarIcon className="w-5 h-5 mr-3" />
+                    <span>Availability</span>
+                  </button>
                 </nav>
               </div>
             </div>
@@ -234,6 +267,9 @@ export default function DoctorWaitingRoomDashboard() {
             )}
 
           {selectedMenu === "pendingConsultations" && <PendingConsultations />}
+          {selectedMenu === "availability" && (
+            <DoctorAvailabilityTable doctorId={doctorId} /> // <-- Replace with your actual component name
+          )}
         </div>
       </div>
       

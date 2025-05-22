@@ -126,7 +126,7 @@ const PendingConsultations = () => {
   
     try {
       // Make the API call to get the consultationId
-      const response = await apiClient.get(`/GetConsultationIdByAppointment/${appointmentId}`, {
+      const response = await apiClient.get(`/GetConsultationIdByAppointmentId/${appointmentId}`, {
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`, // Add token for authentication
       },

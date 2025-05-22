@@ -12,7 +12,7 @@ const ViewDetailsButton = ({ appointmentId }) => {
       const token = localStorage.getItem("token");
       
       // Step 1: Get Consultation ID from Appointment ID
-      const consultationIdRes = await apiClient.get(`GetConsultationIdByAppointment/${appointmentId}`, {
+      const consultationIdRes = await apiClient.get(`GetConsultationIdByAppointmentId/${appointmentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       

@@ -47,6 +47,7 @@ export const rescheduleAppointment = async (appointmentId, newDateTime) => {
   try {
     console.log("Appointment ID:", appointmentId);
     console.log("New DateTime payload:", newDateTime);
+    
 
     const response = await apiClient.put(
       `/RescheduleAppointment/${appointmentId}`,

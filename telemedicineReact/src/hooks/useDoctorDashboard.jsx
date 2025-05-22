@@ -3,6 +3,8 @@ import { fetchTodaysAppointments, getDoctorIdByUserId, rescheduleAppointment } f
 import { cancelDoctorAppointment } from "../pages/Doctor/services/doctorAppointmentApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { fetchAppointments as fetchPaginatedAppointments} from "../pages/Admin/services/appointmentApi";
+
 
 const useDoctorDashboard = () => {
   const [appointments, setAppointments] = useState([]);
@@ -18,35 +20,35 @@ const useDoctorDashboard = () => {
   const [appointmentToReschedule, setAppointmentToReschedule] = useState(null);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userId = localStorage.getItem("id");
-        if (!userId) {
-          setError("Doctor ID not found.");
-          setLoading(false);
-          return;
-        }
+  const fetchData = async () => {
+  try {
+    const userId = localStorage.getItem("id");
+    if (!userId) {
+      setError("Doctor ID not found.");
+      setLoading(false);
+      return;
+    }
 
-        const doctorId = await getDoctorIdByUserId(userId);
-        if (!doctorId) {
-          setError("Failed to fetch Doctor ID.");
-          setLoading(false);
-          return;
-        }
+    const doctorId = await getDoctorIdByUserId(userId);
+    if (!doctorId) {
+      setError("Failed to fetch Doctor ID.");
+      setLoading(false);
+      return;
+    }
 
-        const data = await fetchTodaysAppointments(doctorId);
-        setAppointments(data);
-      } catch (error) {
-        setError(error.message || "Failed to fetch appointments.");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const data = await fetchTodaysAppointments(doctorId);
+    setAppointments(data);
+  } catch (error) {
+    setError(error.message || "Failed to fetch appointments.");
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    fetchData();
-  }, []);
+useEffect(() => {
+  fetchData();
+}, []);
 
   const handleCancelClick = (appointmentId) => {
     console.log("Iskiri",appointmentId);
@@ -103,7 +105,9 @@ const useDoctorDashboard = () => {
             : appointment
         )
       );
+      window.location.reload();
       await fetchData();
+      // await fetchAppointments();
     } catch (err) {
       console.error("Error rescheduling appointment:", err);
     }

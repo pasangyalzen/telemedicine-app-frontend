@@ -23,12 +23,14 @@ import {
 import { fetchAppointmentSummary, getDoctorIdByEmail } from "../services/doctorAppointmentApi"
 import { getEmailFromToken } from "../../auth/auth"
 import { getUserIdFromToken } from "../../auth/auth"
+import DoctorAvailabilityForm from "./DoctorAvailabilityForm"
 
 export default function AppointmentSummary() {
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   const [isDoctorRegistered, setIsDoctorRegistered] = useState(false)
+  const [showAvailabilityForm, setShowAvailabilityForm] = useState(false);
 
   const doctorEmail = getEmailFromToken()
 
@@ -119,7 +121,26 @@ export default function AppointmentSummary() {
           </button>
         </div>
       )}
+      {isDoctorRegistered && (
+      <>
+        {/* <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => setShowAvailabilityForm(true)}
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 shadow-md"
+          >
+            <CalendarIcon className="h-5 w-5" />
+            Add Availability
+          </button>
+        </div> */}
 
+        {showAvailabilityForm && (
+          <DoctorAvailabilityForm
+            onSuccess={() => setShowAvailabilityForm(false)}
+            onClose={() => setShowAvailabilityForm(false)}
+          />
+        )}
+      </>
+    )}
       {showRegisterModal && (
         <DoctorRegisterModal
           email={doctorEmail}
