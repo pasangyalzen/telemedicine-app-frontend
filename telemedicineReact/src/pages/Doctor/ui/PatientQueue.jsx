@@ -6,7 +6,7 @@ import RescheduleForm from "../components/RescheduleForm";
 import {rescheduleAppointment} from "../services/doctorAppointmentApi";
 import { getEmailFromToken } from "../../auth/auth";
 
-export default function PatientQueue({ appointments, handleJoinRoom, handleCancelClick, handleRescheduleButtonClick }) {
+export default function PatientQueue({ appointments, handleJoinRoom, handleCancelClick, handleRescheduleButtonClick}) {
   function useFormattedTime(time) {
     return useMemo(() => {
       // If time is provided, extract hours and minutes

@@ -9,7 +9,7 @@ import { Calendar, Clock, X, RefreshCw } from "lucide-react";
 
 const API_URL = "http://localhost:5186/api";
 
-const RescheduleForm = ({ appointmentId, onClose, onRescheduleSuccess ,fetchAppointments }) => {
+const RescheduleForm = ({ appointmentId, doctorId: propDoctorId, onClose, onRescheduleSuccess, fetchAppointments }) => {
   const navigate = useNavigate();  // Moved inside component
 
   const apiClient = axios.create({
@@ -32,21 +32,26 @@ const RescheduleForm = ({ appointmentId, onClose, onRescheduleSuccess ,fetchAppo
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const userId = getUserIdFromToken();
-    if (!userId) return;
+  if (propDoctorId) {
+    setFormData((prev) => ({ ...prev, doctorId: propDoctorId }));
+    return;
+  }
 
-    const fetchDoctorId = async () => {
-      try {
-        const doctorId = await getDoctorIdByUserId(userId);
-        setFormData((prev) => ({ ...prev, doctorId }));
-      } catch (error) {
-        console.error("Failed to fetch doctorId:", error);
-        toast.error("Failed to retrieve doctor information");
-      }
-    };
+  const userId = getUserIdFromToken();
+  if (!userId) return;
 
-    fetchDoctorId();
-  }, []);
+  const fetchDoctorId = async () => {
+    try {
+      const doctorId = await getDoctorIdByUserId(userId);
+      setFormData((prev) => ({ ...prev, doctorId }));
+    } catch (error) {
+      console.error("Failed to fetch doctorId:", error);
+      toast.error("Failed to retrieve doctor information");
+    }
+  };
+
+  fetchDoctorId();
+}, [propDoctorId]);
 
   useEffect(() => {
     if (!formData.doctorId) return;
@@ -97,10 +102,10 @@ const RescheduleForm = ({ appointmentId, onClose, onRescheduleSuccess ,fetchAppo
     try {
       const message = await rescheduleAppointment(appointmentId, payload);
       toast.success(message);
-      await fetchAppointments;
+      await fetchAppointments?.();
 
-      onClose?.();
       onRescheduleSuccess?.(appointmentId, formData.appointmentDate);
+      onClose?.();
     } catch (err) {
       toast.error(err.message || "Failed to reschedule appointment");
     } finally {

@@ -49,6 +49,10 @@ const useDoctorDashboard = () => {
 useEffect(() => {
   fetchData();
 }, []);
+// Add this function after fetchData()
+const refreshAppointments = async () => {
+  await fetchData();
+};
 
   const handleCancelClick = (appointmentId) => {
     console.log("Iskiri",appointmentId);
@@ -101,11 +105,11 @@ useEffect(() => {
       setAppointments(prevAppointments => 
         prevAppointments.map(appointment => 
           appointment.appointmentId === appointmentId
-            ? { ...appointment, scheduledTime: newDate } // Update scheduled time with new date
+            ? { ...appointment, AppointmentDate: newDate } // Update scheduled time with new date
             : appointment
         )
       );
-      window.location.reload();
+
       await fetchData();
       // await fetchAppointments();
     } catch (err) {
@@ -130,6 +134,7 @@ useEffect(() => {
     showCancelModal,
     setShowCancelModal,
     setAppointmentToCancel,
+    refreshAppointments,
   };
 };
 
