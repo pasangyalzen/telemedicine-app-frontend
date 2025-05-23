@@ -196,7 +196,7 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
   }
 
   return (
-    <div className="flex font-sans bg-teal-50">
+    <div className="flex font-sans bg-gradient-to-br from-teal-50 via-slate-50 to-teal-100 min-h-screen">
       {/* Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -210,35 +210,43 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
       />
 
       {/* Main Content */}
-      <main className="flex-1 ml-0 lg:ml-72 bg-teal-0 min-h-screen">
+      <main className="flex-1 ml-0 lg:ml-72 bg-transparent min-h-screen">
         {/* Top Navigation Bar */}
-        <header className="bg-gradient-to-r from-teal-800 to-teal-600 text-white sticky top-0 z-20 shadow-sm">
-          <div className="flex justify-between items-center px-6 py-6">
+        <header className="bg-gradient-to-r from-teal-900 via-teal-800 to-teal-700 text-white sticky top-0 z-20 shadow-2xl backdrop-blur-lg border-b border-teal-500/20">
+          <div className="flex justify-between items-center px-6 py-6 relative">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-to-r from-teal-400/5 via-transparent to-teal-400/5"></div>
+            
             {/* Left side - Mobile menu and page title */}
-            <div className="flex items-center">
+            <div className="flex items-center relative z-10">
               <button
-                className="lg:hidden text-teal-100 hover:text-white mr-4"
+                className="lg:hidden text-teal-200 hover:text-white mr-4 p-2 rounded-lg hover:bg-teal-700/50 transition-all duration-300"
                 onClick={() => setShowSidebar(!showSidebar)}
               >
                 {showSidebar ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
 
-              <h1 className="text-2xl font-extrabold text-teal-50">{getActiveTabTitle()}</h1>
+              <div>
+                <h1 className="text-3xl font-black bg-gradient-to-r from-teal-100 via-white to-teal-200 bg-clip-text text-transparent drop-shadow-lg">
+                  {getActiveTabTitle()}
+                </h1>
+                <div className="h-1 w-16 bg-gradient-to-r from-teal-300 to-teal-400 rounded-full mt-1"></div>
+              </div>
             </div>
 
             {/* Right side - Search and user menu */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6 relative z-10">
               {/* Search */}
               <div className="relative hidden md:block">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-teal-200" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-teal-300" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Search appointments, doctors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-teal-300 rounded-lg bg-teal-700 text-white placeholder-teal-200 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                  className="block w-80 pl-12 pr-4 py-3 border border-teal-500/30 rounded-2xl bg-teal-700/40 backdrop-blur-sm text-white placeholder-teal-200 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent transition-all duration-300 shadow-lg"
                 />
               </div>
 
@@ -246,28 +254,37 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2 text-white hover:text-teal-100"
+                  className="flex items-center space-x-3 text-white hover:text-teal-100 p-2 rounded-2xl hover:bg-teal-700/40 transition-all duration-300 group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-teal-600 border border-white flex items-center justify-center shadow-sm">
-                    <User className="w-5 h-5" />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-500 border-2 border-teal-300/50 flex items-center justify-center shadow-xl group-hover:shadow-teal-300/30 transition-all duration-300">
+                    <User className="w-6 h-6 text-teal-900" />
                   </div>
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
                 </button>
 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl z-10 border border-teal-100 overflow-hidden">
-                    <div className="px-5 py-4 border-b border-teal-100 bg-teal-50">
-                      <p className="text-sm font-medium text-teal-900">Patient :{patientInfo.fullName}</p>
-                      <p className="text-xs text-teal-600 truncate mt-1">Patient ID: {patientInfo.patientId}</p>
+                  <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl z-10 border border-teal-100 overflow-hidden animate-scaleIn backdrop-blur-lg">
+                    <div className="px-6 py-5 border-b border-teal-100 bg-gradient-to-r from-teal-50 to-teal-100/50">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-lg">
+                          <User className="w-6 h-6 text-teal-900" />
+                        </div>
+                        <div>
+                          <p className="text-base font-bold text-teal-900">Patient: {patientInfo.fullName}</p>
+                          <p className="text-sm text-teal-600 truncate mt-1">Patient ID: {patientInfo.patientId}</p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="py-2">
                       <button
                         onClick={handleLogout}
-                        className="flex items-center w-full px-5 py-3 text-sm bg-white text-teal-800 hover:bg-teal-50 transition-colors"
+                        className="flex items-center w-full px-6 py-4 text-sm bg-white text-teal-800 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 transition-all duration-300 group"
                       >
-                        <LogOut className="w-4 h-4 mr-3 text-teal-600" />
-                        Logout
+                        <div className="p-2 rounded-lg bg-teal-100 group-hover:bg-red-100 mr-4 transition-all duration-300">
+                          <LogOut className="w-4 h-4 text-teal-600 group-hover:text-red-600" />
+                        </div>
+                        <span className="font-medium">Logout</span>
                       </button>
                     </div>
                   </div>
@@ -278,12 +295,16 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
         </header>
 
         {/* Page Content */}
-        <div className="p-6">
+        <div className="p-6 lg:p-8">
           {/* Content Header */}
-          <PageHeader title={getActiveTabTitle()} activeTab={activeTab} />
+          <div className="mb-8">
+            <PageHeader title={getActiveTabTitle()} activeTab={activeTab} />
+          </div>
 
           {/* Main Content */}
-          {renderContent()}
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-xl border border-teal-100/50 p-6 lg:p-8 min-h-[600px]">
+            {renderContent()}
+          </div>
         </div>
       </main>
 
@@ -301,54 +322,98 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
 
       {/* Overlay for mobile sidebar */}
       {showSidebar && (
-        <div className="fixed inset-0 bg-white bg-opacity-50 z-20 lg:hidden" onClick={() => setShowSidebar(false)} />
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-20 lg:hidden animate-fadeIn" onClick={() => setShowSidebar(false)} />
       )}
+      
       {showRescheduleModal && (
-      <RescheduleForm
-        appointmentId={appointmentToReschedule.appointmentId}
-        doctorId={appointmentToReschedule.doctorId}
-        onRescheduleSuccess={() => {
-          fetchAppointments();
-        }}
-        onClose={() => {
-          setShowRescheduleModal(false);
-          setAppointmentToReschedule(null);
-        }}
-      />
-    )}
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl m-4 animate-scaleIn">
+            <RescheduleForm
+              appointmentId={appointmentToReschedule.appointmentId}
+              doctorId={appointmentToReschedule.doctorId}
+              onRescheduleSuccess={() => {
+                fetchAppointments();
+              }}
+              onClose={() => {
+                setShowRescheduleModal(false);
+                setAppointmentToReschedule(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
-    {showCancelModal && appointmentToCancel && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
-    <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 border border-teal-200">
-      <ConfirmationModal
-        message="Are you sure you want to cancel this appointment?"
-        actionLabel="Cancel Appointment"
-        onConfirm={() => handleCancelAppointment(appointmentToCancel)}
-        onCancel={() => {
-          setShowCancelModal(false);
-          setAppointmentToCancel(null);
-        }}
-      />
-    </div>
-  </div>
-)}
+      {showCancelModal && appointmentToCancel && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 animate-fadeIn">
+          <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 border border-teal-200 animate-scaleIn">
+            <ConfirmationModal
+              message="Are you sure you want to cancel this appointment?"
+              actionLabel="Cancel Appointment"
+              onConfirm={() => handleCancelAppointment(appointmentToCancel)}
+              onCancel={() => {
+                setShowCancelModal(false);
+                setAppointmentToCancel(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
-      {/* CSS for animations */}
+      {/* Enhanced CSS for animations */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from { 
+            opacity: 0; 
+          }
+          to { 
+            opacity: 1; 
+          }
         }
         @keyframes scaleIn {
-          from { transform: scale(0.95); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
+          from { 
+            transform: scale(0.95) translateY(-10px); 
+            opacity: 0; 
+          }
+          to { 
+            transform: scale(1) translateY(0); 
+            opacity: 1; 
+          }
+        }
+        @keyframes slideDown {
+          from {
+            transform: translateY(-10px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
         }
         .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
+          animation: fadeIn 0.3s ease-out;
         }
         .animate-scaleIn {
-          animation: scaleIn 0.2s ease-out;
-        } 
+          animation: scaleIn 0.3s ease-out;
+        }
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #14b8a6, #0d9488);
+          border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #0d9488, #0f766e);
+        }
       `}</style>
     </div>
   )

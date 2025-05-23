@@ -1,4 +1,5 @@
 import { User, CalendarIcon, ClockIcon, FileText, Video, AlertCircle, Hash } from "lucide-react"
+import { useNavigate } from "react-router-dom";
 
 export const AppointmentList = ({
   appointments = [],
@@ -9,6 +10,7 @@ export const AppointmentList = ({
   onRescheduleClick,
   onCancelClick,
   hideProceedPayment = false,
+  
 }) => {
   if (error) {
     return (
@@ -41,6 +43,7 @@ export const AppointmentList = ({
       </div>
     )
   }
+  const navigate = useNavigate();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -135,7 +138,11 @@ export const AppointmentList = ({
 
                 {showJoinCall && (
                   <button
-                    onClick={() => alert(`Joining call for appointment ID: ${item.appointmentId}`)}
+                    onClick={() => {
+                      const email = localStorage.getItem("email"); // or decode JWT if needed
+                      const room = item.appointmentId;
+                      navigate(`/lobby?email=${encodeURIComponent(email)}&room=${room}`);
+                    }}
                     className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-4 rounded-2xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-emerald-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold"
                   >
                     <Video className="w-5 h-5" />

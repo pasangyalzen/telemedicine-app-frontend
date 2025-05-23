@@ -19,5 +19,5 @@ export const PATHS = {
     NOTIFICATIONS: "/admin-dashboard/notifications",
     SETTINGS: "/admin-dashboard/settings",
     LOBBY:"/LOBBY",
-    ROOM:"/room/:roomId",
+    ROOM:"/room/:room",
 }

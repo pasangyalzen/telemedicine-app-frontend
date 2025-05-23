@@ -67,3 +67,17 @@ export const deleteAppointment = async (appointmentId) => {
     throw new Error(error.response?.data?.message || "Error deleting appointment");
   }
 };
+
+export const markAppointmentCompleted = async (appointmentId) => {
+  try {
+    const response = await apiClient.put(`/appointments/MarkAppointmentCompleted/${appointmentId}`, null, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error marking appointment completed", error);
+    throw error;
+  }
+};

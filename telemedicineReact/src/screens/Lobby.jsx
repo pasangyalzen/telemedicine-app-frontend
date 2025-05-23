@@ -1,38 +1,55 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSocket } from "../context/SocketProvider";
 
 const LobbyScreen = () => {
-  const [email, setEmail] = useState("");
-  const [room, setRoom] = useState("");
-  
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialEmail = queryParams.get("email") || "";
+  const initialRoom = queryParams.get("room") || "";
+  const initialAppointmentId = queryParams.get("appointmentId") || initialRoom;
+
+  const [email, setEmail] = useState(initialEmail);
+  const [room, setRoom] = useState(initialRoom);
+  const [appointmentId, setAppointmentId] = useState(initialAppointmentId);
+
   const socket = useSocket();
   const navigate = useNavigate();
-  
+
   const handleSubmitForm = useCallback(
     (e) => {
       e.preventDefault();
-      if (!email || !room) return;
-      socket.emit("room:join", { email, room });
+      if (!email || !room || !appointmentId) return;
+      socket.emit("room:join", { email, room, appointmentId });
     },
-    [email, room, socket]
+    [email, room, appointmentId, socket]
   );
-  
+
   const handleJoinRoom = useCallback(
     (data) => {
-      const { room } = data;
-      navigate(`/room/${room}`);
+      const { room, appointmentId } = data;
+      navigate(`/room/${room}?appointmentId=${appointmentId}`);
     },
     [navigate]
   );
-  
+
+  useEffect(() => {
+    if (initialEmail && initialRoom && initialAppointmentId) {
+      socket.emit("room:join", {
+        email: initialEmail,
+        room: initialRoom,
+        appointmentId: initialAppointmentId,
+      });
+    }
+  }, [initialEmail, initialRoom, initialAppointmentId, socket]);
+
   useEffect(() => {
     socket.on("room:join", handleJoinRoom);
     return () => {
       socket.off("room:join", handleJoinRoom);
     };
   }, [socket, handleJoinRoom]);
-  
+
   return (
     <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-teal-100 via-white to-teal-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
@@ -56,13 +73,16 @@ const LobbyScreen = () => {
           </div>
           <div>
             <label htmlFor="room" className="block text-sm font-semibold text-gray-700 mb-1">
-              Room Code
+              Room Code (Appointment ID)
             </label>
             <input
               type="text"
               id="room"
               value={room}
-              onChange={(e) => setRoom(e.target.value)}
+              onChange={(e) => {
+                setRoom(e.target.value);
+                setAppointmentId(e.target.value);
+              }}
               placeholder="e.g. 2036"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               required

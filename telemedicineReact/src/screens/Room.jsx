@@ -3,6 +3,8 @@ import ReactPlayer from "react-player";
 import peer from "../services/peer";
 import { useSocket } from "../context/SocketProvider";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom"
+import { markAppointmentCompleted } from "../pages/Admin/services/appointmentApi";
 
 const RoomPage = () => {
   const socket = useSocket();
@@ -12,12 +14,18 @@ const RoomPage = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isCallActive, setIsCallActive] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const navigate = useNavigate();
+
+  const { room } = useParams(); // inside your component
+const appointmentId = room;
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
     setRemoteSocketId(id);
   }, []);
+
+  
 
   const handleCallUser = useCallback(async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -136,26 +144,42 @@ const RoomPage = () => {
     }
   }, [myStream, isVideoOff]);
 
-  const endCall = useCallback(() => {
-    if (myStream) {
-      myStream.getTracks().forEach(track => track.stop());
-    }
-    setMyStream(null);
-    setRemoteStream(null);
-    setIsCallActive(false);
-    const role = localStorage.getItem("role"); // Or from context or decoded JWT
-    switch (role) {
-      case "Doctor":
-        navigate("/doctor-waiting-room-dashboard");
-        break;
-      case "Patient":
-        navigate("/patient-video-call-dashboard");
-        break;
-      default:
-        navigate("/");
+  const endCall = useCallback(async () => {
+  if (myStream) {
+    myStream.getTracks().forEach(track => track.stop());
   }
-    navigate("/");
-  }, [myStream, navigate]);
+
+  console.log("🔎 appointmentId:", appointmentId); // << Add this
+
+  try {
+    if (appointmentId) {
+      console.log("➡ Marking appointment as completed for ID:", appointmentId);
+      await markAppointmentCompleted(appointmentId);
+      console.log("✅ Appointment marked as completed");
+    } else {
+      console.warn("❌ appointmentId not found in URL");
+    }
+  } catch (err) {
+    console.error("❌ Failed to mark appointment completed", err);
+  }
+
+  setMyStream(null);
+  setRemoteStream(null);
+  setIsCallActive(false);
+
+  const role = localStorage.getItem("role");
+  switch (role) {
+    case "Doctor":
+      navigate("/doctor-waiting-room-dashboard");
+      break;
+    case "Patient":
+      navigate("/patient-video-call-dashboard");
+      break;
+    default:
+      navigate("/");
+      break;
+  }
+}, [myStream, navigate, appointmentId]);
 
   return (
     <div className="fixed inset-0 w-full h-screen bg-teal-900 flex flex-col overflow-hidden">
@@ -299,6 +323,7 @@ const RoomPage = () => {
 
       {/* Call Controls */}
       {myStream && (
+        
         <footer className="bg-teal-800 px-6 py-4 shadow-lg">
           <div className="max-w-3xl mx-auto flex justify-center items-center space-x-4">
             <button
@@ -343,6 +368,15 @@ const RoomPage = () => {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
               </svg>
               Join
+            </button>
+            <button
+            onClick={() => setShowReportModal(true)}
+            className="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v1H3V4zM3 7h14v9a1 1 0 01-1 1H4a1 1 0 01-1-1V7z" />
+              </svg>
+              View Reports
             </button>
             
             <button

@@ -1,31 +1,28 @@
-import React, {useEffect} from "react";
+import React from "react";
 import { FaVideo, FaRegCalendarAlt, FaTrashAlt, FaUserCircle } from 'react-icons/fa';
 import ConfirmationModal from "../../../components/ConfirmationModal";
-import { useState, useMemo } from "react";
 import RescheduleForm from "../components/RescheduleForm";
-import {rescheduleAppointment} from "../services/doctorAppointmentApi";
+import { rescheduleAppointment } from "../services/doctorAppointmentApi";
 import { getEmailFromToken } from "../../auth/auth";
+import { useNavigate } from "react-router-dom";
 
-export default function PatientQueue({ appointments, handleJoinRoom, handleCancelClick, handleRescheduleButtonClick}) {
-  function useFormattedTime(time) {
-    return useMemo(() => {
-      // If time is provided, extract hours and minutes
-      if (time) {
-        const timeParts = time.split("T")[1].split(".")[0]; // Extract time in HH:MM:SS format
-        const [hours, minutes] = timeParts.split(":");
-  
-        let hourIn12HrFormat = parseInt(hours) % 12; // Convert to 12-hour format
-        hourIn12HrFormat = hourIn12HrFormat ? hourIn12HrFormat : 12; // 0 becomes 12 (midnight)
-        const ampm = parseInt(hours) >= 12 ? "PM" : "AM"; // Determine AM/PM
-  
-        // Return the formatted time in 12-hour format with AM/PM
-        return `${hourIn12HrFormat}:${minutes} ${ampm}`;
-      }
-  
-      return ''; // Return empty string if time is not provided
-    }, [time]);
+// Utility function to format time (no hooks used)
+function formatTime(time) {
+  if (time) {
+    const timeParts = time.split("T")[1].split(".")[0];
+    const [hours, minutes] = timeParts.split(":");
+
+    let hourIn12HrFormat = parseInt(hours) % 12 || 12;
+    const ampm = parseInt(hours) >= 12 ? "PM" : "AM";
+
+    return `${hourIn12HrFormat}:${minutes} ${ampm}`;
   }
- 
+  return "";
+}
+
+export default function PatientQueue({ appointments, handleJoinRoom, handleCancelClick, handleRescheduleButtonClick }) {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full bg-gray-900 shadow-md rounded-lg border border-teal-800">
       <h3 className="text-lg font-semibold text-teal-400 p-3 border-b border-teal-700 flex items-center">
@@ -56,7 +53,7 @@ export default function PatientQueue({ appointments, handleJoinRoom, handleCance
                   <p className="font-semibold text-white text-sm truncate">{patient.patientName}</p>
                   <div className="flex items-center text-teal-300 text-xs">
                     <FaRegCalendarAlt className="mr-1" />
-                    <span>{useFormattedTime(patient.scheduledTime)}</span>
+                    <span>{formatTime(patient.scheduledTime)}</span>
                   </div>
                 </div>
               </div>
@@ -67,28 +64,24 @@ export default function PatientQueue({ appointments, handleJoinRoom, handleCance
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    const email = getEmailFromToken(); // Extract email from the token
-                    const appointmentId = patient.appointmentId; // Extract the appointment ID
-                    console.log(patient.appointmentId);
-
+                    const email = getEmailFromToken();
+                    const appointmentId = patient.appointmentId;
                     if (email && appointmentId) {
-                      handleJoinRoom({ email, room: appointmentId }); // Join room with the email and appointmentId
-                    } else {
-                      console.error("Error: Missing email or appointmentId");
+                      navigate(`/lobby?email=${encodeURIComponent(email)}&room=${appointmentId}`);
                     }
                   }}
                   className="flex items-center justify-center py-1 px-2 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors shadow-sm"
                 >
                   <FaVideo className="mr-1" /> Join
                 </a>
-                <button 
-                  onClick={() => handleRescheduleButtonClick(patient)} 
+                <button
+                  onClick={() => handleRescheduleButtonClick(patient)}
                   className="flex items-center justify-center py-1 px-2 bg-teal-600 text-white text-xs rounded hover:bg-teal-700 transition-colors shadow-sm"
                 >
                   <FaRegCalendarAlt className="mr-1" /> Re
                 </button>
-                <button 
-                  onClick={() => handleCancelClick(patient.appointmentId)}  
+                <button
+                  onClick={() => handleCancelClick(patient.appointmentId)}
                   className="flex items-center justify-center py-1 px-2 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors shadow-sm"
                 >
                   <FaTrashAlt />
