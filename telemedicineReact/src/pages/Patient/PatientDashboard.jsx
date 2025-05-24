@@ -12,8 +12,22 @@ import { ErrorMessage } from "./components/ErrorMessage"
 import { PageHeader } from "./components/PageHeader"
 import RescheduleForm from "../Doctor/components/RescheduleForm"
 import ConfirmationModal from "../../components/ConfirmationModal"
-import { cancelDoctorAppointment } from "../Doctor/services/doctorAppointmentApi"
+import { cancelDoctorAppointment, getDoctorIdByEmail, getDoctorIdByUserId } from "../Doctor/services/doctorAppointmentApi"
 import toast from "react-hot-toast"
+import axios from "axios";
+import { getEmailFromToken, getUserIdFromToken } from "../auth/auth"
+
+const API_BASE_URL = "http://localhost:5186/api/Patient";
+
+// Configure Axios instance with default headers
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+  },
+});
+
 
 const PatientDashboard = () => {
   const navigate = useNavigate()
@@ -29,6 +43,20 @@ const PatientDashboard = () => {
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+
+
+  const fetchUpcomingAppointments = async (id) => {
+    const res = await apiClient.get(`/GetUpcomingAppointments/${id}`)
+     console.log("Ressstttt",res);
+     setUpcomingAppointments(res);
+    return res.data
+  }
+
+  const getPatientIdByUserId = async (userId) => {
+    const res = await apiClient.get(`/GetPatientIdByUserId/${userId}`)
+    return res.data.patientId || res.data.id || res.data
+  }
 
   
 
@@ -48,9 +76,9 @@ const PatientDashboard = () => {
   } = usePatientData()
 
   const [showCancelModal, setShowCancelModal] = useState(false);
-const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [appointmentToCancel, setAppointmentToCancel] = useState(null);
 
-const handleCancelAppointment = async (appointmentIdToCancel) => {
+  const handleCancelAppointment = async (appointmentIdToCancel) => {
   setLoading(true);
   setError(null);
   try {
@@ -58,7 +86,7 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
     toast.success("Appointment was successfully cancelled");
     setShowCancelModal(false);
     setAppointmentToCancel(null);
-    // Refresh the list here
+    window.location.reload();
   } catch (err) {
     setError(err.message);
     console.error("Cancel error:", err);
@@ -70,10 +98,13 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
   const fetchAppointments = async () => {
   setLoading(true);
   try {
-    const userId = getUserIdFromToken(); // replace with however you get the patient ID
-    const data = await fetchUpcomingAppointments(userId);
+    const user = getUserIdFromToken();
+    console.log("User ID from token:", user);
+    const patientId = await getPatientIdByUserId(user);
+
+    const data = await fetchUpcomingAppointments(patientId);
     console.log("Fetched patient upcoming appointments:", data);
-    setAppointments(data);
+    setUpcomingAppointments(data);
   } catch (err) {
     console.error("Failed to fetch appointments:", err);
     toast.error("Could not load appointments");

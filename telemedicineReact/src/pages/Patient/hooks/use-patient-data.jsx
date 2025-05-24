@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
+import { getUserIdFromToken } from "../../auth/auth"
 
 export const usePatientData = () => {
   const [loading, setLoading] = useState(true)
@@ -16,6 +17,7 @@ const [patientInfoError, setPatientInfoError] = useState("")
   const [upcomingError, setUpcomingError] = useState("")
   const [pastError, setPastError] = useState("")
   const [prescriptionsError, setPrescriptionsError] = useState("")
+
 
   const userId = localStorage.getItem("id")
   const patientName = localStorage.getItem("name") || "Patient"
@@ -60,6 +62,7 @@ const [patientInfoError, setPatientInfoError] = useState("")
   }
 
   const getPatientIdByUserId = async (userId) => {
+
     const res = await apiClient.get(`/GetPatientIdByUserId/${userId}`)
     return res.data.patientId || res.data.id || res.data
   }

@@ -10,7 +10,7 @@ import OtpVerificationForm from "./OtpVerificationForm"; // Import OTP verificat
 export default function RegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = location.state?.role || "guest";
+  const role = location.state?.role || "Patient";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,13 +51,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="fixed inset-0 bg-primary bg-gradient-to-r from-primary to-primary-light">
-      <span className="text-3xl font-montserrat font-extrabold text-white tracking-widest bg-gradient-to-r from-gray-500 via-white to-white bg-clip-text text-transparent">
+    <main className="fixed inset-0 bg-teal-100 bg-gradient-to-r from-white to-teal-200">
+      <span className="text-3xl font-montserrat font-extrabold text-primary tracking-widest bg-gradient-to-r from-primar-light via-black to-primary bg-clip-text text-transparent">
         TELECHAUKI
       </span>
 
       <div className="h-full w-full flex items-center justify-center px-4">
-        <div className="w-full max-w-3xl flex bg-primary-light bg-gradient-to-r from-primary to-primary-light backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+        <div className="w-full max-w-3xl flex  from-teal-100 via-teal-50 to-cyan-50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
           <div className="w-1/2 flex justify-center items-center">
             <video
               className="w-full h-full object-cover rounded-xl shadow-lg"
@@ -71,7 +71,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="w-1/2 flex flex-col justify-center items-center space-y-6 ml-5">
-            <h1 className="text-4xl font-semibold text-white mb-8 text-center bg-gradient-to-r from-primary-light via-[#036f72] to-primary bg-clip-text text-transparent">
+            <h1 className="text-4xl font-semibold text-black mb-8 text-center bg-gradient-to-r from-primary-light via-[#036f72] to-primary bg-clip-text text-transparent">
               REGISTER AS {role.toUpperCase()}
             </h1>
 
@@ -79,7 +79,7 @@ export default function RegisterPage() {
               // Registration Form
               <form onSubmit={handleSubmit} className="space-y-6 w-full">
                 <div className="space-y-2 text-start">
-                  <label className="text-sm text-gray-300">Email</label>
+                  <label className="text-sm text-gray-500">Email</label>
                   <input
                     type="text"
                     value={email}
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div className="space-y-2 text-start">
-                  <label className="text-sm text-gray-300">Password</label>
+                  <label className="text-sm text-gray-500">Password</label>
                   <input
                     type="password"
                     value={password}
@@ -97,7 +97,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 <div className="space-y-2 text-start">
-                  <label className="text-sm text-gray-300">Confirm Password</label>
+                  <label className="text-sm text-gray-500">Confirm Password</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -112,10 +112,10 @@ export default function RegisterPage() {
                   REGISTER
                 </button>
                 <div className="w-full text-center">
-                  <span className="text-gray-300">Already have an account?</span>{" "}
+                  <span className="text-gray-500">Already have an account?</span>{" "}
                   <Link
                     onClick={() => navigate(PATHS.LOGIN)}
-                    className="text-gray-300 underline hover:text-white"
+                    className="text-green-800 underline hover:text-teal-700"
                   >
                     Login
                   </Link>

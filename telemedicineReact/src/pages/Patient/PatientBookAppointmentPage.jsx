@@ -53,11 +53,8 @@ const PatientBookAppointmentPage = () => {
         endTime: formData.endTime,                 // in "HH:mm:ss"
         reason: formData.reason,
         status: "Scheduled", // or "Pending"
-        doctorName: "",
-        patientName: "",
-        videoCallLink: "",
-        appointmentId: "",
-        scheduledTime: new Date().toISOString(),
+        doctorName: formData.doctorName,
+        patientName: formData.patientName,
       };
 
     console.log("Payload being sent to API:", payload);
@@ -77,8 +74,8 @@ const PatientBookAppointmentPage = () => {
     // Navigate or close modal etc.
     navigate(-1);
   } catch (error) {
-    console.error("Failed to create appointment:", error);
-    toast.error("Failed to create appointment. Please try again.");
+    console.error("There is an existing Appointment already.", error);
+    toast.error("There is an existing Appointment already.");
   } finally {
     setLoadingCreate(false);
   }
