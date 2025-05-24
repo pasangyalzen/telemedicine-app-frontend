@@ -51,11 +51,11 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="fixed inset-0 bg-primary bg-gradient-to-r from-primary">
-            <span className="text-3xl font-montserrat font-extrabold text-white tracking-widest bg-gradient-to-r from-gray-500 via-white to-white bg-clip-text text-transparent">TELECHAUKI</span>
+        <main className="fixed inset-0 bg-gradient-to-br from-teal-50 via-cyan-25 to-teal-100">
+            <span className="text-3xl font-montserrat font-extrabold text-primary tracking-widest bg-gradient-to-r from-primary-light via-primary to-primary bg-clip-text text-transparent">TELECHAUKI</span>
 
             <div className="h-full w-full flex items-center justify-center px-4">
-                <div className="w-full max-w-3xl mt-auto mb-auto flex bg-primary-light bg-gradient-to-r from-primary to-primary-light backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+                <div className="w-full max-w-3xl mt-auto mb-auto flex bg-gradient-to-r from-teal-100 via-teal-50 to-cyan-50 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
                     {/* Video Section */}
                     <div className="w-1/2 mt-0 flex justify-center items-center">
                         <video
@@ -71,7 +71,7 @@ export default function LoginPage() {
 
                     {/* Login Form Section */}
                     <div className="w-1/2 flex flex-col justify-center items-center space-y-6 ml-5">
-                        <h1 className="text-4xl font-semibold text-white mb-8 text-center bg-gradient-to-r from-primary-light via-[#036f72] to-primary bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-semibold text-teal-800 mb-8 text-center bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
                             LOGIN
                         </h1>
 
@@ -84,38 +84,38 @@ export default function LoginPage() {
 
                         <form className="space-y-6" onSubmit={handleLoginClick}>
                             <div className="space-y-2 text-start w-full">
-                                <label className="text-sm text-gray-400">Username</label>
+                                <label className="text-sm text-teal-700">Username</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="w-full px-4 py-2 rounded-md border  bg-primary text-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-light"
+                                    className="w-full px-4 py-2 rounded-md border bg-white text-teal-800 border-teal-200 focus:outline-none focus:ring-2 focus:ring-teal-300"
                                 />
                             </div>
 
                             <div className="space-y-2 text-start w-full">
-                                <label className="text-sm text-gray-400">Password</label>
+                                <label className="text-sm text-teal-700">Password</label>
                                 <input
                                     type="password"
                                     name="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="w-full px-4 py-2 rounded-md border bg-primary text-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
+                                    className="w-full px-4 py-2 rounded-md border bg-white text-teal-800 border-teal-200 focus:outline-none focus:ring-2 focus:ring-teal-300"
                                 />
                             </div>
 
                             <div className="text-center mt-4">
-                                <Link className="text-gray-400 hover:text-white text-sm">
+                                <Link className="text-teal-600 hover:text-teal-800 text-sm">
                                     Forgot your password?
                                 </Link>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-[#036f72] text-white py-2 rounded-md hover:bg-[#278d903c] transition-colors"
+                                className="w-full bg-teal-600 text-white py-2 rounded-md hover:bg-teal-700 transition-colors"
                             >
                                 SIGN IN
                             </button>

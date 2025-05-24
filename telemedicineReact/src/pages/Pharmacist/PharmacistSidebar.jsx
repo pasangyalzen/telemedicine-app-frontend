@@ -1,36 +1,55 @@
-import {
-  User,
-  FileText,
-  Package,
-  Calendar,
-  Archive,
-  Bell,
-  Activity,
-} from "lucide-react";
+// ✅ Ensure you already have email from token
+import { useEffect, useState } from "react";
+import { getEmailFromToken } from "../auth/auth";
+import { apiClient } from "./usePharmacistData";
+import { User, FileText, Package, Calendar, Archive , Bell } from "lucide-react";
 
-const PharmacistSidebar = ({ activeTab, setActiveTab, pharmacist }) => {
+const PharmacistSidebar = ({ activeTab, setActiveTab }) => {
+  const [pharmacist, setPharmacist] = useState(null);
+
+  useEffect(() => {
+    const fetchPharmacistInfo = async () => {
+      const token = localStorage.getItem("token");
+      const email = getEmailFromToken();
+      if (!token || !email) return;
+
+      try {
+        const response = await apiClient.get(`/GetPharmacistByEmail/${email}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPharmacist(response.data);
+      } catch (err) {
+        console.error("Failed to fetch pharmacist profile info:", err);
+      }
+    };
+
+    fetchPharmacistInfo();
+  }, []);
+
   const menuItems = [
     { id: "requests", label: "Patient Requests", icon: User, color: "from-teal-400 to-cyan-400" },
     { id: "consultations", label: "Consultations", icon: FileText, color: "from-emerald-400 to-teal-400" },
     { id: "prescriptions", label: "Prescriptions", icon: Package, color: "from-teal-500 to-blue-400" },
     { id: "appointments", label: "Appointments", icon: Calendar, color: "from-cyan-400 to-teal-500" },
     { id: "inventory", label: "Inventory", icon: Archive, color: "from-teal-400 to-emerald-400" },
-    // Removed Help & Support
   ];
 
   return (
     <aside className="w-64 bg-gradient-to-br from-teal-900 via-teal-800 to-cyan-900 shadow-2xl flex flex-col h-full relative overflow-hidden border-r border-teal-700/50">
-      {/* Background accents */}
-      <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-br from-teal-400/20 to-cyan-300/10 rounded-full -translate-y-10 translate-x-10 animate-pulse" />
-      <div className="absolute bottom-20 left-0 w-20 h-20 bg-gradient-to-tr from-emerald-400/15 to-transparent rounded-full -translate-x-8 animate-pulse delay-1000" />
-
-      {/* Pharmacist Info */}
       <div className="p-5 border-b border-teal-600/40 relative z-10">
         <div className="relative flex items-center space-x-3 bg-teal-800/50 backdrop-blur-xl rounded-2xl p-3 border border-teal-500/30 shadow-xl">
           <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-200 to-cyan-300 flex items-center justify-center shadow-xl border-2 border-white/20">
-              <User className="w-5 h-5 text-teal-900" />
-            </div>
+            {pharmacist?.profileImage ? (
+              <img
+                src={`http://localhost:5186${pharmacist.profileImage}`}
+                alt="Pharmacist"
+                className="w-10 h-10 rounded-xl object-cover border-2 border-white/20 shadow-xl"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-200 to-cyan-300 flex items-center justify-center shadow-xl border-2 border-white/20">
+                <User className="w-5 h-5 text-teal-900" />
+              </div>
+            )}
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center shadow-lg border border-white">
               <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
             </div>
@@ -40,7 +59,7 @@ const PharmacistSidebar = ({ activeTab, setActiveTab, pharmacist }) => {
               Licensed Pharmacist
             </p>
             <p className="text-base font-bold text-white leading-tight">
-              {pharmacist?.fullName || "Dr. Sarah Johnson"}
+              {pharmacist?.fullName || "Loading..."}
             </p>
           </div>
         </div>

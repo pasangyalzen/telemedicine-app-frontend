@@ -44,7 +44,7 @@ const AppointmentCard = ({
     };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-xl shadow-sm mb-4 hover:shadow-md transition-all duration-300 border border-gray-100">
+    <div className="p-6 bg-gradient-to-br from-teal-200 via-white to-cyan-100 rounded-xl shadow-sm border border-gray-100">
       <div className="w-1 self-stretch rounded-full mr-4 bg-gray-400"></div>
       <div className="flex-1 w-full">
         <div className="flex items-center mb-3">

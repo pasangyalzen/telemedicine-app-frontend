@@ -26,14 +26,13 @@ export default function Navbar({ backgroundColor }) {
   };
 
   return (
-    <nav
-      style={{
-        backgroundColor: backgroundColor || "#012f33",
-        opacity: navbarOpacity,
-        transition: "opacity 0.3s ease-in-out",
-      }}
-      className="fixed top-0 left-0 right-0 z-50 w-full p-3 flex items-center justify-between"
-    >
+     <nav
+        style={{
+          backgroundColor: backgroundColor || "#012f33",
+          transition: "background-color 0.3s ease-in-out",
+        }}
+        className="fixed top-0 left-0 right-0 z-50 w-full p-4 flex items-center justify-between shadow-md border-b border-teal-500/40"
+      >
       <span className="text-3xl font-montserrat font-extrabold text-white tracking-widest bg-gradient-to-r from-gray-500 via-white to-white bg-clip-text text-transparent">
         TELECHAUKI
       </span>

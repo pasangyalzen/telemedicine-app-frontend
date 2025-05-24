@@ -252,7 +252,7 @@ export default function DoctorWaitingRoomDashboard() {
         </aside>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col p-6 bg-gray-50 overflow-y-auto">
+        <div className="flex-1 flex flex-col p-6 overflow-y-auto bg-gradient-to-br from-teal-200 via-white to-cyan-50">
           {selectedMenu === "dashboard" && (
             <DoctorDashboardHome
               inviteLink={inviteLink}
