@@ -10,6 +10,7 @@ export const apiClient = axios.create({
   },
 });
 
+
 // Function to fetch today's appointments for the doctor
 export const fetchTodaysAppointments = async (doctorId) => {
   try {

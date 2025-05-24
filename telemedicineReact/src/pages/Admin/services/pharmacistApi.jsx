@@ -107,3 +107,22 @@ export const fetchUserIdByPharmacistId = async (pharmacistId) => {
     throw new Error(error.response?.data?.message || "Error fetching UserId by PharmacistId");
   }
 };
+
+// Fetch PharmacistId by Email
+export const fetchPharmacistIdByEmail = async (email) => {
+  if (!email) throw new Error("Email is required to fetch PharmacistId");
+
+  try {
+    const response = await apiClient.get(`/GetPharmacistIdByEmail/${encodeURIComponent(email)}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    // Returns object: { PharmacistId: ... }
+    return response.data.PharmacistId;
+  } catch (error) {
+    console.error("🚨 Error fetching PharmacistId by email:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || "Error fetching PharmacistId by email");
+  }
+};

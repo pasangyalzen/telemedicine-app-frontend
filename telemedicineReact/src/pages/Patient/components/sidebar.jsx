@@ -11,6 +11,7 @@ export const Sidebar = ({
   showSidebar,
   setShowSidebar,
 }) => {
+  console.log("We are herer", patient);
   const navigate = useNavigate();
   // Map icon strings to actual components
   const getIcon = (iconName) => {
@@ -51,9 +52,19 @@ export const Sidebar = ({
         <div className="absolute inset-0 bg-gradient-to-br from-teal-300/5 to-transparent"></div>
         <div className="flex items-center space-x-4 relative z-10">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-300 via-teal-200 to-teal-400 flex items-center justify-center text-teal-900 shadow-xl border-3 border-teal-200/50 ring-2 ring-teal-400/30">
-              <User className="w-8 h-8" />
-            </div>
+            <div className="w-16 h-16 rounded-full overflow-hidden shadow-xl border-3 border-teal-200/50 ring-2 ring-teal-400/30">
+            {patient?.profileImage ? (
+              <img
+                src={`http://localhost:5186${patient.profileImage}`}
+                alt="Patient"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-teal-300 via-teal-200 to-teal-400 flex items-center justify-center text-teal-900">
+                <User className="w-8 h-8" />
+              </div>
+            )}
+          </div>
             <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-teal-400 to-teal-500 border-2 border-teal-800 flex items-center justify-center">
               <div className={`w-2 h-2 rounded-full ${patient?.status ? "bg-emerald-300" : "bg-red-400"} animate-pulse`}></div>
             </div>

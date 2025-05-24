@@ -29,6 +29,20 @@ export const fetchPatients = async () => {
   }
 };
 
+
+  export const fetchConsultationFeeByDoctorId = async (doctorId) => {
+    try {
+      const response = await axios.get(`http://localhost:5186/api/Patient/GetConsultationFeeByDoctorId/${doctorId}`);
+      console.log("FEERESPONSE", response);
+  
+      return response.data.consultationFee;
+    } catch (error) {
+      console.error('Error fetching consultation fee:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || 'Failed to fetch consultation fee');
+    }
+  };
+
+
 // Create a new patient
 export const createPatient = async (patientData) => {
   console.log("I am here");

@@ -21,4 +21,5 @@ export const PATHS = {
     LOBBY:"/LOBBY",
     ROOM:"/room/:room",
     PHARMACISTDASHBOARD: "/pharmacist-dashboard",
+    VERIFYPAYMENT: "/verify-payment"
 }

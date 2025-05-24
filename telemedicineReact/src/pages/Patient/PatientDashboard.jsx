@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState , useEffect} from "react"
 import { useNavigate } from "react-router-dom"
 import { Search, User, ChevronDown, Menu, X, LogOut } from "lucide-react"
 import { Sidebar as PatientSidebar} from "./components/sidebar"
@@ -16,6 +16,11 @@ import { cancelDoctorAppointment, getDoctorIdByEmail, getDoctorIdByUserId } from
 import toast from "react-hot-toast"
 import axios from "axios";
 import { getEmailFromToken, getUserIdFromToken } from "../auth/auth"
+import MedicineRequestForm from "./components/MedicineRequestForm"
+import { fetchPharmacistIdByEmail } from "../Admin/services/pharmacistApi"
+
+
+
 
 const API_BASE_URL = "http://localhost:5186/api/Patient";
 
@@ -30,6 +35,23 @@ export const apiClient = axios.create({
 
 
 const PatientDashboard = () => {
+  useEffect(() => {
+    const checkPharmacistStatus = async () => {
+      try {
+        const email = getEmailFromToken();
+        const pharmacistId = await fetchPharmacistIdByEmail(email);
+        if (pharmacistId) {
+          setIsPharmacistRegistered(true);
+        } else {
+          setIsPharmacistRegistered(false);
+        }
+      } catch (error) {
+        console.error("Error checking pharmacist registration", error);
+        setIsPharmacistRegistered(false);
+      }
+    };
+    checkPharmacistStatus();
+  }, []); 
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("today")
   const [showSidebar, setShowSidebar] = useState(false)
@@ -44,6 +66,8 @@ const PatientDashboard = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [showMedicineRequestForm, setShowMedicineRequestForm] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
 
 
   const fetchUpcomingAppointments = async (id) => {
@@ -77,6 +101,9 @@ const PatientDashboard = () => {
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [isPharmacistRegistered, setIsPharmacistRegistered] = useState(false);
+  const [showPharmacistRegisterModal, setShowPharmacistRegisterModal] = useState(false);
+
 
   const handleCancelAppointment = async (appointmentIdToCancel) => {
   setLoading(true);
@@ -220,7 +247,10 @@ const PatientDashboard = () => {
           />
         )
       case "prescriptions":
-        return <PrescriptionList prescriptions={prescriptions} error={prescriptionsError} />
+        return <PrescriptionList prescriptions={prescriptions} error={prescriptionsError} onRequestMedicine={(item) => {
+    setSelectedMedicine(item);
+    setShowMedicineRequestForm(true);
+  }} />
       default:
         return null
     }
@@ -276,9 +306,19 @@ const PatientDashboard = () => {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-3 text-white hover:text-teal-100 p-2 rounded-2xl hover:bg-teal-700/40 transition-all duration-300 group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-500 border-2 border-teal-300/50 flex items-center justify-center shadow-xl group-hover:shadow-teal-300/30 transition-all duration-300">
-                    <User className="w-6 h-6 text-teal-900" />
-                  </div>
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-teal-300/50 shadow-xl group-hover:shadow-teal-300/30 transition-all duration-300">
+                  {patientInfo?.profileImage ? (
+                    <img
+                      src={`http://localhost:5186${patientInfo.profileImage}`}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center">
+                      <User className="w-6 h-6 text-teal-900" />
+                    </div>
+                  )}
+                </div>
                   <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
                 </button>
 
@@ -286,9 +326,19 @@ const PatientDashboard = () => {
                   <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl z-10 border border-teal-100 overflow-hidden animate-scaleIn backdrop-blur-lg">
                     <div className="px-6 py-5 border-b border-teal-100 bg-gradient-to-r from-teal-50 to-teal-100/50">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-lg">
-                          <User className="w-6 h-6 text-teal-900" />
-                        </div>
+                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-teal-300/50 shadow-xl group-hover:shadow-teal-300/30 transition-all duration-300">
+                        {patientInfo?.profileImage ? (
+                          <img
+                            src={`http://localhost:5186${patientInfo.profileImage}`}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center">
+                            <User className="w-6 h-6 text-teal-900" />
+                          </div>
+                        )}
+                      </div>
                         <div>
                           <p className="text-base font-bold text-teal-900">Patient: {patientInfo.fullName}</p>
                           <p className="text-sm text-teal-600 truncate mt-1">Patient ID: {patientInfo.patientId}</p>
@@ -385,6 +435,38 @@ const PatientDashboard = () => {
           </div>
         </div>
       )}
+
+      {showMedicineRequestForm && selectedMedicine && (
+      <MedicineRequestForm
+        medicine={selectedMedicine}
+        onClose={() => {
+          setShowMedicineRequestForm(false);
+          setSelectedMedicine(null);
+        }}
+      />
+    )}
+
+    {!isPharmacistRegistered && (
+    <div className="my-6 flex justify-center">
+      <button
+        onClick={() => setShowPharmacistRegisterModal(true)}
+        className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+      >
+        Register as Pharmacist
+      </button>
+    </div>
+  )}
+
+  {showPharmacistRegisterModal && (
+    <PharmacistRegisterModal
+      email={getEmailFromToken()}
+      onClose={() => setShowPharmacistRegisterModal(false)}
+      onSubmit={() => {
+        setIsPharmacistRegistered(true);
+        setShowPharmacistRegisterModal(false);
+      }}
+    />
+  )}
 
       {/* Enhanced CSS for animations */}
       <style jsx>{`

@@ -25,7 +25,7 @@ import { SocketProvider } from "../context/SocketProvider";
 import RoomPage from "../screens/Room";
 import PatientBookAppointmentPage from "../pages/Patient/PatientBookAppointmentPage";
 import PharmacistDashboard from "../pages/Pharmacist/PharmacistDashboard";
-
+import VerifyPayment from "../pages/Patient/components/VerifyPayment";
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -41,6 +41,7 @@ export default function AppRoutes() {
         <Route path={PATHS.DOCTORWAITINGROOMDASHBOARD} element={<DoctorWaitingRoomDashboard />} />
         <Route path={PATHS.LOBBY} element = {<LobbyScreen/>}/>
         <Route path={PATHS.ROOM} element={<RoomPage />} />
+        <Route path={PATHS.VERIFYPAYMENT} element={<VerifyPayment />} />
         {/* Admin Dashboard with Nested Routes */}
         <Route path={PATHS.ADMINDASHBOARD} element={<AdminDashboard />}>
           {/* Nested Routes for Admin Dashboard */}

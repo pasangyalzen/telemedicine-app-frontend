@@ -211,7 +211,7 @@ const appointmentId = room;
           onClick={() => {
             const role = localStorage.getItem("role");
             if (role === "Doctor") navigate("/doctor-waiting-room-dashboard");
-            else if (role === "Patient") navigate("/patient-video-call-dashboard");
+            else if (role === "Patient") navigate("/patientdashboard");
             else navigate("/");
           }}
           className="mt-2 w-40 text-center px-3 py-1 rounded-md bg-red-200 text-red-700 hover:bg-red-300 transition-colors font-semibold"

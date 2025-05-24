@@ -45,6 +45,7 @@ const [patientInfoError, setPatientInfoError] = useState("")
     return res.data
   }
 
+
   const fetchUpcomingAppointments = async (id) => {
     const res = await apiClient.get(`/GetUpcomingAppointments/${id}`)
      console.log("Ressstttt",res);
