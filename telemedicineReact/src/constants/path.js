@@ -20,4 +20,5 @@ export const PATHS = {
     SETTINGS: "/admin-dashboard/settings",
     LOBBY:"/LOBBY",
     ROOM:"/room/:room",
+    PHARMACISTDASHBOARD: "/pharmacist-dashboard",
 }

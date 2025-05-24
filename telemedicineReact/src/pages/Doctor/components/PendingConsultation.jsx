@@ -54,9 +54,11 @@ const AppointmentCard = ({
 
         <div className="flex items-center text-sm text-gray-600 mb-4">
           <Calendar size={16} className="text-gray-500 mr-2" />
-          <span className="font-medium">{formatDate(appointment.scheduledTime)}</span>
+          <span className="font-medium">{formatDate(appointment.appointmentDate)}</span>
           <Clock size={16} className="text-gray-500 ml-4 mr-2" />
-          <span className="font-medium">{formatTime(appointment.scheduledTime)}</span>
+        <span className="font-medium">
+          {appointment.startTime?.slice(0, 5)} - {appointment.endTime?.slice(0, 5)}
+        </span>
         </div>
 
         <div className="flex gap-3">
@@ -150,6 +152,7 @@ const PendingConsultations = () => {
       console.error("Error fetching consultation ID:", error);
     }
   };
+  
 
   return (
     <div className="p-8 bg-gradient-to-b from-gray-50 to-white rounded-xl shadow-sm min-h-[500px] border border-gray-100">
@@ -172,14 +175,17 @@ const PendingConsultations = () => {
         </div>
       ) : appointments?.length > 0 ? (
         <div className="space-y-4">
-          {appointments.map((appointment) => (
+          {appointments.map((appointment) => {
+          console.log("Appointment object:", appointment);
+          return (
             <AppointmentCard
               key={appointment.appointmentId}
               appointment={appointment}
               onAddConsultation={handleAddConsultation}
               onAddPrescription={handleAddPrescription}
             />
-          ))}
+          );
+        })}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center h-64 text-center">

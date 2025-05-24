@@ -88,56 +88,57 @@ export const ConsultationModal = ({ consultationData, consultationLoading, selec
 
         {/* Modal Content */}
         <div className="p-6 overflow-y-auto flex-grow">
-          {consultationLoading ? (
+        {consultationLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
-              <p className="text-teal-700">Loading consultation details...</p>
+            <div className="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
+            <p className="text-teal-700">Loading consultation details...</p>
             </div>
-          ) : consultationData ? (
+        ) : consultationData ? (
             consultationData.error ? (
-              <div className="flex items-center justify-center py-8 text-red-600">
-                <AlertCircle className="w-6 h-6 mr-2" />
-                <p>{consultationData.error}</p>
-              </div>
+            // Replace error display with friendly message
+            <div className="flex items-center justify-center py-8 text-gray-700">
+                <FileText className="w-6 h-6 mr-2 text-gray-500" />
+                <p>The doctor hasn't uploaded any consultation details for this appointment.</p>
+            </div>
             ) : (
-              <div className="space-y-8">
+            <div className="space-y-8">
                 <div className="bg-teal-50 rounded-xl p-5 border border-teal-100 shadow-sm">
-                  <h4 className="text-teal-800 font-medium mb-3 flex items-center">
+                <h4 className="text-teal-800 font-medium mb-3 flex items-center">
                     <FileText className="w-5 h-5 mr-2 text-teal-600" />
                     Doctor's Notes
-                  </h4>
-                  <p className="text-gray-700 whitespace-pre-line bg-white p-3 rounded border border-teal-100 min-h-[60px]">
+                </h4>
+                <p className="text-gray-700 whitespace-pre-line bg-white p-3 rounded border border-teal-100 min-h-[60px]">
                     {consultationData.notes || "No notes provided"}
-                  </p>
+                </p>
                 </div>
 
                 <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                  <h4 className="text-green-800 font-medium mb-2 flex items-center">
+                <h4 className="text-green-800 font-medium mb-2 flex items-center">
                     <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
                     Recommendations
-                  </h4>
-                  <p className="text-gray-700 whitespace-pre-line bg-white p-3 rounded border border-green-100 min-h-[60px]">
+                </h4>
+                <p className="text-gray-700 whitespace-pre-line bg-white p-3 rounded border border-green-100 min-h-[60px]">
                     {consultationData.recommendations || "No recommendations provided"}
-                  </p>
+                </p>
                 </div>
 
                 {consultationData.createdAt && (
-                  <p className="text-sm text-gray-500 flex items-center">
+                <p className="text-sm text-gray-500 flex items-center">
                     <Calendar className="w-4 h-4 mr-2" />
                     Created on: {new Date(consultationData.createdAt).toLocaleDateString()}
-                  </p>
+                </p>
                 )}
-              </div>
-            )
-          ) : (
-            <div className="text-center py-8">
-              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-3" />
-              <h4 className="text-lg font-medium text-gray-700">No consultation details available</h4>
-              <p className="text-gray-500 mt-1">
-                The doctor hasn't uploaded any consultation details for this appointment.
-              </p>
             </div>
-          )}
+            )
+        ) : (
+            <div className="text-center py-8">
+            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-3" />
+            <h4 className="text-lg font-medium text-gray-700">No consultation details available</h4>
+            <p className="text-gray-500 mt-1">
+                The doctor hasn't uploaded any consultation details for this appointment.
+            </p>
+            </div>
+        )}
         </div>
 
         {/* Modal Footer */}

@@ -192,19 +192,32 @@ const appointmentId = room;
           </svg>
           <h1 className="text-xl font-bold text-white ml-2">TELECHAUKI</h1>
         </div>
-        <div className="flex items-center">
-          <span className="text-teal-100 mr-4">
-            {remoteSocketId ? 
-              <span className="flex items-center">
-                <span className="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
-                Connected
-              </span> : 
-              <span className="flex items-center">
-                <span className="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
-                Waiting for connection
-              </span>
-            }
-          </span>
+        <div className="flex flex-col items-end mr-4">
+        <span className="text-teal-100">
+          {remoteSocketId ? (
+            <span className="flex items-center">
+              <span className="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
+              Connected
+            </span>
+          ) : (
+            <span className="flex items-center">
+              <span className="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
+              Waiting for connection
+            </span>
+          )}
+        </span>
+
+          <button
+          onClick={() => {
+            const role = localStorage.getItem("role");
+            if (role === "Doctor") navigate("/doctor-waiting-room-dashboard");
+            else if (role === "Patient") navigate("/patient-video-call-dashboard");
+            else navigate("/");
+          }}
+          className="mt-2 w-40 text-center px-3 py-1 rounded-md bg-red-200 text-red-700 hover:bg-red-300 transition-colors font-semibold"
+        >
+          ← Back
+        </button>
         </div>
       </header>
 

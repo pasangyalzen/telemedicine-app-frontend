@@ -23,7 +23,8 @@ import PatientDashboard from "../pages/Patient/PatientDashboard";
 import LobbyScreen from "../screens/Lobby";
 import { SocketProvider } from "../context/SocketProvider";
 import RoomPage from "../screens/Room";
-
+import PatientBookAppointmentPage from "../pages/Patient/PatientBookAppointmentPage";
+import PharmacistDashboard from "../pages/Pharmacist/PharmacistDashboard";
 
 export default function AppRoutes() {
   return (
@@ -35,6 +36,8 @@ export default function AppRoutes() {
         <Route path={PATHS.REGISTER} element={<RegisterPage />} />
         <Route path={PATHS.PATIENTVIDEOCALLDASHBOARD} element={<PatientVideoCallDashboard />} />
         <Route path={PATHS.PATIENTDASHBOARD} element={<PatientDashboard/>}/>
+        <Route path={PATHS.PHARMACISTDASHBOARD} element={<PharmacistDashboard />} />
+        <Route path="/book-appointment" element={<PatientBookAppointmentPage />} />
         <Route path={PATHS.DOCTORWAITINGROOMDASHBOARD} element={<DoctorWaitingRoomDashboard />} />
         <Route path={PATHS.LOBBY} element = {<LobbyScreen/>}/>
         <Route path={PATHS.ROOM} element={<RoomPage />} />

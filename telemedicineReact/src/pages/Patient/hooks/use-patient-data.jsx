@@ -114,14 +114,19 @@ const [patientInfoError, setPatientInfoError] = useState("")
 
         const safeFetch = async (fn, setData, setErr) => {
           try {
-            const result = await fn(fetchedPatientId)
-            setData(result)
-            setErr("")
+            const result = await fn(fetchedPatientId);
+            if (!result || result.length === 0) {
+              setData([]);
+              setErr("");  // No error message, just empty data
+            } else {
+              setData(result);
+              setErr("");
+            }
           } catch (e) {
-            setData([])
-            setErr("Failed to load this section.")
+            setData([]);
+            setErr("");  // Clear error, do NOT set an error message
           }
-        }
+        };
 
         await Promise.all([
           safeFetch(fetchTodaysAppointments, setToday, setTodayError),

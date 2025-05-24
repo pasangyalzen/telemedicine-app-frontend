@@ -35,7 +35,7 @@ export default function LoginPage() {
                 navigate(PATHS.PATIENTDASHBOARD);
                 break;
             case "Pharmacist":
-                navigate(PATHS.PHARMACIST_DASHBOARD);
+                navigate(PATHS.PHARMACISTDASHBOARD);
                 break;
             default:
                 navigate(PATHS.DASHBOARD);

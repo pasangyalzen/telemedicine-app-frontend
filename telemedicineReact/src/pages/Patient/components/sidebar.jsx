@@ -1,5 +1,6 @@
 import { HelpCircle, User } from "lucide-react"
 import { Clock, Calendar, FileText, FilePlus } from "lucide-react"
+import { useNavigate } from "react-router-dom";
 
 export const Sidebar = ({
   activeTab,
@@ -10,6 +11,7 @@ export const Sidebar = ({
   showSidebar,
   setShowSidebar,
 }) => {
+  const navigate = useNavigate();
   // Map icon strings to actual components
   const getIcon = (iconName) => {
     switch (iconName) {
@@ -121,6 +123,7 @@ export const Sidebar = ({
             </button>
           ))}
         </nav>
+        
       </div>
 
       {/* Bottom section with enhanced help and support */}

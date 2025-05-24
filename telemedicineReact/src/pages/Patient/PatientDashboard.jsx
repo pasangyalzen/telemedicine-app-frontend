@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Search, User, ChevronDown, Menu, X, LogOut } from "lucide-react"
-import { Sidebar } from "./components/sidebar"
+import { Sidebar as PatientSidebar} from "./components/sidebar"
 import { AppointmentList } from "./components/AppointmentList"
 import { PrescriptionList } from "./components/PrescriptionList"
 import { ConsultationModal } from "./components/ConsultationModal"
@@ -198,7 +198,7 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
   return (
     <div className="flex font-sans bg-gradient-to-br from-teal-50 via-slate-50 to-teal-100 min-h-screen">
       {/* Sidebar */}
-      <Sidebar
+      <PatientSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         menuItems={menuItems}
@@ -237,18 +237,7 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
             {/* Right side - Search and user menu */}
             <div className="flex items-center space-x-6 relative z-10">
               {/* Search */}
-              <div className="relative hidden md:block">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-teal-300" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search appointments, doctors..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-80 pl-12 pr-4 py-3 border border-teal-500/30 rounded-2xl bg-teal-700/40 backdrop-blur-sm text-white placeholder-teal-200 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent transition-all duration-300 shadow-lg"
-                />
-              </div>
+              
 
               {/* User Menu */}
               <div className="relative">
@@ -298,7 +287,14 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
         <div className="p-6 lg:p-8">
           {/* Content Header */}
           <div className="mb-8">
-            <PageHeader title={getActiveTabTitle()} activeTab={activeTab} />
+            <PageHeader
+            title={getActiveTabTitle()}
+            activeTab={activeTab}
+            onBookAppointment={() => {
+              console.log("PageHeader button clicked");
+              navigate("/book-appointment");
+            }}
+          />
           </div>
 
           {/* Main Content */}
@@ -326,8 +322,8 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
       )}
       
       {showRescheduleModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl m-4 animate-scaleIn">
+        <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 animate-fadeIn">
             <RescheduleForm
               appointmentId={appointmentToReschedule.appointmentId}
               doctorId={appointmentToReschedule.doctorId}
@@ -344,8 +340,8 @@ const handleCancelAppointment = async (appointmentIdToCancel) => {
       )}
 
       {showCancelModal && appointmentToCancel && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 animate-fadeIn">
-          <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 border border-teal-200 animate-scaleIn">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full outline-none border-none">
             <ConfirmationModal
               message="Are you sure you want to cancel this appointment?"
               actionLabel="Cancel Appointment"
