@@ -11,6 +11,7 @@ export default function OtpVerificationForm({ email, password, confirmPassword, 
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 
+
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
 

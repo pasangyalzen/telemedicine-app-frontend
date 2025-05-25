@@ -150,13 +150,13 @@ export const PrescriptionList = ({ prescriptions = [], error = "", onRequestMedi
               <Download className="w-4 h-4" />
               Download Prescription
             </button>
-            <button
+            {/* <button
             onClick={() => handleRequestMedicineClick(prescription)}
             className="mt-3 flex items-center justify-center gap-2 w-full bg-emerald-600 text-white px-4 py-3 rounded-xl hover:bg-emerald-700 transition-colors duration-300 shadow-md"
           >
             <ShoppingCart className="w-4 h-4" />
             Request Medicine
-          </button>
+          </button> */}
           </div>
         </div>
       ))}

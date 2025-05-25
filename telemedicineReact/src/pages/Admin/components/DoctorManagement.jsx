@@ -121,9 +121,9 @@ const DoctorManagement = () => {
       )}
 
       {/* Search Bar Component */}
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      </div>
+      </div> */}
 
       {/* Doctor Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden border border-teal-100">

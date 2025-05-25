@@ -31,7 +31,7 @@ const PharmacistSidebar = ({ activeTab, setActiveTab }) => {
     { id: "consultations", label: "Consultations", icon: FileText, color: "from-emerald-400 to-teal-400" },
     { id: "prescriptions", label: "Prescriptions", icon: Package, color: "from-teal-500 to-blue-400" },
     { id: "appointments", label: "Appointments", icon: Calendar, color: "from-cyan-400 to-teal-500" },
-    { id: "inventory", label: "Inventory", icon: Archive, color: "from-teal-400 to-emerald-400" },
+    // { id: "inventory", label: "Inventory", icon: Archive, color: "from-teal-400 to-emerald-400" },
   ];
 
   return (
@@ -56,10 +56,10 @@ const PharmacistSidebar = ({ activeTab, setActiveTab }) => {
           </div>
           <div className="flex-1">
             <p className="text-xs text-teal-200/70 font-semibold uppercase tracking-wide mb-0.5">
-              Licensed Pharmacist
+              Pharmacist
             </p>
             <p className="text-base font-bold text-white leading-tight">
-              {pharmacist?.fullName || "Loading..."}
+              {pharmacist?.fullName || ""}
             </p>
           </div>
         </div>

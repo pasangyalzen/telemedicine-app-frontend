@@ -9,7 +9,7 @@ import { Calendar, Clock, X, RefreshCw } from "lucide-react";
 
 const API_URL = "http://localhost:5186/api";
 
-const RescheduleForm = ({ appointmentId, doctorId: propDoctorId, onClose, onRescheduleSuccess, fetchAppointments }) => {
+const RescheduleForm = ({ appointmentId, doctorId: propDoctorId, onClose, onRescheduleSuccess }) => {
   const navigate = useNavigate();  // Moved inside component
 
   const apiClient = axios.create({
@@ -102,7 +102,7 @@ const RescheduleForm = ({ appointmentId, doctorId: propDoctorId, onClose, onResc
     try {
       const message = await rescheduleAppointment(appointmentId, payload);
       toast.success(message);
-      await fetchAppointments?.();
+      // await fetchAppointments?.();
 
       onRescheduleSuccess?.(appointmentId, formData.appointmentDate);
       onClose?.();

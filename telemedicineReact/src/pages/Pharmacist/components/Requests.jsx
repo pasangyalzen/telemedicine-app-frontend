@@ -285,29 +285,6 @@ const Requests = () => {
                         </div>
                       </div>
 
-                      {/* Availability Toggle */}
-                      <button
-                        onClick={() => toggleAvailability(item.medicineName)}
-                        className={`w-full py-3 px-6 rounded-xl font-bold text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                          availability[item.medicineName]
-                            ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-                            : "bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white"
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-2">
-                          {availability[item.medicineName] ? (
-                            <>
-                              <CheckCircle2 className="w-5 h-5" />
-                              Available in Stock
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle className="w-5 h-5" />
-                              Not Available
-                            </>
-                          )}
-                        </div>
-                      </button>
                     </div>
                   ))}
                 </div>

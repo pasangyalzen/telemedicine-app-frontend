@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import axios from "axios";
+"use client"
 
-const API_URL = "http://localhost:5186/api";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+
+const API_URL = "http://localhost:5186/api"
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -9,55 +11,120 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
-});
+})
 
-const DoctorTable = ({ doctors, handleEditClick, handleDeleteClick, refreshDoctors }) => {
-  const [expandedDoctorId, setExpandedDoctorId] = useState(null);
-  const [modalData, setModalData] = useState({ open: false, doctorId: null, currentStatus: false });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const DoctorTable = ({ handleEditClick, handleDeleteClick, searchQuery = "" }) => {
+  const [doctors, setDoctors] = useState([])
+  const [expandedDoctorId, setExpandedDoctorId] = useState(null)
+  const [modalData, setModalData] = useState({ open: false, doctorId: null, currentStatus: false })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
+  const [totalDoctors, setTotalDoctors] = useState(0)
+  const [sortColumn, setSortColumn] = useState("CreatedAt")
+  const [sortOrder, setSortOrder] = useState("ASC")
+  const [fetchLoading, setFetchLoading] = useState(false)
+
+  // Fetch doctors with pagination
+  const fetchDoctors = async (page = currentPage, search = searchQuery) => {
+    setFetchLoading(true)
+    try {
+      const response = await apiClient.get("/admin/GetDoctors", {
+        params: {
+          search: search,
+          sortColumn: sortColumn,
+          sortOrder: sortOrder,
+          page: page,
+          pageSize: pageSize,
+        },
+      })
+
+      if (response.data) {
+        setDoctors(response.data.doctors || [])
+        setTotalDoctors(response.data.totalDoctors || 0)
+        setCurrentPage(response.data.currentPage || page)
+      }
+    } catch (err) {
+      console.error("Error fetching doctors:", err)
+      setDoctors([])
+      setTotalDoctors(0)
+    } finally {
+      setFetchLoading(false)
+    }
+  }
+
+  // Initial fetch and when dependencies change
+  useEffect(() => {
+    fetchDoctors(1, searchQuery)
+  }, [searchQuery, sortColumn, sortOrder, pageSize])
+
+  // Calculate pagination info
+  const totalPages = Math.ceil(totalDoctors / pageSize)
+  const startIndex = (currentPage - 1) * pageSize + 1
+  const endIndex = Math.min(currentPage * pageSize, totalDoctors)
+
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage)
+      fetchDoctors(newPage, searchQuery)
+    }
+  }
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize)
+    setCurrentPage(1)
+  }
 
   const toggleExpand = (doctorId) => {
-    setExpandedDoctorId((prev) => (prev === doctorId ? null : doctorId));
-  };
+    setExpandedDoctorId((prev) => (prev === doctorId ? null : doctorId))
+  }
 
   // Open confirmation modal on toggle button click
   const openConfirmationModal = (doctorId, currentStatus) => {
-    console.log("Toggling doctorId:", doctorId);
-    setModalData({ open: true, doctorId, currentStatus });
-    setError(null);
-  };
+    console.log("Toggling doctorId:", doctorId)
+    setModalData({ open: true, doctorId, currentStatus })
+    setError(null)
+  }
 
   // Close modal without changes
   const closeModal = () => {
-    setModalData({ open: false, doctorId: null, currentStatus: false });
-    setError(null);
-  };
+    setModalData({ open: false, doctorId: null, currentStatus: false })
+    setError(null)
+  }
 
   // Call API to toggle status on confirm
   const confirmToggleStatus = async () => {
-    if (!modalData.doctorId) return;
-    setLoading(true);
-    setError(null);
+    if (!modalData.doctorId) return
+    setLoading(true)
+    setError(null)
 
     try {
-      await apiClient.put(`/admin/ToggleDoctorStatus/${modalData.doctorId}`);
-      setLoading(false);
-      setModalData({ open: false, doctorId: null, currentStatus: false });
+      await apiClient.put(`/admin/ToggleDoctorStatus/${modalData.doctorId}`)
+      setLoading(false)
+      setModalData({ open: false, doctorId: null, currentStatus: false })
 
-      // Refresh doctor list after successful toggle
-      if (typeof refreshDoctors === "function") {
-        refreshDoctors();
-      }
+      // Refresh current page after successful toggle
+      fetchDoctors(currentPage, searchQuery)
     } catch (err) {
-      setLoading(false);
-      setError("Failed to toggle status. Please try again.");
-      console.error(err);
+      setLoading(false)
+      setError("Failed to toggle status. Please try again.")
+      console.error(err)
     }
-  };
+  }
 
   return (
     <div className="w-full overflow-x-auto rounded-xl shadow-xl bg-white p-4">
+      {/* Loading indicator */}
+      {fetchLoading && (
+        <div className="flex justify-center items-center py-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+        </div>
+      )}
+
       <table className="w-full table-auto text-sm text-gray-700">
         <thead className="bg-gradient-to-r from-teal-600 to-teal-700 text-white text-[13px] uppercase">
           <tr>
@@ -120,14 +187,31 @@ const DoctorTable = ({ doctors, handleEditClick, handleDeleteClick, refreshDocto
                   <tr>
                     <td colSpan="7" className="px-6 py-4 bg-gray-50 border-t border-teal-100 text-xs text-gray-800">
                       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                        <div><strong>Email:</strong> {doctor.email}</div>
-                        <div><strong>Phone:</strong> {doctor.phoneNumber}</div>
-                        <div><strong>Clinic:</strong> {doctor.clinicName}</div>
-                        <div><strong>Clinic Address:</strong> {doctor.clinicAddress}</div>
-                        <div><strong>License No.:</strong> {doctor.licenseNumber}</div>
-                        <div><strong>Medical College:</strong> {doctor.medicalCollege}</div>
-                        <div><strong>Date of Birth:</strong> {doctor.dateOfBirth ? new Date(doctor.dateOfBirth).toLocaleDateString() : "N/A"}</div>
-                        <div><strong>Status:</strong> {doctor.isActive ? "Active" : "Inactive"}</div>
+                        <div>
+                          <strong>Email:</strong> {doctor.email}
+                        </div>
+                        <div>
+                          <strong>Phone:</strong> {doctor.phoneNumber}
+                        </div>
+                        <div>
+                          <strong>Clinic:</strong> {doctor.clinicName}
+                        </div>
+                        <div>
+                          <strong>Clinic Address:</strong> {doctor.clinicAddress}
+                        </div>
+                        <div>
+                          <strong>License No.:</strong> {doctor.licenseNumber}
+                        </div>
+                        <div>
+                          <strong>Medical College:</strong> {doctor.medicalCollege}
+                        </div>
+                        <div>
+                          <strong>Date of Birth:</strong>{" "}
+                          {doctor.dateOfBirth ? new Date(doctor.dateOfBirth).toLocaleDateString() : "N/A"}
+                        </div>
+                        <div>
+                          <strong>Status:</strong> {doctor.isActive ? "Active" : "Inactive"}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -161,6 +245,88 @@ const DoctorTable = ({ doctors, handleEditClick, handleDeleteClick, refreshDocto
         </tbody>
       </table>
 
+      {/* Pagination Controls */}
+      {totalDoctors > 0 && (
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 bg-gray-50 p-4 rounded-lg">
+          {/* Results info */}
+          <div className="text-sm text-gray-700 font-medium">
+            Showing {startIndex}-{endIndex} of {totalDoctors} doctors
+          </div>
+
+          {/* Pagination buttons */}
+          <div className="flex items-center gap-2">
+            {/* Previous button */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-gray-500 transition-colors"
+            >
+              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Previous
+            </button>
+
+            {/* Page numbers */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                let pageNum
+                if (totalPages <= 3) {
+                  pageNum = i + 1
+                } else if (currentPage <= 2) {
+                  pageNum = i + 1
+                } else if (currentPage >= totalPages - 1) {
+                  pageNum = totalPages - 2 + i
+                } else {
+                  pageNum = currentPage - 1 + i
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      currentPage === pageNum
+                        ? "text-white bg-teal-600 hover:bg-teal-700"
+                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Next button */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-gray-500 transition-colors"
+            >
+              Next
+              <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Page size selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Show:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+        </div>
+      )}
+
       {/* Confirmation Modal */}
       {modalData.open && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -192,7 +358,7 @@ const DoctorTable = ({ doctors, handleEditClick, handleDeleteClick, refreshDocto
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DoctorTable;
+export default DoctorTable

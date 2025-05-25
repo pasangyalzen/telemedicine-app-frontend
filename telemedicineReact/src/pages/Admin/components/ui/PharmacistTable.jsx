@@ -69,7 +69,7 @@ const PharmacistTable = ({ pharmacists, refreshPharmacists }) => {
   return (
     <div className="w-full overflow-x-auto rounded-xl shadow-xl bg-white p-4">
       <table className="w-full table-auto text-sm text-gray-700">
-        <thead className="bg-gradient-to-r from-green-600 to-green-700 text-white text-[13px] uppercase">
+        <thead className="bg-gradient-to-r from-teal-600 to-teal-700 text-white text-[13px] uppercase">
           <tr>
             <th className="px-3 py-3 text-left">Pharmacist</th>
             <th className="px-3 py-3 text-left">Gender</th>

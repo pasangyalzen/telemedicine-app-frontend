@@ -47,6 +47,7 @@ const Prescription = ({ consultationId, setConsultationId, setShowPrescriptionFo
     } catch (error) {
       console.error("Error creating prescription:", error);
       setMessage("Error creating prescription");
+      toast.error("The prescription has been already added.");
     }
   };
 

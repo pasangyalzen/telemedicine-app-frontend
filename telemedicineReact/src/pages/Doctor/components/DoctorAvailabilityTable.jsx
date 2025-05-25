@@ -34,7 +34,7 @@ const DoctorAvailabilityTable = ({ doctorId }) => {
       setAvailabilityList(response.data);
     } catch (error) {
       console.error("Error fetching availability:", error);
-      toast.error("Failed to fetch availability.", { id: "fetch-error" });
+      // toast.error("Failed to fetch availability.", { id: "fetch-error" });
     }
   };
 
@@ -362,22 +362,23 @@ const DoctorAvailabilityTable = ({ doctorId }) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex gap-2 opacity-70 group-hover:opacity-100 transition-opacity duration-200">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => handleEditClick(item.availabilityId)}
-                            className="p-2 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-200"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => confirmDeleteAvailability(item.availabilityId)}
-                            className="p-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300 transition-all duration-200"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <button
+                          onClick={() => handleEditClick(item.availabilityId)}
+                          className="group relative p-3 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 transform"
+                          title="Edit Item"
+                        >
+                          <Pencil className="w-5 h-5" />
+                          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 rounded-xl transition-all duration-200"></div>
+                        </button>
+
+                        <button
+                          onClick={() => confirmDeleteAvailability(item.availabilityId)}
+                          className="group relative p-3 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 transform"
+                          title="Delete Item"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 rounded-xl transition-all duration-200"></div>
+                        </button>
                         </div>
                       </td>
                     </tr>

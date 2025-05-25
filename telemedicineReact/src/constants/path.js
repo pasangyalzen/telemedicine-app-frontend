@@ -21,5 +21,7 @@ export const PATHS = {
     LOBBY:"/LOBBY",
     ROOM:"/room/:room",
     PHARMACISTDASHBOARD: "/pharmacist-dashboard",
-    VERIFYPAYMENT: "/verify-payment"
+    VERIFYPAYMENT: "/verify-payment",
+    FORGOT_PASSWORD: "/forgot-password",
+    RESET_PASSWORD: "/reset-password",
 }

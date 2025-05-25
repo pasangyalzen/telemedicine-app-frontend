@@ -12,6 +12,7 @@ import { getEmailFromToken } from "../auth/auth";
 import { DoctorRegisterModal } from "./components/AppointmentSummary";
 import DoctorAvailabilityTable from "./components/DoctorAvailabilityTable";
 import { getDoctorIdByEmail } from "./services/doctorAppointmentApi";
+import { fetchAppointments } from "../Admin/services/appointmentApi";
 
 
 
@@ -266,7 +267,7 @@ export default function DoctorWaitingRoomDashboard() {
               <UpcomingAppointments appointments={appointments} />
             )}
 
-          {selectedMenu === "pendingConsultations" && <PendingConsultations />}
+          {selectedMenu === "pendingConsultations" && <PendingConsultations appointments={appointments}/>}
           {selectedMenu === "availability" && (
             <DoctorAvailabilityTable doctorId={doctorId} /> // <-- Replace with your actual component name
           )}

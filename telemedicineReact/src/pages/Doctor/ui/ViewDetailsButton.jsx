@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FileSearch, X, Pill, Calendar, ClipboardList, AlertCircle } from 'lucide-react';
 import { apiClient } from '../services/doctorAppointmentApi';
+import toast from 'react-hot-toast';
 
 const ViewDetailsButton = ({ appointmentId }) => {
   const [showModal, setShowModal] = useState(false);
@@ -34,6 +35,7 @@ const ViewDetailsButton = ({ appointmentId }) => {
       setShowModal(true);
     } catch (err) {
       console.error("Error fetching consultation/prescription:", err);
+      toast.error("Either the consultation or Prescription is missing.")
     }
   };
 

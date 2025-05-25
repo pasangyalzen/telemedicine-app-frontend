@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PATHS } from "../constants/path";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar({ backgroundColor }) {
   const [showSignupOptions, setShowSignupOptions] = useState(false);
   const [navbarOpacity, setNavbarOpacity] = useState(1);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -41,7 +44,7 @@ export default function Navbar({ backgroundColor }) {
 
       <div className="flex gap-4 mr-8">
         {/* Other Links */}
-        <Link>
+        {/* <Link>
           <button className="font-sans font-extrabold px-4 py-2 bg-transparent rounded-md text-gray-400 border hover:text-gray-300 border-none relative group">
             For Providers
             <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#65cccc] group-hover:w-full transition-all duration-500"></span>
@@ -58,7 +61,7 @@ export default function Navbar({ backgroundColor }) {
             About Us
             <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#65cccc] group-hover:w-full transition-all duration-500"></span>
           </button>
-        </Link>
+        </Link> */}
 
         {/* Login Button */}
         <Link to={PATHS.LOGIN}>
@@ -102,18 +105,19 @@ export default function Navbar({ backgroundColor }) {
           {showSignupOptions && (
             <div className="absolute top-full right-1 mt-4 mb-0 bg-[#012f33] rounded-md shadow-lg z-10 w-60 flex flex-col gap-4 p-4 border border-x-primary-light border-y-primary-light">
               {/* Provider Button */}
-              <Link to={PATHS.REGISTER} state={{ role: "doctor" }}>
+              {/* <Link to={PATHS.REGISTER} state={{ role: "doctor" }}>
                 <button className="flex items-center justify-center w-full px-3 py-3 bg-[#65cccc] text-black rounded-md font-medium shadow-md hover:bg-[#52b5b6] transition">
                   <span>I'm a Doctor</span>
                 </button>
-              </Link>
+              </Link> */}
 
               {/* Patient Button */}
-              <Link to={PATHS.REGISTER} state={{ role: "patient" }}>
-                <button className="flex items-center justify-center w-full px-3 py-3 bg-[#ffaa33] text-black rounded-md font-medium shadow-md hover:bg-[#e6992d] transition">
-                  <span>I'm a Patient</span>
-                </button>
-              </Link>
+              <button
+              onClick={() => navigate("/register", { state: { role: "Patient" } })}
+              className="flex items-center justify-center w-full px-3 py-3 bg-[#ffaa33] text-black rounded-md font-medium shadow-md hover:bg-[#e6992d] transition"
+            >
+              <span>I'm a Patient</span>
+            </button>
             </div>
           )}
         </div>

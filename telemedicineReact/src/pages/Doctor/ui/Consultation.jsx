@@ -30,6 +30,7 @@ const Consultation = ({ appointmentId, setShowConsultationForm, onClose, refetch
       setShowConsultationForm(false);
     } catch (error) {
       console.error("Error creating consultation:", error);
+      toast.error("Consultation has been already created.")
     }
   };
 

@@ -173,7 +173,7 @@ const appointmentId = room;
       navigate("/doctor-waiting-room-dashboard");
       break;
     case "Patient":
-      navigate("/patient-video-call-dashboard");
+      navigate("/patientdashboard");
       break;
     default:
       navigate("/");

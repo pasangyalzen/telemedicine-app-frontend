@@ -108,8 +108,8 @@ export default function LoginPage() {
                             </div>
 
                             <div className="text-center mt-4">
-                                <Link className="text-teal-600 hover:text-teal-800 text-sm">
-                                    Forgot your password?
+                                <Link to={PATHS.FORGOT_PASSWORD} className="text-teal-600 hover:text-teal-800 text-sm">
+                                Forgot your password?
                                 </Link>
                             </div>
 

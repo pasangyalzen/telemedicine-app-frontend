@@ -80,7 +80,7 @@ const Sidebar = ({ setSelectedMenu, selectedMenu }) => {
         </div>
         {!isCollapsed && (
           <div>
-            <p className="font-semibold text-[#65cccc]">{admin.name}</p>
+            <p className="text-xs font-semibold text-[#65cccc]">{admin.name}</p>
             <p className="text-xs text-[#65cccc80]">{admin.role}</p>
           </div>
         )}

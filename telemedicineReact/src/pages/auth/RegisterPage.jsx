@@ -1,16 +1,29 @@
 import { Link } from "react-router-dom";
 import { PATHS } from "../../constants/path";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 import RegisterVideo from "../../assets/RegisterVideo.mp4";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import OtpVerificationForm from "./OtpVerificationForm"; // Import OTP verification component
 
+
+
+
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = location.state?.role || "Patient";
+  const role = "Patient"; 
+  useEffect(() => {
+  if (location.state && location.state.role) {
+    console.log(`Role received from navigation state: ${location.state.role}`);
+  } else {
+    console.warn("Navigated to register without role state. Defaulting to 'patient'");
+  }
+}, [location.state]);
+
+  
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -91,19 +91,18 @@ const PatientManagement = () => {
         </div>
       )}
 
-      <div className="flex justify-between mb-4">
-        <SearchBar 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
-          className="border p-4 rounded-lg w-3/4 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-md h-12" 
-        />
-        <button
-          onClick={openCreateModal}
-          className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
-        >
-          Register Patient
-        </button>
-      </div>
+      <div className="flex justify-between items-center mb-4">
+      {/* Empty space where the SearchBar used to be */}
+      <div className="w-3/4"></div>
+
+      {/* Register Patient Button aligned right */}
+      <button
+        onClick={openCreateModal}
+        className="w-1/4 px-6 py-3 text-lg text-white font-semibold rounded-lg shadow-md bg-teal-800 hover:bg-teal-600 transition-all"
+      >
+        Register Patient
+      </button>
+    </div>
 
       <PatientTable
         patients={filteredPatients}
