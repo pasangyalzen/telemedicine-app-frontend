@@ -382,7 +382,7 @@ const appointmentId = room;
               </svg>
               Join
             </button>
-            <button
+            {/* <button
             onClick={() => setShowReportModal(true)}
             className="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center"
             >
@@ -390,7 +390,7 @@ const appointmentId = room;
                 <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v1H3V4zM3 7h14v9a1 1 0 01-1 1H4a1 1 0 01-1-1V7z" />
               </svg>
               View Reports
-            </button>
+            </button> */}
             
             <button
               onClick={endCall}

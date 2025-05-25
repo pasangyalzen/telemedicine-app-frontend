@@ -96,27 +96,30 @@ export default function RegisterPage() {
                   <input
                     type="text"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.replace(/\s/g, ''))}
+                    onKeyDown={(e) => { if (e.key === ' ') e.preventDefault(); }}
                     className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
                   />
                 </div>
                 <div className="space-y-2 text-start">
                   <label className="text-sm text-gray-500">Password</label>
                   <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
-                  />
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value.replace(/\s/g, ''))}
+                  onKeyDown={(e) => { if (e.key === ' ') e.preventDefault(); }}
+                  className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
+                />
                 </div>
                 <div className="space-y-2 text-start">
                   <label className="text-sm text-gray-500">Confirm Password</label>
                   <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
-                  />
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value.replace(/\s/g, ''))}
+                  onKeyDown={(e) => { if (e.key === ' ') e.preventDefault(); }}
+                  className="w-full px-4 py-2 bg-white text-black rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-100"
+                />
                 </div>
                 <button
                   type="submit"
